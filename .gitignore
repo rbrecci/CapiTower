@@ -1,0 +1,15 @@
+# credenciais reais
+app/config/config.php
+
+# ambiente
+.vscode/
+.idea/
+*.log
+
+# windows
+Thumbs.db
+desktop.ini
+
+# dumps locais do banco
+*.sql.bak
+database/dump_*.sql
