@@ -19,7 +19,7 @@ Registradas na entrevista de design de 10/09/2026.
 | D11 | Lacaios | Aparecem em campo, mas **nao sao alvejaveis**. Sao contadores, nao unidades. |
 | D12 | Derrota | Permadeath, com bonus de meta proporcional ao andar alcancado. |
 | D13 | Desbloqueio | Por objetivos e conquistas nomeadas. Sem XP passivo, sem moeda de meta. |
-| D14 | Classe 1 | Conjuradora (necromante), com os 4 arquetipos girando em torno dos lacaios. |
+| D14 | Classe 1 | Capivárias (conjuradora necromante), com os 4 arquetipos girando em torno dos lacaios. |
 | D15 | Arte | Placeholder agora, arte gerada por IA depois. |
 | D16 | Ambiente | XAMPP para desenvolver, InfinityFree para hospedar. Sem build, sem Node, sem Composer. |
 | D17 | Tema | Fantasia com humor. Capivaras de esteroide, Soberana Gertrudes no topo. |
@@ -31,6 +31,8 @@ Registradas na entrevista de design de 10/09/2026.
 | D23 | Lacaios entre combates | **Nao persistem.** Zeram ao fim de todo combate, sem excecao nem privilegio de habilidade. Resolve Q7. |
 | D24 | Nome | O projeto se chama **CapiTower**, pasta local e repositorio. Resolve Q8. |
 | D25 | Desafio opcional | Fica. Vencer da um **modificador de run** permanente e pequeno, escolhido entre 2 sorteados. Maximo de 5 por run. Resolve Q4. |
+| D26 | Nomes das classes | **Capivárias** (conjuradora), **Brutamontes** (Adrenalina) e **Ligeira** (Impulso). |
+| D27 | Classes 2 e 3 | Conceitos aprovados: Brutamontes e Ligeira, com mecanica, habilidade, estado exclusivo e 4 arquetipos cada. |
 
 ## 2. Questoes em aberto
 
@@ -104,7 +106,7 @@ uma segunda dimensao de crescimento para quem gosta de arriscar.
 
 Restricoes que vieram junto, detalhadas em `01-gdd.md` secao 3.3: modificadores sao sempre
 aditivos e de valor fixo, e nenhum deles pode tocar na mecanica exclusiva de uma unica classe.
-Sem isso, o desafio opcional viraria uma sala que vale mais para a Conjuradora que para as
+Sem isso, o desafio opcional viraria uma sala que vale mais para Capivárias que para as
 outras duas, e a paridade entre classes iria junto.
 
 ---

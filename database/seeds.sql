@@ -10,7 +10,7 @@
 --   eventos
 --   objetivos
 --
--- STATUS: esqueleto. As 20 cartas da Conjuradora, o bestiario e os chefes entram
+-- STATUS: esqueleto. As 20 cartas de Capivárias, o bestiario e os chefes entram
 -- na Fase 3 do roadmap, depois que as questoes Q1 e Q3 de docs/07-decisoes.md
 -- estiverem fechadas.
 
@@ -24,7 +24,7 @@ INSERT INTO classes
   (slug, nome, descricao, mecanica_nome, mecanica_descricao,
    habilidade_nome, habilidade_descricao, hp_inicial, acao_por_turno, inicial, ordem)
 VALUES
-  ('conjuradora', 'A Conjuradora',
+  ('capivarias', 'Capivárias',
    'Capivara necromante. A unica classe cuja forca esta fora do proprio corpo.',
    'Lacaios',
    'Contadores persistentes que aparecem em campo como capivaras esqueleto. Nao sao alvejaveis, nao tem HP e so somem por efeito que diga consome ou dissipa.',
@@ -43,12 +43,12 @@ ON DUPLICATE KEY UPDATE
   inicial = VALUES(inicial),
   ordem = VALUES(ordem);
 
--- Classes 2 e 3: A Bruta (mecanica Adrenalina) e A Ligeira (mecanica Impulso).
+-- Classes 2 e 3: Brutamontes (mecanica Adrenalina) e Ligeira (mecanica Impulso).
 -- Propostas em docs/02-classes-e-arquetipos.md secoes 5 e 6. Entram no seed junto
 -- com as cartas delas, na Fase 6 do roadmap.
 
 -- ---------------------------------------------------------------------------
--- ARQUETIPOS DA CONJURADORA
+-- ARQUETIPOS DE CAPIVARIAS
 -- ---------------------------------------------------------------------------
 
 INSERT INTO arquetipos (classe_id, slug, nome, descricao, cor, ordem)
@@ -60,7 +60,7 @@ JOIN (
   UNION ALL SELECT 'ossada',     'Ossada',     'Muralha de ossos. Lacaios viram Bloco e mitigacao. Vence por atrito.', '#D9CBA3', 3
   UNION ALL SELECT 'putrefacao', 'Putrefacao', 'Decadencia lenta. Lacaios aplicam Veneno e estados. Nao precisa atacar para vencer.', '#6B8E5A', 4
 ) v
-WHERE c.slug = 'conjuradora'
+WHERE c.slug = 'capivarias'
 ON DUPLICATE KEY UPDATE
   nome = VALUES(nome),
   descricao = VALUES(descricao),

@@ -119,7 +119,7 @@ Snapshot em JSON, gravado numa coluna `estado_json`. Formato inicial:
 ```json
 {
   "versao": 1,
-  "classe": "conjuradora",
+  "classe": "capivarias",
   "seed": 849213774,
   "andar": 23,
   "hp": 41,

@@ -53,7 +53,7 @@ Todo inimigo telegrafa a intencao do proximo turno (icone + valor).
 
 ### 2.5 Lacaios
 
-Lacaios da classe conjuradora **aparecem em campo como elemento visual e nao sao alvejaveis**.
+Lacaios da classe Capivárias **aparecem em campo como elemento visual e nao sao alvejaveis**.
 Nao possuem HP, nao recebem dano e nao ocupam espaco de alvo. Mecanicamente sao contadores
 persistentes que disparam efeitos (dano no fim do turno, bloco, gatilhos), representados na
 interface como capivaras esqueleto acumulando ao lado do jogador.
@@ -80,10 +80,10 @@ Cada classe adiciona no maximo **um** estado exclusivo proprio:
 
 | Estado | Classe | Efeito |
 | --- | --- | --- |
-| Retaliacao | Bruta | Todo ataque recebido devolve X de dano ao atacante. |
+| Retaliacao | Brutamontes | Todo ataque recebido devolve X de dano ao atacante. |
 | Evasao | Ligeira | Anula por completo o proximo ataque, uma instancia por ponto. |
 
-A Conjuradora nao tem estado exclusivo: os lacaios ja cumprem esse papel.
+Capivárias nao tem estado exclusivo: os lacaios ja cumprem esse papel.
 Detalhes em `docs/02-classes-e-arquetipos.md`.
 
 ## 3. A torre

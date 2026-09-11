@@ -9,7 +9,7 @@ comece com dado real e nao com planilha.
 - [x] Esqueleto de pastas
 - [x] Schema do banco
 - [x] Fechar as questoes abertas de `07-decisoes.md` (D01 a D25)
-- [x] Definir as classes 2 e 3 no brainstorm (Bruta e Ligeira, propostas)
+- [x] Definir as classes 2 e 3 no brainstorm (Brutamontes e Ligeira, aprovadas)
 
 ## Fase 1: prototipo de combate (sem banco, sem conta)
 
@@ -39,7 +39,7 @@ Criterio de saida: da para subir do andar 1 ao 51 numa sentada.
 
 ## Fase 3: conteudo da primeira classe
 
-- [ ] As 20 cartas da Conjuradora escritas e balanceadas no papel
+- [ ] As 20 cartas de Capivárias escritas e balanceadas no papel
 - [ ] Os 10 niveis da habilidade Legiao
 - [ ] Bestiario dos 5 blocos
 - [ ] Os 5 chefes com fases

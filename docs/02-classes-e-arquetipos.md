@@ -54,7 +54,7 @@ fraca cedo e explosiva no fim. Assimetria proibida: o teto de poder.
 Antes de aprovar qualquer carta: se essa carta fosse movida para outra classe, faria sentido?
 Se sim, ela e generica demais e nao deveria existir.
 
-## 3. Classe 1: a Conjuradora (definida)
+## 3. Classe 1: Capivárias (definida)
 
 **Status: conceito aprovado, cartas a detalhar.**
 
@@ -110,12 +110,12 @@ sem trava.
 ## 4. O eixo que separa as tres classes
 
 **Onde mora o poder do jogador.** Esse e o criterio que impede as classes 2 e 3 de virarem
-variacoes da Conjuradora.
+variacoes de Capivárias.
 
 | Classe | Onde mora o poder | Quando o poder aparece | Ritmo |
 | --- | --- | --- | --- |
-| Conjuradora | No campo (lacaios) | Cresce ao longo do combate | Fraca cedo, vence por atrito |
-| Bruta | No proprio corpo (vida perdida) | Reage ao que o inimigo faz | Forte cedo, precisa de combustivel |
+| Capivárias | No campo (lacaios) | Cresce ao longo do combate | Fraca cedo, vence por atrito |
+| Brutamontes | No proprio corpo (vida perdida) | Reage ao que o inimigo faz | Forte cedo, precisa de combustivel |
 | Ligeira | No deck e na mao (sequencia) | Acontece dentro de um unico turno | Variancia alta, picos explosivos |
 
 Referencia assumida: o triangulo tabuleiro / corpo / deck do Slay the Spire (Defect, Ironclad,
@@ -127,20 +127,20 @@ jogador para um tipo de decisao diferente. O conteudo dentro de cada vertice e n
 | Direcao | Por que ficou de fora |
 | --- | --- |
 | Postura (estilo Watcher) | Vistosa, mas o teto de poder de dancar entre posturas e historicamente dificil de conter. Feriria o pilar de paridade. |
-| Alquimista (transformar cartas) | Mora no mesmo vertice da Ligeira (deck). Duas classes brigando pelo mesmo espaco de design. |
-| Engenhoca (estruturas que disparam depois) | Mora no mesmo vertice da Conjuradora (campo, recurso persistente). Viraria lacaio com outro nome. |
+| Alquimista (transformar cartas) | Mora no mesmo vertice de Ligeira (deck). Duas classes brigando pelo mesmo espaco de design. |
+| Engenhoca (estruturas que disparam depois) | Mora no mesmo vertice de Capivárias (campo, recurso persistente). Viraria lacaio com outro nome. |
 | Bardo (manipular a intencao inimiga) | Interessante, mas exige que todo inimigo do jogo seja desenhado pensando nisso. Custo de conteudo alto demais. |
 
-## 5. Classe 2: A Bruta (proposta)
+## 5. Classe 2: Brutamontes
 
-**Status: proposta do brainstorm, aguardando validacao.**
+**Status: conceito aprovado, cartas a detalhar.**
 
 Capivara que nunca chegou perto do poco de esteroides e faz questao de dizer isso. Tudo que ela
 tem veio de teimosia, e ela leva esse fato mais a serio do que qualquer um gostaria.
 
 ### 5.1 Mecanica exclusiva: Adrenalina
 
-**Dano recebido vira recurso.** Toda vez que a Bruta perde vida (dano que passou pelo Bloco), ela
+**Dano recebido vira recurso.** Toda vez que Brutamontes perde vida (dano que passou pelo Bloco), ela
 ganha **1 de Adrenalina**, no maximo 1 por instancia de dano.
 
 - Acumula durante o combate, teto de **10** `[ajustar]`.
@@ -148,7 +148,7 @@ ganha **1 de Adrenalina**, no maximo 1 por instancia de dano.
 - Cartas gastam Adrenalina ou escalam com a quantidade acumulada.
 
 A tensao central da classe cabe em uma frase: **bloquear perfeitamente deixa o tanque vazio.**
-Como a cura e escassa (D07), a Bruta vive negociando vida por poder, e errar essa conta custa a
+Como a cura e escassa (D07), Brutamontes vive negociando vida por poder, e errar essa conta custa a
 run. Nenhuma outra classe tem esse dilema.
 
 ### 5.2 Habilidade: Casca Grossa (niveis 1 a 10)
@@ -187,7 +187,7 @@ E o unico estado do jogo que transforma o turno do inimigo em dano do jogador.
 
 Pontes: Suor alimenta Estouro (precisa encher para gastar). Couro sustenta Troco (sobreviver e o
 que da tempo de devolver). A briga proposital e **Suor contra Couro**: um quer perder vida, o
-outro quer nao perder. Escolher entre os dois e escolher como a Bruta joga.
+outro quer nao perder. Escolher entre os dois e escolher como Brutamontes joga.
 
 ### 5.5 Perigos conhecidos
 
@@ -197,9 +197,9 @@ outro quer nao perder. Escolher entre os dois e escolher como a Bruta joga.
   precisa ficar bem abaixo do valor de um descanso, senao o arquetipo so funciona para quem ja
   decorou a torre.
 
-## 6. Classe 3: A Ligeira (proposta)
+## 6. Classe 3: Ligeira
 
-**Status: proposta do brainstorm, aguardando validacao.**
+**Status: conceito aprovado, cartas a detalhar.**
 
 Capivara pequena e encharcada, impossivel de segurar. Rapida a ponto de ofender as leis da
 natureza e a reputacao da propria especie.
@@ -291,7 +291,7 @@ Toda carta tem:
 | Campo | Exemplo |
 | --- | --- |
 | Nome | Costela Solta |
-| Classe | Conjuradora |
+| Classe | Capivárias |
 | Arquetipo | Enxame |
 | Custo | 1 Acao |
 | Tipo | Ataque, Defesa, Poder ou Utilidade |
