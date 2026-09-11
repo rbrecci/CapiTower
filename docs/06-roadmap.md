@@ -8,7 +8,7 @@ comece com dado real e nao com planilha.
 - [x] Documentacao de design e tecnica
 - [x] Esqueleto de pastas
 - [x] Schema do banco
-- [ ] Fechar as questoes abertas de `07-decisoes.md`
+- [x] Fechar as questoes abertas de `07-decisoes.md` (D01 a D25)
 - [ ] Definir as classes 2 e 3 no brainstorm
 
 ## Fase 1: prototipo de combate (sem banco, sem conta)
@@ -31,6 +31,7 @@ Criterio de saida: da para jogar um combate inteiro e perder de proposito.
 - [ ] `tower.js` gerando os 5 blocos com ordem embaralhada
 - [ ] Tipos de sala: combate, elite, evento, descanso, desafio, chefe
 - [ ] Tela de recompensa com a escolha carta contra habilidade
+- [ ] Modificadores de run vindos do desafio opcional
 - [ ] HP persistente entre andares
 - [ ] Fim de run: vitoria e derrota
 

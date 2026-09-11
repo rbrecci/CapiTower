@@ -30,11 +30,12 @@ Registradas na entrevista de design de 10/09/2026.
 | D22 | Personagem jogavel | O jogador tambem e uma capivara. Lore detalhada fica para depois das mecanicas. Resolve Q5. |
 | D23 | Lacaios entre combates | **Nao persistem.** Zeram ao fim de todo combate, sem excecao nem privilegio de habilidade. Resolve Q7. |
 | D24 | Nome | O projeto se chama **CapiTower**, pasta local e repositorio. Resolve Q8. |
+| D25 | Desafio opcional | Fica. Vencer da um **modificador de run** permanente e pequeno, escolhido entre 2 sorteados. Maximo de 5 por run. Resolve Q4. |
 
 ## 2. Questoes em aberto
 
-Restou apenas Q4. As demais estao resolvidas e ficam registradas abaixo com o historico do
-raciocinio que levou a cada decisao.
+**Todas resolvidas.** Ficam registradas abaixo com o historico do raciocinio que levou a cada
+decisao, para nao refazer a mesma discussao daqui a tres meses.
 
 ---
 
@@ -93,14 +94,18 @@ largada e piora a leitura da tela de sorteio.
 
 ---
 
-### Q4. Recompensa do desafio opcional
+### Q4. Recompensa do desafio opcional (RESOLVIDA, ver D25)
 
-Nao pode dar ponto de recompensa (quebraria a conta de 10) e nao pode dar moeda (nao existe).
-Candidatos: cura grande, carta temporaria ate o proximo chefe, modificador permanente da run
-(tipo +1 Forca), ou escolher uma das 3 cartas que apareceriam na proxima recompensa.
+Nao podia dar ponto de recompensa (quebraria a conta de 10) nem moeda (nao existe).
 
-**Recomendacao: modificador permanente pequeno da run.** Nao infla o deck, nao mexe na economia
-de recompensa e da uma segunda dimensao de crescimento para quem gosta de arriscar.
+**Decidido: modificador de run.** Bonus permanente e pequeno que vale ate o fim da run, escolhido
+entre 2 sorteados, no maximo 5 por run. Nao infla o deck, nao mexe na economia de recompensa e da
+uma segunda dimensao de crescimento para quem gosta de arriscar.
+
+Restricoes que vieram junto, detalhadas em `01-gdd.md` secao 3.3: modificadores sao sempre
+aditivos e de valor fixo, e nenhum deles pode tocar na mecanica exclusiva de uma unica classe.
+Sem isso, o desafio opcional viraria uma sala que vale mais para a Conjuradora que para as
+outras duas, e a paridade entre classes iria junto.
 
 ---
 

@@ -117,9 +117,26 @@ persistente, carta temporaria, risco x recompensa). Nunca da ponto de recompensa
 
 **Descanso.** Recupera **30% do HP maximo** `[ajustar]`. Unica cura confiavel do jogo.
 
-**Desafio opcional.** O jogador pode pular sem custo. Aceitando, enfrenta um combate mais duro
-com condicao extra (limite de turnos, inimigo com buff, comecar sem Bloco). Recompensa em aberto,
-ver Q4 em `docs/07-decisoes.md`.
+**Desafio opcional.** O jogador pode pular sem custo nenhum. Aceitando, enfrenta um combate mais
+duro com uma condicao extra (limite de turnos, inimigo com buff, comecar sem Bloco). Vencendo,
+ganha um **modificador de run**: um bonus permanente e pequeno que vale ate o fim da run.
+
+Sao no maximo 5 modificadores por run, um por bloco. Pool inicial `[ajustar]`:
+
+| Modificador | Efeito |
+| --- | --- |
+| Casco Duro | +1 de Bloco toda vez que ganhar Bloco |
+| Musculo Teimoso | +1 de Forca permanente |
+| Folego | +5 de HP maximo, e cura os 5 na hora |
+| Largada | +1 Acao no primeiro turno de cada combate |
+| Mao Firme | Compra +1 carta no primeiro turno de cada combate |
+
+Regras do pool:
+- Todo modificador e **aditivo e de valor fixo**. Nada percentual, nada multiplicativo, porque com
+  5 acumulados o efeito composto sai do controle.
+- Nenhum modificador pode interagir com a mecanica exclusiva de uma classe so, senao o desafio
+  vale mais para uma classe que para as outras e quebra a paridade.
+- O jogador escolhe 1 entre 2 sorteados, nao recebe aleatorio.
 
 ### 3.4 Escalada de dificuldade
 
