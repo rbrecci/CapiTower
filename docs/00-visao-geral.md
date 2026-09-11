@@ -18,8 +18,9 @@ Nenhuma classe e a escolha "certa". Escolher classe e escolher estilo de jogo, n
 Toda proposta de carta ou habilidade passa pelo teste: isso quebra a paridade entre as classes?
 
 **2. Deck pequeno, decisao grande.**
-15 cartas no fim da run. Sem remocao, sem upgrade de carta, sem lixo. Cada carta ganha e cerca de
-7% do deck, entao toda recompensa importa e o jogador nunca precisa "consertar" o deck.
+Comeca com 10 cartas (5 sorteadas, 2 copias de cada) e termina com 20. Sem remocao, sem upgrade
+de carta, sem lixo. Cada carta ganha e 5% do deck, entao toda recompensa importa e o jogador nunca
+precisa "consertar" o deck.
 
 **3. A run conta uma historia de build.**
 O deck inicial aleatorio define a pergunta da run, e as 10 recompensas definem a resposta.

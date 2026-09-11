@@ -35,9 +35,9 @@ Quando o deck de compra esvazia, o descarte e embaralhado e vira o novo deck.
 - Sem limite de mao alem do que a compra entrega.
 - Cartas jogadas vao para o descarte, salvo texto em contrario.
 
-> **Ponto critico em aberto.** Com deck de 5 cartas e mao de 5, o jogador compra o deck inteiro
-> todo turno nos primeiros andares, o que elimina qualquer variancia ate o primeiro chefe.
-> Ver `docs/07-decisoes.md`, questao Q1, para as opcoes e a recomendacao.
+O deck comeca com 10 cartas justamente para que a mao de 5 nunca compre o deck inteiro (ver 4.1).
+No pior caso, o jogador ve metade do deck por turno, o que preserva sorte de compra e decisao de
+sequenciamento desde o andar 1.
 
 ### 2.4 Inimigos por sala
 
@@ -131,20 +131,29 @@ escala global para depurar depois.
 
 ### 4.1 Deck inicial
 
-- Ao escolher a classe, o jogo sorteia **5 cartas** entre as 20 da classe (apenas as desbloqueadas).
-- O jogador pode **re-roletar 1 das 5**, uma unica vez. A carta trocada nao volta ao sorteio.
-- Cartas repetidas no sorteio: permitido ou nao, ver Q2 em `docs/07-decisoes.md`.
+- Ao escolher a classe, o jogo sorteia **5 cartas distintas** entre as 20 da classe (apenas as
+  desbloqueadas). O sorteio **nunca repete carta**.
+- Cada carta sorteada entra no deck em **2 copias**. Deck inicial: **10 cartas**.
+- O jogador pode **re-roletar 1 das 5**, uma unica vez. A troca leva as duas copias junto, e a
+  carta trocada nao volta ao sorteio.
 
-O sorteio e a fonte de variedade entre runs. Comecar com 3 cartas do mesmo arquetipo e um convite
-a especializar. Comecar com 5 arquetipos diferentes e um convite a generalizar.
+O sorteio e a fonte de variedade entre runs. Comecar com 3 cartas do mesmo arquetipo significa 6
+copias dele no deck, uma identidade de build forte desde o primeiro combate, e um convite a
+especializar. Comecar com 5 arquetipos diferentes e um convite a generalizar.
+
+A duplicacao existe por dois motivos: garante que a mao de 5 nao compre o deck inteiro, e faz o
+sorteio inicial pesar de verdade na identidade da run.
 
 ### 4.2 Crescimento
 
 10 pontos de recompensa por run (5 elites + 5 chefes). Em cada um, o jogador escolhe **uma** opcao:
 
 - **Carta nova**: escolhe 1 entre 3 cartas sorteadas da propria classe (nunca oferece carta que ja
-  esta no deck), ou
+  esta no deck), e ela entra em **1 copia**, ou
 - **+1 nivel de habilidade** da classe.
+
+Deck no fim de uma run completa: **10 iniciais + ate 10 de recompensa = 20 cartas**, e menos que
+isso se o jogador investir na habilidade.
 
 Sem remocao de carta. Sem upgrade de carta. Sem loja. Sem moeda.
 

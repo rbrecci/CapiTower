@@ -11,7 +11,7 @@ Registradas na entrevista de design de 10/09/2026.
 | D03 | Backend | Conta e save da run, meta progressao e catalogo de conteudo no MySQL. |
 | D04 | Validacao | Sem validacao autoritativa. Combate roda no cliente. |
 | D05 | Upgrade | Cartas nao evoluem. So a habilidade de classe sobe de nivel. |
-| D06 | Deck | Enxuto, 15 cartas no fim. Sem remocao, sem upgrade, sem lixo. |
+| D06 | Deck | Enxuto. Sem remocao, sem upgrade, sem lixo. Tamanho final definido em D18. |
 | D07 | Vida | HP persiste entre andares, cura escassa (so descanso e evento). |
 | D08 | Encontros | Combate comum, elite, evento narrativo, descanso, desafio opcional. |
 | D09 | Economia | **Nao existe moeda.** Sem loja, sem ouro, sem tesouro. Recompensa e sempre direta. |
@@ -23,14 +23,18 @@ Registradas na entrevista de design de 10/09/2026.
 | D15 | Arte | Placeholder agora, arte gerada por IA depois. |
 | D16 | Ambiente | XAMPP para desenvolver, InfinityFree para hospedar. Sem build, sem Node, sem Composer. |
 | D17 | Tema | Fantasia com humor. Capivaras de esteroide, Soberana Gertrudes no topo. |
+| D18 | Deck inicial | Cada uma das 5 cartas sorteadas entra em **2 copias**. Deck comeca com 10 e termina com ate 20. Resolve Q1. |
+| D19 | Sorteio inicial | As 5 cartas sorteadas sao **sempre distintas**. Resolve Q2. |
+| D20 | Tipos de encontro | Fechado em 6: combate comum, elite, evento, descanso, desafio opcional e chefe. Nao havera um setimo. Resolve Q6. |
 
 ## 2. Questoes em aberto
 
-Ordenadas por impacto. Q1 e Q3 travam o design do MVP, o resto pode esperar.
+Ordenadas por impacto. Q3 trava o design do MVP, o resto pode esperar.
+Q1, Q2 e Q6 ja foram resolvidas e ficam registradas abaixo com o historico do raciocinio.
 
 ---
 
-### Q1. Deck de 5 cartas com mao de 5 elimina a variancia inicial
+### Q1. Deck de 5 cartas com mao de 5 elimina a variancia inicial (RESOLVIDA, ver D18)
 
 **Problema.** No andar 1 o deck tem 5 cartas e a mao compra 5. O jogador compra o deck inteiro
 todo turno, sempre. Nao existe sorte de compra, nao existe decisao de sequenciamento, e isso dura
@@ -46,10 +50,14 @@ da torre.
 | **C. Aceitar** | Os 10 primeiros andares sao deterministicos e funcionam como tutorial. Barato, mas 10 andares e muito tempo sem variancia. |
 | **D. Cartas basicas neutras** | Deck comeca com as 5 sorteadas mais 5 cartas basicas genericas. Resolve a variancia, mas contraria o pilar de nao ter carta de lixo no deck. |
 
-**Recomendacao: A.** E a unica que resolve o problema sem ferir nenhum pilar. Deck final de 20
-continua enxuto para o genero, e duplicar as cartas iniciais reforca exatamente o que voce queria:
-comecar com 3 cartas de um arquetipo passa a significar 6 copias, uma identidade de build forte
-desde o comeco.
+**Decidido: A.** E a unica que resolve o problema sem ferir nenhum pilar. Deck final de 20
+continua enxuto para o genero, e duplicar as cartas iniciais reforca exatamente a intencao do
+desenho: comecar com 3 cartas de um arquetipo passa a significar 6 copias, uma identidade de build
+forte desde o primeiro combate.
+
+Consequencia a vigiar no playtest: com 2 copias de cada inicial, combos de duas cartas ficam bem
+mais faceis de montar no comeco da run. Se algum par sair forte demais no bloco 1, o ajuste e no
+numero da carta, nao na regra de duplicacao.
 
 ---
 
@@ -72,15 +80,13 @@ motivo para existir.
 
 ---
 
-### Q2. Carta repetida no sorteio inicial
+### Q2. Carta repetida no sorteio inicial (RESOLVIDA, ver D19)
 
 O sorteio das 5 iniciais pode entregar a mesma carta duas vezes?
 
-- **Nao pode**: 5 cartas distintas, leitura mais limpa, garante variedade minima.
-- **Pode**: abre a chance de um comeco extremo, o que combina com roguelike.
-
-**Recomendacao: nao pode**, se Q1 for resolvido pela opcao A (que ja duplica tudo). Se Q1 ficar
-como esta, permitir repeticao vira uma forma barata de dar consistencia.
+**Decidido: nao pode.** As 5 sao sempre distintas. Como D18 ja entrega 2 copias de cada, permitir
+repeticao criaria decks iniciais com 4 copias da mesma carta, o que estreita demais a run logo na
+largada e piora a leitura da tela de sorteio.
 
 ---
 
@@ -105,10 +111,17 @@ uma piada estrutural de graca (a familia que ficou de fora da bonanca).
 
 ---
 
-### Q6. O sexto tipo de encontro
+### Q6. O sexto tipo de encontro (RESOLVIDA, ver D20)
 
-Na entrevista foi marcado um tipo de encontro adicional que nao chegou a ser nomeado. Fica
-registrado como pendente.
+Na entrevista foi marcado um tipo de encontro adicional que nao chegou a ser nomeado.
+
+**Decidido: nao havera.** Os seis tipos atuais (combate, elite, evento, descanso, desafio e chefe)
+ja preenchem os 10 andares de cada bloco e cobrem o ritmo pretendido. Candidatos avaliados e
+descartados: sala de troca de carta, altar de arquetipo, emboscada e pedagio.
+
+Fica registrado o buraco que esses candidatos preencheriam, caso o playtest mostre que ele
+incomoda: **nada fora das recompensas mexe no deck**, entao quem recebe um sorteio inicial ruim
+nao tem ferramenta para corrigir o rumo antes do primeiro elite.
 
 ---
 
