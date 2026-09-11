@@ -153,7 +153,8 @@ async def main():
     await settle(page, 4)
     check_error(app)
     txt = screen_text(app)
-    assert "Sala limpa" in txt or "Você caiu" in txt or "Recompensa" in txt, txt[:300]
+    # pós-combate depende do tipo do andar sorteado: comum, elite/chefe, desafio ou derrota
+    assert any(k in txt for k in ("Sala limpa", "Recompensa", "Desafio vencido", "Você caiu")), txt[:300]
 
     # telas restantes, forçadas direto (não dependem do sorteio da torre)
     app.busy = False
