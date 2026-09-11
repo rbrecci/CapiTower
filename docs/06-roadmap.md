@@ -39,7 +39,7 @@ Criterio de saida: da para subir do andar 1 ao 51 numa sentada.
 
 ## Fase 3: conteudo da primeira classe
 
-- [ ] As 20 cartas de Capivárias escritas e balanceadas no papel
+- [ ] As 20 cartas da Capimaga escritas e balanceadas no papel
 - [ ] Os 10 niveis da habilidade Legiao
 - [ ] Bestiario dos 5 blocos
 - [ ] Os 5 chefes com fases

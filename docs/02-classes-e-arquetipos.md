@@ -54,7 +54,7 @@ fraca cedo e explosiva no fim. Assimetria proibida: o teto de poder.
 Antes de aprovar qualquer carta: se essa carta fosse movida para outra classe, faria sentido?
 Se sim, ela e generica demais e nao deveria existir.
 
-## 3. Classe 1: Capivárias (definida)
+## 3. Classe 1: Capimaga (definida)
 
 **Status: conceito aprovado, cartas a detalhar.**
 
@@ -110,11 +110,11 @@ sem trava.
 ## 4. O eixo que separa as tres classes
 
 **Onde mora o poder do jogador.** Esse e o criterio que impede as classes 2 e 3 de virarem
-variacoes de Capivárias.
+variacoes da Capimaga.
 
 | Classe | Onde mora o poder | Quando o poder aparece | Ritmo |
 | --- | --- | --- | --- |
-| Capivárias | No campo (lacaios) | Cresce ao longo do combate | Fraca cedo, vence por atrito |
+| Capimaga | No campo (lacaios) | Cresce ao longo do combate | Fraca cedo, vence por atrito |
 | Brutamontes | No proprio corpo (vida perdida) | Reage ao que o inimigo faz | Forte cedo, precisa de combustivel |
 | Ligeira | No deck e na mao (sequencia) | Acontece dentro de um unico turno | Variancia alta, picos explosivos |
 
@@ -128,7 +128,7 @@ jogador para um tipo de decisao diferente. O conteudo dentro de cada vertice e n
 | --- | --- |
 | Postura (estilo Watcher) | Vistosa, mas o teto de poder de dancar entre posturas e historicamente dificil de conter. Feriria o pilar de paridade. |
 | Alquimista (transformar cartas) | Mora no mesmo vertice de Ligeira (deck). Duas classes brigando pelo mesmo espaco de design. |
-| Engenhoca (estruturas que disparam depois) | Mora no mesmo vertice de Capivárias (campo, recurso persistente). Viraria lacaio com outro nome. |
+| Engenhoca (estruturas que disparam depois) | Mora no mesmo vertice da Capimaga (campo, recurso persistente). Viraria lacaio com outro nome. |
 | Bardo (manipular a intencao inimiga) | Interessante, mas exige que todo inimigo do jogo seja desenhado pensando nisso. Custo de conteudo alto demais. |
 
 ## 5. Classe 2: Brutamontes
@@ -291,7 +291,7 @@ Toda carta tem:
 | Campo | Exemplo |
 | --- | --- |
 | Nome | Costela Solta |
-| Classe | Capivárias |
+| Classe | Capimaga |
 | Arquetipo | Enxame |
 | Custo | 1 Acao |
 | Tipo | Ataque, Defesa, Poder ou Utilidade |
