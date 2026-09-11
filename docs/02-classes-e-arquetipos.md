@@ -66,7 +66,8 @@ Lacaios sao **contadores persistentes**, nao unidades. Aparecem em campo como ca
 empilhando ao lado do jogador, mas **nao sao alvejaveis, nao tem HP e nao recebem dano**.
 
 - Persistem entre turnos dentro do mesmo combate.
-- Zeram ao fim do combate `[ajustar: ou carregam para o proximo andar em alguma build]`.
+- **Zeram ao fim do combate**, sempre. Nenhuma carta e nenhum nivel de habilidade carrega lacaio
+  para o andar seguinte (decisao D23).
 - Limite maximo de lacaios em campo: `[ajustar: 10]`, so para nao quebrar a interface.
 - So somem por efeito que diga "consome" ou "dissipa".
 
@@ -80,7 +81,7 @@ Comeca cada combate com N lacaios em campo. Proposta de curva `[ajustar]`:
 | 2 a 4 | +1 lacaio inicial a cada nivel |
 | 5 | Ao invocar, 20% de chance de invocar 1 a mais |
 | 6 a 8 | +1 lacaio inicial a cada nivel |
-| 9 | Lacaios sobrevivem ao fim do combate (metade, arredondado para baixo) |
+| 9 | Uma vez por combate, ao ficar sem lacaios em campo, invoca 2 imediatamente |
 | 10 | Comeca o combate com o dobro de lacaios iniciais |
 
 A curva precisa ser desenhada de forma que o nivel 10 seja forte sem tornar as cartas de invocacao

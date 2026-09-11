@@ -26,11 +26,15 @@ Registradas na entrevista de design de 10/09/2026.
 | D18 | Deck inicial | Cada uma das 5 cartas sorteadas entra em **2 copias**. Deck comeca com 10 e termina com ate 20. Resolve Q1. |
 | D19 | Sorteio inicial | As 5 cartas sorteadas sao **sempre distintas**. Resolve Q2. |
 | D20 | Tipos de encontro | Fechado em 6: combate comum, elite, evento, descanso, desafio opcional e chefe. Nao havera um setimo. Resolve Q6. |
+| D21 | Pontos de recompensa | 10 por run: **5 elites + 5 chefes**. O chefao do andar 51 nao da ponto. Resolve Q3. |
+| D22 | Personagem jogavel | O jogador tambem e uma capivara. Lore detalhada fica para depois das mecanicas. Resolve Q5. |
+| D23 | Lacaios entre combates | **Nao persistem.** Zeram ao fim de todo combate, sem excecao nem privilegio de habilidade. Resolve Q7. |
+| D24 | Nome | O projeto se chama **CapiTower**, pasta local e repositorio. Resolve Q8. |
 
 ## 2. Questoes em aberto
 
-Ordenadas por impacto. Q3 trava o design do MVP, o resto pode esperar.
-Q1, Q2 e Q6 ja foram resolvidas e ficam registradas abaixo com o historico do raciocinio.
+Restou apenas Q4. As demais estao resolvidas e ficam registradas abaixo com o historico do
+raciocinio que levou a cada decisao.
 
 ---
 
@@ -61,7 +65,7 @@ numero da carta, nao na regra de duplicacao.
 
 ---
 
-### Q3. De onde vem os 10 pontos de recompensa
+### Q3. De onde vem os 10 pontos de recompensa (RESOLVIDA, ver D21)
 
 **Problema.** O desenho pedia 10 recompensas e um chefe a cada 10 andares. Sao 5 chefes mais o
 chefao, o que da 5 ou 6 pontos, nao 10.
@@ -74,9 +78,8 @@ chefao, o que da 5 ou 6 pontos, nao 10.
 | **B. Chefe da 2 pontos** | 5 chefes x 2 = 10. Menos momentos de decisao, cada um mais pesado. |
 | **C. Recompensa a cada 5 andares** | Andares 5, 10, 15... 50 = 10 pontos, independente do tipo de sala. Regular, mas desconecta a recompensa do desafio. |
 
-**Recomendacao: A.** Ja esta escrita no GDD. Amarra recompensa a dificuldade, distribui as
-decisoes ao longo do bloco e da funcao ao elite, que senao seria so um combate mais duro sem
-motivo para existir.
+**Decidido: A.** Amarra recompensa a dificuldade, distribui as decisoes ao longo do bloco e da
+funcao ao elite, que senao seria so um combate mais duro sem motivo para existir.
 
 ---
 
@@ -101,13 +104,11 @@ de recompensa e da uma segunda dimensao de crescimento para quem gosta de arrisc
 
 ---
 
-### Q5. Quem e o jogador
+### Q5. Quem e o jogador (RESOLVIDA, ver D22)
 
-O jogador tambem e uma capivara (do ramo que nao caiu no poco) ou e outra coisa que sobe a torre?
-Isso decide se o bestiario de personagens jogaveis e capivara ou nao, e afeta as classes 2 e 3.
-
-**Recomendacao: tambem capivara.** Economiza direcao de arte, explica a capivara necromante e da
-uma piada estrutural de graca (a familia que ficou de fora da bonanca).
+**Decidido: tambem capivara.** O resto (por que sobe, qual o vinculo com a familia da Soberana,
+historia de cada classe) entra numa passada de lore dedicada, depois que as mecanicas fecharem.
+Nada no design mecanico depende dessa historia.
 
 ---
 
@@ -125,17 +126,19 @@ nao tem ferramenta para corrigir o rumo antes do primeiro elite.
 
 ---
 
-### Q7. Lacaios persistem entre combates?
+### Q7. Lacaios persistem entre combates? (RESOLVIDA, ver D23)
 
-Zerar ao fim do combate e o padrao seguro. Persistir cria uma fantasia forte (o exercito cresce
-andar apos andar) mas exige teto rigido, senao o bloco 5 vira passeio. O nivel 9 da habilidade
-Legiao ja flerta com isso ao carregar metade dos lacaios.
+**Decidido: nao persistem.** Zeram ao fim de todo combate, sem excecao. Persistir criaria bola de
+neve entre andares e exigiria um teto artificial para o bloco 5 nao virar passeio.
 
-**Recomendacao: zera por padrao, e persistir vira privilegio da habilidade em nivel alto.**
+Consequencia: o nivel 9 da habilidade Legiao, que carregava metade dos lacaios para o combate
+seguinte, foi substituido por uma rede de seguranca dentro do combate (uma vez por combate, ao
+ficar sem lacaios, invoca 2). Isso serve principalmente ao arquetipo Sacrificio, que fica exposto
+logo depois de gastar tudo.
 
 ---
 
-### Q8. Nome do projeto
+### Q8. Nome do projeto (RESOLVIDA, ver D24)
 
-A pasta local se chama `BrecciTower` e o repositorio se chama `CapiTower`. A documentacao adotou
-**CapiTower**, que combina com o tema. Vale renomear a pasta local para evitar confusao.
+**Decidido: CapiTower.** A pasta local foi renomeada de `BrecciTower` para `CapiTower`, ficando
+igual ao repositorio e a documentacao.

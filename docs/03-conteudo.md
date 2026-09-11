@@ -20,11 +20,12 @@ quebrar a quarta parede, nada de referencia de internet que envelhece em seis me
 
 ## 3. Quem e o jogador
 
-**Em aberto**, ver Q5 em `docs/07-decisoes.md`.
+O jogador tambem e uma capivara (decisao D22). O motivo de subir a torre, o vinculo com a familia
+da Soberana e a historia de cada classe ficam para uma passada de lore dedicada, depois que as
+mecanicas estiverem fechadas.
 
-Proposta: o jogador tambem e uma capivara, do ramo da familia que **nao** caiu no poco e ficou de
-fora da bonanca. Sobe a torre por motivos que variam por classe. Isso explica por que existe uma
-capivara necromante e economiza a criacao de um segundo bestiario de personagens.
+Para o design, o que importa dessa decisao e pratico: personagem jogavel e capivara, o que unifica
+a direcao de arte e explica por que existe uma capivara necromante.
 
 ## 4. Blocos da torre
 
