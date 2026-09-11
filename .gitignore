@@ -13,3 +13,10 @@ desktop.ini
 # dumps locais do banco
 *.sql.bak
 database/dump_*.sql
+
+# python / flet
+__pycache__/
+*.pyc
+flet_mvp/.flet/
+flet_mvp/storage/
+flet_mvp/build/

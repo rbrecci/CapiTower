@@ -23,6 +23,12 @@ Sem build, sem Node, sem Composer. O projeto roda direto em qualquer host com PH
 Fase de planejamento e documentacao. Nao ha codigo de jogo ainda, apenas o esqueleto de pastas
 e o design documentado em `docs/`.
 
+## MVP alternativo em Flet
+
+Existe uma versao jogavel do design em Python + Flet na pasta `flet_mvp/`, independente da stack
+PHP/MySQL, feita para playtestar as mecanicas no desktop ou no celular (via QR code no app Flet).
+Instrucoes em [flet_mvp/README.md](flet_mvp/README.md).
+
 ## Documentacao
 
 | Arquivo | Conteudo |

@@ -1,0 +1,25 @@
+# Metadados usados por `flet build` (apk / web / windows). Rode de dentro de flet_mvp/:
+#   flet build apk        -> build/apk/app-release.apk (manda pros amigos instalarem)
+#   flet build web        -> build/web/ (site estatico, roda em qualquer hospedagem)
+# Primeira vez demora (baixa Flutter/Android SDK se precisar). Icone: assets/icon.png, se existir.
+[project]
+name = "capitower"
+version = "0.1.0"
+description = "CapiTower - tower crawler roguelike de deck building"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["flet>=0.80"]
+
+[tool.flet]
+org = "br.com.capitower"
+product = "CapiTower"
+company = "CapiTower"
+copyright = "CapiTower"
+
+[tool.flet.app]
+path = "."
+module = "main"
+
+[tool.flet.splash]
+color = "#141f19"
+dark_color = "#0b110e"
