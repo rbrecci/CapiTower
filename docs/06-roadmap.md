@@ -9,7 +9,7 @@ comece com dado real e nao com planilha.
 - [x] Esqueleto de pastas
 - [x] Schema do banco
 - [x] Fechar as questoes abertas de `07-decisoes.md` (D01 a D25)
-- [ ] Definir as classes 2 e 3 no brainstorm
+- [x] Definir as classes 2 e 3 no brainstorm (Bruta e Ligeira, propostas)
 
 ## Fase 1: prototipo de combate (sem banco, sem conta)
 
@@ -72,7 +72,7 @@ Criterio de saida: perder uma run gera progresso visivel.
 
 ## Fase 6: classes 2 e 3
 
-- [ ] Conceito, mecanica exclusiva e 4 arquetipos de cada
+- [x] Conceito, mecanica exclusiva e 4 arquetipos de cada
 - [ ] 20 cartas de cada
 - [ ] Habilidade com 10 niveis de cada
 - [ ] Passe de balanceamento comparando as tres

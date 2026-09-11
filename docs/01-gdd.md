@@ -76,7 +76,15 @@ Vocabulario unico para as tres classes, para manter a leitura previsivel:
 | Veneno | Perde X de vida no fim do turno, X cai 1 depois. |
 | Atordoamento | Pula a proxima intencao. Raro e caro por design. |
 
-Cada classe adiciona no maximo **um** estado exclusivo proprio (ver `docs/02-classes-e-arquetipos.md`).
+Cada classe adiciona no maximo **um** estado exclusivo proprio:
+
+| Estado | Classe | Efeito |
+| --- | --- | --- |
+| Retaliacao | Bruta | Todo ataque recebido devolve X de dano ao atacante. |
+| Evasao | Ligeira | Anula por completo o proximo ataque, uma instancia por ponto. |
+
+A Conjuradora nao tem estado exclusivo: os lacaios ja cumprem esse papel.
+Detalhes em `docs/02-classes-e-arquetipos.md`.
 
 ## 3. A torre
 

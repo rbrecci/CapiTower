@@ -107,29 +107,184 @@ O arquetipo Sacrificio combinado com habilidade em nivel alto pode virar combo d
 devem ter limite de escala ou consumir um numero fixo, nunca "consome todos, dano por lacaio"
 sem trava.
 
-## 4. Classes 2 e 3 (a definir)
+## 4. O eixo que separa as tres classes
 
-**Status: nao definidas. A resolver na fase de brainstorm.**
+**Onde mora o poder do jogador.** Esse e o criterio que impede as classes 2 e 3 de virarem
+variacoes da Conjuradora.
 
-Requisitos que ja fecham antes de escolher os conceitos:
+| Classe | Onde mora o poder | Quando o poder aparece | Ritmo |
+| --- | --- | --- | --- |
+| Conjuradora | No campo (lacaios) | Cresce ao longo do combate | Fraca cedo, vence por atrito |
+| Bruta | No proprio corpo (vida perdida) | Reage ao que o inimigo faz | Forte cedo, precisa de combustivel |
+| Ligeira | No deck e na mao (sequencia) | Acontece dentro de um unico turno | Variancia alta, picos explosivos |
 
-- Nenhuma pode ser "a classe de dano" ou "a classe de defesa". Todas precisam de acesso aos dois.
-- Cada uma precisa de uma mecanica exclusiva tao visivel quanto Lacaios, algo que o jogador
-  aponte na tela e diga: e essa aqui.
-- Cada uma precisa dos mesmos 4 arquetipos estruturais: um de acumulo, um de gasto explosivo, um
-  defensivo e um alternativo (estados, manipulacao de deck, controle de turno).
+Referencia assumida: o triangulo tabuleiro / corpo / deck do Slay the Spire (Defect, Ironclad,
+Silent). O triangulo e emprestado de proposito, porque funciona e porque cada vertice puxa o
+jogador para um tipo de decisao diferente. O conteudo dentro de cada vertice e nosso.
 
-Direcoes candidatas para avaliar no brainstorm (nenhuma escolhida ainda):
+### Alternativas consideradas e descartadas
 
-| Direcao | Mecanica exclusiva possivel |
+| Direcao | Por que ficou de fora |
 | --- | --- |
-| Bruta / musculo | Postura acumulada que converte dano recebido em dano devolvido |
-| Agil / combo | Contador de cartas jogadas no turno, cartas de custo 0 encadeadas |
-| Alquimista | Transformacao de cartas na mao, mistura de dois efeitos em um |
-| Engenhoca | Estruturas que disparam no fim do turno, com tempo de preparo |
-| Bardo / controle | Manipulacao da intencao do inimigo, atrasar e redirecionar |
+| Postura (estilo Watcher) | Vistosa, mas o teto de poder de dancar entre posturas e historicamente dificil de conter. Feriria o pilar de paridade. |
+| Alquimista (transformar cartas) | Mora no mesmo vertice da Ligeira (deck). Duas classes brigando pelo mesmo espaco de design. |
+| Engenhoca (estruturas que disparam depois) | Mora no mesmo vertice da Conjuradora (campo, recurso persistente). Viraria lacaio com outro nome. |
+| Bardo (manipular a intencao inimiga) | Interessante, mas exige que todo inimigo do jogo seja desenhado pensando nisso. Custo de conteudo alto demais. |
 
-## 5. Formato de carta
+## 5. Classe 2: A Bruta (proposta)
+
+**Status: proposta do brainstorm, aguardando validacao.**
+
+Capivara que nunca chegou perto do poco de esteroides e faz questao de dizer isso. Tudo que ela
+tem veio de teimosia, e ela leva esse fato mais a serio do que qualquer um gostaria.
+
+### 5.1 Mecanica exclusiva: Adrenalina
+
+**Dano recebido vira recurso.** Toda vez que a Bruta perde vida (dano que passou pelo Bloco), ela
+ganha **1 de Adrenalina**, no maximo 1 por instancia de dano.
+
+- Acumula durante o combate, teto de **10** `[ajustar]`.
+- Zera ao fim do combate, igual aos lacaios (D23).
+- Cartas gastam Adrenalina ou escalam com a quantidade acumulada.
+
+A tensao central da classe cabe em uma frase: **bloquear perfeitamente deixa o tanque vazio.**
+Como a cura e escassa (D07), a Bruta vive negociando vida por poder, e errar essa conta custa a
+run. Nenhuma outra classe tem esse dilema.
+
+### 5.2 Habilidade: Casca Grossa (niveis 1 a 10)
+
+Curva proposta `[ajustar]`:
+
+| Nivel | Efeito |
+| --- | --- |
+| 1 | Comeca cada combate com 2 de Adrenalina |
+| 2 | +1 de Adrenalina inicial (3) |
+| 3 | +1 de Adrenalina inicial (4) |
+| 4 | A primeira vez que perde vida em cada combate rende 2 de Adrenalina em vez de 1 |
+| 5 | Ganha 1 de Adrenalina tambem quando o Bloco absorve um ataque inteiro |
+| 6 | +1 de Adrenalina inicial (5) |
+| 7 | O teto de Adrenalina sobe de 10 para 15 |
+| 8 | +1 de Adrenalina inicial (6) |
+| 9 | Ao cair para metade da vida ou menos, ganha 3 de Adrenalina na hora (uma vez por combate) |
+| 10 | Toda Adrenalina ganha e dobrada |
+
+O nivel 5 e o degrau mais importante da curva: e ele que desfaz a tensao entre bloquear e
+acumular. Por isso precisa vir no meio, e nunca cedo.
+
+### 5.3 Estado exclusivo: Retaliacao
+
+Enquanto tiver Retaliacao X, todo ataque recebido devolve X de dano ao atacante. Dura N turnos.
+E o unico estado do jogo que transforma o turno do inimigo em dano do jogador.
+
+### 5.4 Arquetipos
+
+| # | Arquetipo | Papel | Como usa Adrenalina | Carta exemplo |
+| --- | --- | --- | --- | --- |
+| 1 | **Suor** | Acumulo | Gera Adrenalina de proposito, inclusive pagando vida por ela | Bufo (0): perde 3 de vida, ganha 2 de Adrenalina, compra 1 carta |
+| 2 | **Estouro** | Gasto explosivo | Consome Adrenalina num golpe unico que escala com ela | Cabecada Final (2): consome ate 6 de Adrenalina, causa 8 mais 3 por ponto consumido |
+| 3 | **Couro** | Defensivo | Converte Adrenalina em Bloco e mitigacao | Costado (1): ganha 5 de Bloco, mais 1 por Adrenalina acumulada (limite 8) |
+| 4 | **Troco** | Alternativo | Retaliacao. Ganha por ser atingida, nao por atacar | Nao Faz Isso (1): ganha Retaliacao 4 por 2 turnos |
+
+Pontes: Suor alimenta Estouro (precisa encher para gastar). Couro sustenta Troco (sobreviver e o
+que da tempo de devolver). A briga proposital e **Suor contra Couro**: um quer perder vida, o
+outro quer nao perder. Escolher entre os dois e escolher como a Bruta joga.
+
+### 5.5 Perigos conhecidos
+
+- **Estouro com Casca Grossa no nivel 10** pode virar golpe unico que mata chefe. Trava: consumo
+  sempre limitado a um numero fixo (o "ate 6" do exemplo), nunca "consome toda a Adrenalina".
+- **Suor pagando vida com cura escassa** pode virar armadilha para jogador novo. O custo em vida
+  precisa ficar bem abaixo do valor de um descanso, senao o arquetipo so funciona para quem ja
+  decorou a torre.
+
+## 6. Classe 3: A Ligeira (proposta)
+
+**Status: proposta do brainstorm, aguardando validacao.**
+
+Capivara pequena e encharcada, impossivel de segurar. Rapida a ponto de ofender as leis da
+natureza e a reputacao da propria especie.
+
+### 6.1 Mecanica exclusiva: Impulso
+
+**Contador de cartas jogadas no turno atual.** Zera no fim de todo turno.
+
+- Nao acumula entre turnos, e essa e a diferenca fundamental: lacaios e Adrenalina crescem ao
+  longo do combate, o Impulso e construido e gasto dentro do mesmo turno.
+- Cartas consultam o Impulso ("para cada carta jogada antes desta neste turno").
+- Com 3 de Acao e mao de 5, chegar a um Impulso alto exige cartas de custo 0 e geracao de Acao.
+  Ou seja: o arquetipo de acumulo da Ligeira nao acumula recurso, acumula **tempo dentro do turno**.
+
+### 6.2 Habilidade: Ligeireza (niveis 1 a 10)
+
+Curva proposta `[ajustar]`. Ativa **uma vez por turno**, e esse limite e o que impede loop infinito:
+
+| Nivel | Efeito |
+| --- | --- |
+| 1 | Ao jogar a 5a carta do turno, ganha +1 Acao |
+| 2 | Passa a ativar na 4a carta |
+| 3 | A ativacao tambem compra 1 carta |
+| 4 | Passa a ativar na 3a carta |
+| 5 | Comeca cada combate com +1 Acao no primeiro turno |
+| 6 | A ativacao passa a dar +2 Acao |
+| 7 | Passa a ativar na 2a carta |
+| 8 | A ativacao compra 2 cartas |
+| 9 | Ativa duas vezes por turno (a segunda exige o dobro de cartas) |
+| 10 | A primeira carta de cada turno custa 0 |
+
+### 6.3 Estado exclusivo: Evasao
+
+Anula **completamente** o proximo ataque recebido, uma instancia por ponto de Evasao. Nao absorve
+valor como o Bloco, cancela o golpe inteiro.
+
+Contrapartida embutida: contra inimigo que ataca duas vezes com valores baixos, a Evasao morre
+barata. Contra golpe unico e pesado, e a melhor defesa do jogo. E uma defesa que exige leitura de
+intencao, nao aritmetica.
+
+### 6.4 Arquetipos
+
+| # | Arquetipo | Papel | Como usa Impulso | Carta exemplo |
+| --- | --- | --- | --- | --- |
+| 1 | **Corrente** | Acumulo | Cartas de custo 0 e compra, para esticar o turno | Passo Curto (0): causa 3 de dano, compra 1 carta |
+| 2 | **Estocada** | Gasto explosivo | Finalizadores que escalam com o Impulso ja acumulado | Ponto Cego (1): causa 4 de dano por carta jogada antes desta neste turno (limite 5 cartas) |
+| 3 | **Fumaca** | Defensivo | Evasao e negacao de golpe | Banho de Lama (1): ganha 1 de Evasao, ou 2 se ja jogou 2 cartas neste turno |
+| 4 | **Contrabando** | Alternativo | Mexe no descarte e na ordem de compra, da consistencia | Pega de Volta (1): devolve a mao a ultima carta jogada neste turno (nao alcanca carta de custo 0) |
+
+Pontes: Contrabando recicla Corrente, Corrente arma Estocada. Fumaca compra os turnos necessarios
+para o combo se montar. A tensao proposital e que **Fumaca gasta Acao em defesa**, exatamente o
+recurso que os outros tres arquetipos querem para esticar o turno.
+
+### 6.5 Perigos conhecidos
+
+- **Loop infinito**: Contrabando devolvendo uma carta de custo 0 que se devolve de novo. Regra
+  dura do design: nenhum efeito de recursao pode alcancar carta de custo 0. Ja esta escrita dentro
+  da carta exemplo, de proposito.
+- **Variancia de mao**: a classe pode simplesmente nao funcionar num turno em que a mao veio
+  errada. A duplicacao do deck inicial (D18) ajuda, mas o arquetipo Contrabando precisa existir
+  como remedio para isso, e nao como luxo.
+- **Ligeireza nivel 9 com nivel 10** precisa de teste pesado. E a unica combinacao do jogo que
+  gera Acao mais de uma vez no mesmo turno.
+
+## 7. Matriz de pressao: chefes contra classes
+
+Cada chefe existe para testar uma competencia. Esta matriz e o instrumento de balanceamento: se
+uma linha nao tiver ninguem sofrendo, o chefe nao esta testando nada. Se uma classe nunca sofrer,
+ela esta forte demais.
+
+| Chefe | O que testa | Quem se da bem | Quem sofre |
+| --- | --- | --- | --- |
+| Dorival Supino | Golpe unico e pesado, telegrafado | Fumaca, a Evasao anula o golpe inteiro | Enxame, que ainda nao montou o exercito no bloco 1 |
+| Marlene Cardio | Duas acoes por turno, valores baixos | Suor e Troco, dois gatilhos por turno | Fumaca, a Evasao morre barata |
+| Helio Whey | Estados e buff proprio | Putrefacao, joga o mesmo jogo melhor | Corrente, um turno de mao ruim e um turno perdido |
+| Gemeos Rosca Direta | Dano concentrado, o irmao herda o buff | Estouro e Estocada, matam antes da heranca | Ossada, vence por atrito e o atrito joga a favor dele |
+| Sargento Capitolino | Bloco alto todo turno | Estouro e Estocada, um golpe grande fura Bloco | Corrente e Enxame, muitos ataques pequenos morrem no Bloco |
+| Soberana Gertrudes | Tres fases, uma pressao diferente em cada | Builds generalistas, com resposta para tudo | Especialistas de nicho unico |
+
+Observacao de design que sai dessa matriz: **Gertrudes e a unica luta que favorece o generalista**,
+e isso e o contrapeso do caminho especialista. A habilidade em nivel alto precisa ser boa o
+bastante para pagar essa desvantagem final, senao o jogo passa a ter uma resposta certa e a
+decisao central da run vira decoracao. Esse e o primeiro numero a conferir no playtest.
+
+## 8. Formato de carta
 
 Toda carta tem:
 

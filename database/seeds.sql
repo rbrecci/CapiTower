@@ -43,7 +43,9 @@ ON DUPLICATE KEY UPDATE
   inicial = VALUES(inicial),
   ordem = VALUES(ordem);
 
--- Classes 2 e 3: a definir no brainstorm. Ver docs/02-classes-e-arquetipos.md secao 4.
+-- Classes 2 e 3: A Bruta (mecanica Adrenalina) e A Ligeira (mecanica Impulso).
+-- Propostas em docs/02-classes-e-arquetipos.md secoes 5 e 6. Entram no seed junto
+-- com as cartas delas, na Fase 6 do roadmap.
 
 -- ---------------------------------------------------------------------------
 -- ARQUETIPOS DA CONJURADORA
