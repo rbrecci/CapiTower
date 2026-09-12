@@ -156,6 +156,19 @@ async def main():
     # pós-combate depende do tipo do andar sorteado: comum, elite/chefe, desafio ou derrota
     assert any(k in txt for k in ("Sala limpa", "Recompensa", "Desafio vencido", "Você caiu")), txt[:300]
 
+    # elite: o banner com o nome cobre a tela inteira e precisa sumir de verdade depois do
+    # fade, senão continua engolindo os toques e o jogo parece travado
+    app.busy = False
+    app.run.hp = app.run.max_hp
+    app.run.floor = next(i for i, f in enumerate(app.run.floors) if f["type"] == "elite") + 1
+    app.start_combat(app.run.current()["enemies"])
+    await settle(page)
+    check_error(app)
+    overlays = app.root.content.controls[1:]
+    assert overlays, "banner de elite não foi montado"
+    assert all(o.visible is False for o in overlays), "overlay do banner ainda está por cima da tela"
+    assert not app.busy and app.combat.status == "ongoing"
+
     # telas restantes, forçadas direto (não dependem do sorteio da torre)
     app.busy = False
     app.show_reward()

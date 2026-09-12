@@ -18,7 +18,7 @@ import flet as ft
 
 from . import content
 from .anim import A, BACK, IN, INOUT, OUT, Stage, Typewriter, flush
-from .cards import CardDef
+from .cards import POWER_NAMES, CardDef
 from .combat import Combat, Enemy
 from .run import Run
 
@@ -135,7 +135,6 @@ FLOOR = {
     "rest": (ft.Icons.HOTEL, "Descanso", "Recupera 30% do HP máximo."),
     "challenge": (ft.Icons.FLAG, "Desafio opcional", "Pode pular sem custo. Vencendo, ganha um modificador de run."),
 }
-POWER_NAMES = {"ossos_firmes": "Ossos Firmes", "peste": "Peste Óssea", "rugido": "Rugido", "olho_por_olho": "Olho por Olho"}
 
 
 def alpha(color: str, a: float) -> str:
@@ -1018,13 +1017,14 @@ class App:
                     vignette.opacity = 0
             flush(self.page, every if k == 0 else shakes)
 
-    async def _fade_after(self, control: ft.Control, delay: float):
+    async def _fade_after(self, control: ft.Control, delay: float, ms: int = 600):
         await asyncio.sleep(delay)
         control.opacity = 0
-        try:
-            control.update()
-        except Exception:
-            pass
+        flush(self.page, [control])
+        await asyncio.sleep(ms / 1000)
+        # opacidade 0 nao basta: o overlay continua no Stack engolindo os toques
+        control.visible = False
+        flush(self.page, [control])
 
     async def _finish_later(self, delay: float):
         await asyncio.sleep(delay)
@@ -1158,7 +1158,7 @@ class App:
             )
             st.enter(pill, dy=-0.8, scale=0.6, ms=450, curve=BACK)
             layers.append(pill)
-            self.task(self._fade_after, pill, 1.0)
+            self.task(self._fade_after, pill, 1.0, 400)
 
         # ---- banner de chefe / elite
         if self.banner:
