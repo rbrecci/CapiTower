@@ -242,7 +242,8 @@ def heading(icon, text, color=ACCENT, size=20):
     return ft.Row([ft.Icon(icon, color=color, size=size + 8), display(text, size, color)], spacing=8)
 
 
-def card_view(card: CardDef, on_click=None, cost=None, playable=True, width=118, height=176, raised=False):
+def card_view(card: CardDef, on_click=None, cost=None, playable=True, reason: str | None = None,
+              width=118, height=176, raised=False):
     """Carta com a moldura do tipo. Custo na gema, ícone e nome na janela de arte, texto na caixa."""
     cost = card.cost if cost is None else cost
     color = KIND_COLORS[card.kind]
@@ -301,7 +302,8 @@ def card_view(card: CardDef, on_click=None, cost=None, playable=True, width=118,
     tip = f"{card.name} ({card.kind} · {card.arch}) · custo {cost}\n{card.text}"
     return ft.Container(
         content=stack, width=w, height=h, on_click=on_click, ink=False,
-        opacity=1.0 if playable else 0.6, tooltip=tip if playable else tip + "\n(Ação insuficiente)",
+        opacity=1.0 if playable else 0.6,
+        tooltip=tip if playable else tip + (f"\n({reason})" if reason else "\n(Ação insuficiente)"),
         shadow=ft.BoxShadow(blur_radius=14, color=alpha(ACCENT, 0.9)) if raised else
         ft.BoxShadow(blur_radius=8, color=alpha(INK, 0.7), offset=ft.Offset(0, 3)),
         border_radius=ft.BorderRadius.all(w * 0.06),
@@ -1017,11 +1019,15 @@ class App:
                     vignette.opacity = 0
             flush(self.page, every if k == 0 else shakes)
 
-    async def _fade_after(self, control: ft.Control, delay: float, ms: int = 600):
+    async def _fade_after(self, control: ft.Control, g: int, delay: float, ms: int = 600):
         await asyncio.sleep(delay)
+        if self.gen != g:
+            return  # tela ja trocou: o controle esta fora da arvore e o flush cairia num page.update inteiro
         control.opacity = 0
         flush(self.page, [control])
         await asyncio.sleep(ms / 1000)
+        if self.gen != g:
+            return
         # opacidade 0 nao basta: o overlay continua no Stack engolindo os toques
         control.visible = False
         flush(self.page, [control])
@@ -1103,12 +1109,16 @@ class App:
         if self.selected is not None and self.selected < len(c.hand) and not over:
             card = c.hand[self.selected]
             cost = c.cost_of(card)
+            reason = c.block_reason(card)
+            info = [
+                ft.Row([chip("action", cost, 12), display(card.name, 14, KIND_COLORS[card.kind]),
+                        txt(card.arch, 10, MUTED)], spacing=8, vertical_alignment=ft.CrossAxisAlignment.CENTER),
+                txt(card.text, 11, TEXT, max_lines=3),
+            ]
+            if reason is not None:
+                info.append(txt(reason, 10, MUTED))
             middle = panel(ft.Row([
-                ft.Column([
-                    ft.Row([chip("action", cost, 12), display(card.name, 14, KIND_COLORS[card.kind]),
-                            txt(card.arch, 10, MUTED)], spacing=8, vertical_alignment=ft.CrossAxisAlignment.CENTER),
-                    txt(card.text, 11, TEXT, max_lines=3),
-                ], spacing=2, expand=True),
+                ft.Column(info, spacing=2, expand=True),
                 button("Jogar", lambda e, i=self.selected: self.play_card(i), icon=ft.Icons.TOUCH_APP,
                        disabled=not c.can_play(card)),
             ], spacing=8, vertical_alignment=ft.CrossAxisAlignment.CENTER), padding=8, border_color=alpha(ACCENT, 0.6))
@@ -1158,7 +1168,8 @@ class App:
             )
             st.enter(pill, dy=-0.8, scale=0.6, ms=450, curve=BACK)
             layers.append(pill)
-            self.task(self._fade_after, pill, 1.0, 400)
+            # gen + 1: o show() no fim deste metodo incrementa self.gen (mesmo padrao de typed())
+            self.task(self._fade_after, pill, self.gen + 1, 1.0, 400)
 
         # ---- banner de chefe / elite
         if self.banner:
@@ -1177,7 +1188,7 @@ class App:
                 ), scale=0.4, dy=0.3, ms=650, curve=BACK, delay=250),
             )
             layers.append(banner)
-            self.task(self._fade_after, banner, 1.7)
+            self.task(self._fade_after, banner, self.gen + 1, 1.7)
 
         self.show(ft.Stack(layers, expand=True), fade=entering, stage=st)
         if self._fx or shakes or flashes or punches:
@@ -1298,7 +1309,8 @@ class App:
             holder = ft.Container(
                 left=left, top=top, rotate=rot,
                 content=card_view(card, on_click=lambda e, i=i: self.tap_card(i), cost=c.cost_of(card),
-                                  playable=c.can_play(card), width=cw, height=ch, raised=sel),
+                                  playable=c.can_play(card), reason=c.block_reason(card),
+                                  width=cw, height=ch, raised=sel),
             )
             match = next((p for p in prev if p[0] == card), None)
             if match:

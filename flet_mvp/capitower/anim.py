@@ -88,11 +88,11 @@ class Stage:
 
 
 def flush(page: ft.Page, controls):
-    """Manda as mudanças dos controles dados; se algum ainda não está na página, cai para o update geral."""
+    """Manda as mudanças dos controles dados; se algum ainda não está na página (RuntimeError), cai para o update geral."""
     try:
         for c in controls:
             c.update()
-    except Exception:
+    except RuntimeError:
         page.update()
 
 
@@ -120,7 +120,7 @@ class Typewriter:
                 self.shown.value = self.full[:n]
                 self.shown.update()
                 await asyncio.sleep(0.035)
-        except Exception:
+        except RuntimeError:
             return
         if alive():
             self.finish()
@@ -132,7 +132,7 @@ class Typewriter:
         self.shown.value = self.full
         try:
             self.shown.update()
-        except Exception:
+        except RuntimeError:
             pass
         if self.on_done:
             self.on_done()

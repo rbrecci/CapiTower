@@ -51,7 +51,7 @@ class FakePage:
         pass
 
     def run_task(self, fn, *args):
-        t = asyncio.get_event_loop().create_task(fn(*args))
+        t = asyncio.get_running_loop().create_task(fn(*args))
         self.tasks.append(t)
         return t
 
@@ -64,8 +64,8 @@ class FakePage:
 
 async def settle(page, timeout=6.0):
     """Espera as tarefas de fundo (transições, stagger, typewriter) terminarem."""
-    end = asyncio.get_event_loop().time() + timeout
-    while asyncio.get_event_loop().time() < end:
+    end = asyncio.get_running_loop().time() + timeout
+    while asyncio.get_running_loop().time() < end:
         pending = [t for t in page.tasks if not t.done()]
         if not pending:
             break
