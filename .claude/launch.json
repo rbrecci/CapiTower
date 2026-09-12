@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "flet-web",
+      "runtimeExecutable": "flet",
+      "runtimeArgs": ["run", "--web", "--port", "8550", "flet_mvp/main.py"],
+      "port": 8550
+    }
+  ]
+}
