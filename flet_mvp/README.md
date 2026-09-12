@@ -127,9 +127,9 @@ padrao de intencoes.
   jogador embaixo com retrato e barra, e a mao em leque. Tocar numa carta seleciona (mostra o
   texto inteiro e o botao Jogar), tocar de novo joga. Dano e Defesa aparecem como numeros
   flutuantes, quem apanha treme, e elite/chefe entra com um banner.
-- Chefes e elites ainda nao tem arte: sao silhuetas com icone (`ENEMY_ICONS` em `ui.py`),
-  destacadas por cor e tamanho. Gertrudes e as classes usam a arte de `assets/`. Os prompts para
-  gerar o resto estao em `docs/08-prompts-de-assets.md`.
+- Todos os inimigos tem arte em `assets/` (512px RGBA, mesmo traco da capimaga), mapeada em
+  `ENEMY_ART` no `ui.py`; a silhueta com icone (`ENEMY_ICONS`) fica so como fallback. Os prompts
+  usados e o processo (Gemini + recorte de fundo) estao em `docs/08-prompts-de-assets.md`.
 - Icones nativos do Flet (Material) e tooltips com o nome por extenso (na carta, o tooltip traz
   o texto completo, util quando a caixa da moldura corta); textos do front com acentuacao (os
   docs continuam sem acento por convencao do repositorio).

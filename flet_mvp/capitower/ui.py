@@ -83,7 +83,13 @@ ENEMY_ICONS = {
     "dorival": ft.Icons.FITNESS_CENTER, "marlene": ft.Icons.DIRECTIONS_RUN, "helio": ft.Icons.SCIENCE,
     "gemeo_a": ft.Icons.FITNESS_CENTER, "gemeo_b": ft.Icons.FITNESS_CENTER, "capitolino": ft.Icons.MILITARY_TECH,
 }
-ENEMY_ART = {"gertrudes": "gertrudes.png"}
+# arte gerada a partir de docs/08-prompts-de-assets.md (512px RGBA, mesmo traço da capimaga)
+ENEMY_ART = {i: f"{i}.png" for i in (
+    "capivarinha", "sapo", "rato", "halter", "spinning", "personal", "frasco", "experimental", "bolha",
+    "marmita", "garcom", "sobremesa", "guarda", "jardineira", "vaso",
+    "elite1", "elite2", "elite3", "elite4", "elite5",
+    "dorival", "marlene", "helio", "gemeo_a", "gemeo_b", "capitolino", "gertrudes",
+)}
 # ícone, cor e nome por extenso de cada estado / recurso
 STAT = {
     "hp": (ft.Icons.FAVORITE, HP, "Vida"),
@@ -1206,7 +1212,7 @@ class App:
         n = len(c.enemies)
         size = min(ew * 0.85, {1: 130, 2: 104}.get(n, 84) * (1.15 if e.is_boss else 1.0))
         if e.edef.id in ENEMY_ART:
-            size = min(ew * 0.95, 170)
+            size = min(ew * 0.95, size * 1.3)
         statuses = [chip(k, v, 11) for k, v in (("strength", e.strength), ("weak", e.weak),
                                                  ("frail", e.frail), ("poison", e.poison)) if v]
         if e.block:
