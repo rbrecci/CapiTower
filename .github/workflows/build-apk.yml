@@ -28,6 +28,9 @@ jobs:
       - name: Instalar Flet
         run: pip install -r requirements.txt
 
+      - name: Testes do motor de combate
+        run: python tests/test_combat.py
+
       - name: Smoke test da UI
         run: python tests/smoke_ui.py
 
