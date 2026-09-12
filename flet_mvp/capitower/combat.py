@@ -102,6 +102,7 @@ class Combat:
 
         # estado do jogador dentro do combate
         self.block = 0
+        self.keep_block = False
         self.actions = 0
         self.strength = run.perm_strength + (1 if "musculo" in run.modifiers else 0)
         self.weak = run.weak_next_combat
@@ -174,7 +175,14 @@ class Combat:
     # ------------------------------------------------------- turno jogador
     def _start_player_turn(self):
         self.turn += 1
-        self.block = 0
+        if not self.keep_block:
+            self.block = 0
+        self.keep_block = False
+        if "calo" in self.powers and self.adrenaline >= 2:
+            self.gain_block(self.adrenaline // 2)
+            self.say(f"Calo: +{self.adrenaline // 2} de Defesa.")
+        if "vala_comum" in self.powers:
+            self.summon(1)
         self.actions = content.ACTIONS_PER_TURN - self.steal_next
         self.steal_next = 0
         self.played_this_turn = 0
@@ -255,6 +263,12 @@ class Combat:
         self.played_this_turn += 1
         if card.cost > 0 and not any(e[0] == "return_last" for e in card.effects):
             self.last_played = card
+        if "segundo_folego" in self.powers and self.played_this_turn == 3:
+            self.draw_cards(1)
+            self.say("Segundo Fôlego: compra 1.")
+        if "golpe_de_vista" in self.powers and self.played_this_turn == 4 and self.living():
+            self.say("Golpe de Vista!")
+            self._hit(6, "enemy")
         self._ligeireza_check()
         self._check_end()
 
@@ -299,6 +313,8 @@ class Combat:
             return ctx["impulso"] >= val
         if key == "adren":
             return self.adrenaline >= val
+        if key == "evasion":
+            return self.evasion >= val
         return False
 
     def _resolve(self, effects, ctx: dict):
@@ -334,6 +350,9 @@ class Combat:
                 ctx["consumed"] = n
                 if n:
                     self.say(f"Consome {n} lacaio(s).")
+                    if "banquete" in self.powers:
+                        self.draw_cards(1)
+                        self.say("Banquete: compra 1.")
                 self._legiao9_check()
             elif kind == "dmg_per_consumed":
                 if ctx["consumed"]:
@@ -343,6 +362,23 @@ class Combat:
                     self._hit(eff[1] * self.minions, eff[2])
             elif kind == "block_per_minion":
                 self.gain_block(min(eff[2], eff[1] * self.minions))
+            elif kind == "dmg_block":
+                if self.block:
+                    self._hit(min(eff[1], self.block), "enemy")
+                else:
+                    self.say("Sem Defesa para bater. Nada acontece.")
+            elif kind == "keep_block":
+                self.keep_block = True
+                self.say("A Defesa fica para o próximo turno.")
+            elif kind == "spread_poison":
+                t = self._target()
+                if t and t.poison:
+                    for e in self.living():
+                        if e is not t and e.poison < t.poison:
+                            e.poison = t.poison
+                    self.say(f"Contágio: Veneno {t.poison} se espalha.")
+                else:
+                    self.say("O alvo não está envenenado. Nada para espalhar.")
             elif kind == "adren":
                 self.gain_adrenaline(eff[1])
             elif kind == "consume_adren":
@@ -351,12 +387,20 @@ class Combat:
                 ctx["consumed"] = n
                 if n:
                     self.say(f"Gasta {n} de Adrenalina.")
+                    if "pavio_curto" in self.powers:
+                        for e in self.living():
+                            self._damage_enemy(e, n, "Pavio Curto")
             elif kind == "dmg_per_adren":
                 self._hit(min(eff[2], eff[1] * self.adrenaline), "enemy")
             elif kind == "block_per_adren":
                 self.gain_block(min(eff[2], eff[1] * self.adrenaline))
             elif kind == "block_per_consumed":
                 self.gain_block(eff[1] * ctx["consumed"])
+            elif kind == "action_per_consumed":
+                if ctx["consumed"]:
+                    self.actions += eff[1] * ctx["consumed"]
+            elif kind == "block_per_impulso":
+                self.gain_block(eff[1] * min(eff[2], ctx["impulso"]))
             elif kind == "retaliation":
                 self.retaliation = max(self.retaliation, eff[1])
                 self.retaliation_turns = max(self.retaliation_turns, eff[2] + 1)
@@ -468,6 +512,9 @@ class Combat:
         if self.evasion > 0:
             self.evasion -= 1
             self.say(f"Evasão anula o ataque de {source.name}.")
+            if "rastro" in self.powers:
+                self.draw_cards(1)
+                self.say("Rastro de Lama: compra 1.")
             return
         absorbed = min(self.block, dmg)
         self.block -= absorbed
@@ -591,8 +638,13 @@ class Combat:
         if self.poison:
             self._lose_hp(self.poison, None, from_attack=False)
             self.poison -= 1
+        kept = []
+        if "bolso_fundo" in self.powers and self.hand:
+            kept = [self.rng.choice(self.hand)]
+            self.hand.remove(kept[0])
+            self.say(f"Bolso Fundo: guarda {kept[0].name}.")
         self.discard += self.hand
-        self.hand = []
+        self.hand = kept
         self._check_end()
         return self.status == "ongoing"
 

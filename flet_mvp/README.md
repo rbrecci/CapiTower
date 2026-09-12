@@ -110,7 +110,8 @@ padrao de intencoes.
 
 - As 3 classes (Capimaga, Brutamontes, Ligeira) com mecanica exclusiva, estado exclusivo e
   habilidade de 10 niveis seguindo as curvas de `docs/02-classes-e-arquetipos.md`.
-- 12 cartas por classe (3 por arquetipo), incluindo as cartas exemplo dos docs.
+- 20 cartas por classe (5 por arquetipo, com pelo menos 1 Ataque, 1 Defesa, 1 Poder e
+  1 Utilidade em cada, regra D28), incluindo as cartas exemplo dos docs.
 - Torre de 51 andares: 5 blocos com 5 combates, 1 elite (posicao 3 a 8), 1 evento, 1 descanso,
   1 desafio opcional e chefe fixo no andar 10. Andar 51: Gertrudes com 3 fases.
 - Os 5 chefes com suas mecanicas centrais (carregar/golpear, dupla acao, estados, gemeos com
@@ -140,7 +141,6 @@ padrao de intencoes.
 | Item | Docs | MVP | Motivo |
 | --- | --- | --- | --- |
 | HP inicial | 70 | 80 | Simulacao com bot ganancioso morria no bloco 1 com 70. |
-| Cartas por classe | 20 | 12 | Escopo. As 20 entram quando as cartas forem detalhadas. |
 | Dano dos lacaios | nao definido | 2 por lacaio, alvo aleatorio, no fim do turno | Precisava de um valor base para o Enxame funcionar. |
 | Sorteio inicial | 5 aleatorias | 5 aleatorias com >= 2 Ataques | Sem isso existe deck sem dano nenhum. |
 | Atordoamento | no vocabulario | nao implementado | Nenhuma carta do MVP usa. |
@@ -148,16 +148,17 @@ padrao de intencoes.
 
 ## Estado do balanceamento
 
-Simulacao com um bot ganancioso (defende quando vai levar dano, ataca o inimigo mais fraco),
-40 runs por classe, escolhendo carta ou nivel ao acaso em cada recompensa:
+Simulacao com um bot ganancioso (defende quando o dano previsto passa da Defesa, senao ataca o
+inimigo mais fraco), 40 runs por classe, escolhendo carta ou nivel ao acaso em cada recompensa,
+com o catalogo de 20 cartas por classe:
 
 | Classe | Andar mediano | Andar maximo |
 | --- | --- | --- |
-| Capimaga | 16 | 36 |
-| Brutamontes | 15 | 26 |
-| Ligeira | 24 | 46 |
+| Capimaga | 13 | 36 |
+| Brutamontes | 13 | 25 |
+| Ligeira | 20 | 44 |
 
-A Ligeira ainda esta acima das outras duas: ela atravessa o bloco 1 quase sem perder vida (Evasao
+Zero vitorias nas 120 runs. A Ligeira continua acima das outras duas: ela atravessa o bloco 1 quase sem perder vida (Evasao
 anula golpes unicos), e o bot nao sabe jogar Brutamontes direito (nunca toma dano de proposito
 para encher a Adrenalina). Do bloco 2 em diante as tres perdem vida parecido. E o primeiro ponto
 a olhar no playtest com gente de verdade. Os numeros vivem em `content.py` e `cards.py`.

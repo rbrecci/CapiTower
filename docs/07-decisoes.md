@@ -33,6 +33,7 @@ Registradas na entrevista de design de 10/09/2026.
 | D25 | Desafio opcional | Fica. Vencer da um **modificador de run** permanente e pequeno, escolhido entre 2 sorteados. Maximo de 5 por run. Resolve Q4. |
 | D26 | Nomes das classes | **Capimaga** (conjuradora), **Brutamontes** (Adrenalina) e **Ligeira** (Impulso). A classe 1 foi Conjuradora e Capivarias antes de fechar em Capimaga. |
 | D27 | Classes 2 e 3 | Conceitos aprovados: Brutamontes e Ligeira, com mecanica, habilidade, estado exclusivo e 4 arquetipos cada. |
+| D28 | Composicao de arquetipo | Arquetipo e um **nicho** dentro do jeito de jogar da classe, nao uma funcao no deck. Cada um tem 5 cartas com pelo menos 1 Ataque, 1 Defesa, 1 Poder e 1 Utilidade. Resolve Q9. |
 
 ## 2. Questoes em aberto
 
@@ -149,3 +150,34 @@ logo depois de gastar tudo.
 
 **Decidido: CapiTower.** A pasta local foi renomeada de `BrecciTower` para `CapiTower`, ficando
 igual ao repositorio e a documentacao.
+
+---
+
+### Q9. Arquetipo e funcao ou nicho? (RESOLVIDA, ver D28)
+
+Registrada em 11/09/2026, a partir do primeiro playtest do MVP em Flet.
+
+**Problema.** Com 3 cartas por arquetipo, cinco arquetipos eram 100% de um tipo so: Estouro e
+Estocada so Ataque, Couro e Fumaca so Defesa, Contrabando so Utilidade. A raiz estava na propria
+documentacao: as tabelas de arquetipo de Brutamontes e Ligeira em `02-classes-e-arquetipos.md`
+tinham uma coluna "Papel" com valores "Acumulo / Gasto explosivo / Defensivo / Alternativo", que e
+exatamente funcao dentro do deck, e induzia a montar cada arquetipo como um tipo de carta.
+
+**Decidido: nicho.** Arquetipo e um nicho dentro do jeito de jogar da classe, nao uma funcao no
+deck. Cada arquetipo tem 5 cartas, com pelo menos 1 Ataque, 1 Defesa, 1 Poder e 1 Utilidade; a 5a
+e livre. A coluna "Papel" virou "Nicho" nas tabelas de `02`.
+
+**Consequencias.** Cartas que mudaram para cumprir a regra:
+
+| Carta | Classe | Mudanca |
+| --- | --- | --- |
+| Soco de Sobra | Brutamontes | Saiu de Estouro e foi para Couro (dano por Adrenalina acumulada, sem gastar). |
+| Pele de Bicho | Brutamontes | Saiu de Couro e foi para Estouro (consome Adrenalina por Defesa). |
+| Esquiva | Ligeira (Fumaca) | Removida: era Defesa generica e falhava no teste de identidade da secao 2.3 de `02`. |
+| Rasteira | Ligeira (Estocada) | Deixou de ser Ataque e virou Utilidade (so aplica Fragilidade). |
+| Troca Rapida | Ligeira (Contrabando) | Deixou de ser Utilidade e virou Defesa (ganhou 4 de Defesa, mantem o redraw). |
+
+Entraram 8 poderes novos no motor, 1 por arquetipo que nao tinha: Vala Comum (Enxame), Banquete
+(Sacrificio), Pavio Curto (Estouro), Calo (Couro), Segundo Folego (Corrente), Golpe de Vista
+(Estocada), Rastro de Lama (Fumaca) e Bolso Fundo (Contrabando). O catalogo completo esta na
+secao 9 de `02-classes-e-arquetipos.md`.
