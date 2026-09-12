@@ -1,7 +1,9 @@
 """Motor de combate por turnos.
 
-Roda inteiramente no cliente (D04). A UI so chama play(), end_turn() e
-select_target(), e le o estado publico para desenhar a tela.
+Roda inteiramente no cliente (D04). A UI chama play(), select_target() e as fases do fim
+de turno (end_turn_start, enemies_begin, enemy_act, enemies_end, start_next_turn) uma a uma
+para animar entre elas; end_turn() encadeia tudo para bots e testes. O resto e estado publico
+que a tela le (hand, target, log, block...).
 """
 
 import math
@@ -11,6 +13,10 @@ from . import content
 from .cards import CardDef
 from .content import EnemyDef
 from .run import Run
+
+
+def _power_name(card: CardDef) -> str:
+    return next(e[1] for e in card.effects if e[0] == "power")
 
 
 class Enemy:
@@ -26,7 +32,8 @@ class Enemy:
         self.poison = 0
         self.flags = dict(edef.flags)
         self.pattern = edef.pattern
-        self.idx = rng.randrange(len(self.pattern)) if len(self.pattern) > 1 and not self.is_boss else 0
+        randomize = len(self.pattern) > 1 and not self.is_boss and not self.flags.get("fixed_start")
+        self.idx = rng.randrange(len(self.pattern)) if randomize else 0
         self.phase = 0
 
     @property
@@ -108,6 +115,10 @@ class Combat:
         self.weak = run.weak_next_combat
         run.weak_next_combat = 0
         self.frail = 0
+        # estado que o inimigo acabou de aplicar (ou o evento, antes do turno 1) ainda nao foi
+        # usado: pula o primeiro decremento, senao Fraqueza 1 de chefe nao vale nada
+        self.weak_fresh = self.weak > 0
+        self.frail_fresh = False
         self.poison = 0
         self.retaliation = 0
         self.retaliation_turns = 0
@@ -189,10 +200,11 @@ class Combat:
         self.last_played = None
         self.next_free = False
         self.ligeireza_triggers = 0
-        if self.weak:
+        if self.weak and not self.weak_fresh:
             self.weak -= 1
-        if self.frail:
+        if self.frail and not self.frail_fresh:
             self.frail -= 1
+        self.weak_fresh = self.frail_fresh = False
         if self.retaliation_turns:
             self.retaliation_turns -= 1
             if self.retaliation_turns == 0:
@@ -226,8 +238,18 @@ class Combat:
             return 0
         return card.cost
 
+    def block_reason(self, card: CardDef) -> str | None:
+        """None se a carta pode ser jogada agora; senao o motivo, que a HUD mostra na carta."""
+        if self.status != "ongoing":
+            return "Combate encerrado"
+        if card.kind == "Poder" and _power_name(card) in self.powers:
+            return "Poder já em campo"
+        if self.actions < self.cost_of(card):
+            return "Ação insuficiente"
+        return None
+
     def can_play(self, card: CardDef) -> bool:
-        return self.status == "ongoing" and self.actions >= self.cost_of(card)
+        return self.block_reason(card) is None
 
     def select_target(self, idx: int):
         if 0 <= idx < len(self.enemies) and self.enemies[idx].alive:
@@ -246,16 +268,17 @@ class Combat:
         if self.status != "ongoing" or not (0 <= hand_index < len(self.hand)):
             return
         card = self.hand[hand_index]
-        cost = self.cost_of(card)
-        if self.actions < cost:
-            self.say("Ação insuficiente.")
+        reason = self.block_reason(card)
+        if reason:
+            self.say(reason + ".")
             return
-        self.actions -= cost
+        self.actions -= self.cost_of(card)
         self.next_free = False
         self.hand.pop(hand_index)
         ctx = {"consumed": 0, "impulso": self.played_this_turn}
         self.say(f"Joga {card.name}.")
         self._resolve(card.effects, ctx)
+        self._flush_hit(ctx)
         if card.kind == "Poder":
             pass  # ja registrado em self.powers
         else:
@@ -317,11 +340,33 @@ class Combat:
             return self.evasion >= val
         return False
 
+    # efeitos que compoem o golpe da carta em vez de resolver na hora (ver _add_dmg)
+    DMG_KINDS = ("dmg", "dmg_plus", "dmg_per_consumed", "dmg_per_minion", "dmg_per_adren",
+                 "dmg_per_impulso", "dmg_block")
+
+    def _add_dmg(self, ctx: dict, n: int, which: str, new_strike=False):
+        """Soma ao golpe pendente da carta, para "X de dano, +Y" ser um golpe so (Forca, espinhos
+        e reflexo contam uma vez). `new_strike` fecha o pendente antes: "4 de dano duas vezes"."""
+        pending = ctx.get("pending")
+        if pending and (new_strike or pending[1] != which):
+            self._flush_hit(ctx)
+            pending = None
+        ctx["pending"] = (n + (pending[0] if pending else 0), which)
+
+    def _flush_hit(self, ctx: dict):
+        pending = ctx.pop("pending", None)
+        if pending:
+            self._hit(*pending)
+
     def _resolve(self, effects, ctx: dict):
         for eff in effects:
             kind = eff[0]
+            if kind not in self.DMG_KINDS and kind != "if":
+                self._flush_hit(ctx)  # o golpe resolve antes de qualquer outro efeito da carta
             if kind == "dmg":
-                self._hit(eff[1], eff[2])
+                self._add_dmg(ctx, eff[1], eff[2], new_strike=True)
+            elif kind == "dmg_plus":
+                self._add_dmg(ctx, eff[1], eff[2])
             elif kind == "block":
                 self.gain_block(eff[1])
             elif kind == "draw":
@@ -356,15 +401,15 @@ class Combat:
                 self._legiao9_check()
             elif kind == "dmg_per_consumed":
                 if ctx["consumed"]:
-                    self._hit(eff[1] * ctx["consumed"], eff[2])
+                    self._add_dmg(ctx, eff[1] * ctx["consumed"], eff[2])
             elif kind == "dmg_per_minion":
                 if self.minions:
-                    self._hit(eff[1] * self.minions, eff[2])
+                    self._add_dmg(ctx, eff[1] * self.minions, eff[2])
             elif kind == "block_per_minion":
                 self.gain_block(min(eff[2], eff[1] * self.minions))
             elif kind == "dmg_block":
                 if self.block:
-                    self._hit(min(eff[1], self.block), "enemy")
+                    self._add_dmg(ctx, min(eff[1], self.block), "enemy")
                 else:
                     self.say("Sem Defesa para bater. Nada acontece.")
             elif kind == "keep_block":
@@ -391,7 +436,8 @@ class Combat:
                         for e in self.living():
                             self._damage_enemy(e, n, "Pavio Curto")
             elif kind == "dmg_per_adren":
-                self._hit(min(eff[2], eff[1] * self.adrenaline), "enemy")
+                if self.adrenaline:
+                    self._add_dmg(ctx, min(eff[2], eff[1] * self.adrenaline), "enemy")
             elif kind == "block_per_adren":
                 self.gain_block(min(eff[2], eff[1] * self.adrenaline))
             elif kind == "block_per_consumed":
@@ -403,7 +449,7 @@ class Combat:
                 self.gain_block(eff[1] * min(eff[2], ctx["impulso"]))
             elif kind == "retaliation":
                 self.retaliation = max(self.retaliation, eff[1])
-                self.retaliation_turns = max(self.retaliation_turns, eff[2] + 1)
+                self.retaliation_turns = max(self.retaliation_turns, eff[2])
                 self.say(f"Retaliação {eff[1]}.")
             elif kind == "evasion":
                 self.evasion += eff[1]
@@ -411,7 +457,7 @@ class Combat:
             elif kind == "dmg_per_impulso":
                 n = min(eff[2], ctx["impulso"])
                 if n:
-                    self._hit(eff[1] * n, "enemy")
+                    self._add_dmg(ctx, eff[1] * n, "enemy")
                 else:
                     self.say("Nenhuma carta antes desta. Nada acontece.")
             elif kind == "return_last":
@@ -548,7 +594,7 @@ class Combat:
         through = dmg - absorbed
         e.hp -= through
         src = f"{label}: " if label else ""
-        self.say(f"{src}{e.name} recebe {through} de dano" + (f" ({absorbed} no Defesa)" if absorbed else "") + ".")
+        self.say(f"{src}{e.name} recebe {through} de dano" + (f" ({absorbed} na Defesa)" if absorbed else "") + ".")
         if is_attack and through > 0:
             if e.flags.get("reflect"):
                 back = math.floor(through * e.flags["reflect"])
@@ -576,6 +622,7 @@ class Combat:
                     if o.flags.get("twin"):
                         o.strength += e.flags["twin"]
                         self.say(f"{o.name} herda +{e.flags['twin']} de Força!")
+            self._target()  # re-aponta para um vivo; a UI usa self.target para o anel e o voo da carta
             return
         self._gertrudes_phase(e)
 
@@ -585,7 +632,7 @@ class Combat:
         frac = e.hp / e.max_hp
         for i, (mn, pattern) in enumerate(content.GERTRUDES_PHASES):
             if frac > mn:
-                if e.phase != i:
+                if i > e.phase:  # so avanca: cura da fase 3 nao devolve o padrao da fase 2
                     e.phase = i
                     e.pattern = pattern
                     e.idx = 0
@@ -618,7 +665,6 @@ class Combat:
         if self.status != "ongoing":
             return False
         if self.cls == "capimaga" and self.minions:
-            alive = self.living()
             total = 0
             for _ in range(self.minions):
                 if not self.living():
@@ -682,9 +728,11 @@ class Combat:
                 self.say(f"{e.name} buffa a sala (+{val} Força).")
             elif kind == "weak":
                 self.weak += val
+                self.weak_fresh = True
                 self.say(f"{e.name} aplica Fraqueza {val}.")
             elif kind == "frail":
                 self.frail += val
+                self.frail_fresh = True
                 self.say(f"{e.name} aplica Fragilidade {val}.")
             elif kind == "poison":
                 self.poison += val

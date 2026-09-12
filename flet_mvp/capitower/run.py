@@ -106,6 +106,8 @@ class Run:
         return floors
 
     def current(self) -> dict:
+        if self.floor < 1:
+            raise ValueError("ainda nao entrou na torre (floor=0)")
         return self.floors[self.floor - 1]
 
     def block_info(self) -> dict:

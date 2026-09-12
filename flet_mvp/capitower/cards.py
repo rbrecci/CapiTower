@@ -3,7 +3,8 @@
 Cada carta e um CardDef com uma lista de efeitos. Um efeito e uma tupla
 ("tipo", *args). O resolvedor fica em combat.py. Vocabulario:
 
-  ("dmg", n, alvo)               alvo: "enemy" (selecionado) ou "all"
+  ("dmg", n, alvo)               alvo: "enemy" (selecionado) ou "all". Abre um golpe novo.
+  ("dmg_plus", n, alvo)          soma ao golpe aberto (mesmo golpe: Forca e espinhos uma vez)
   ("block", n)
   ("draw", n)
   ("action", n)
@@ -14,7 +15,7 @@ Cada carta e um CardDef com uma lista de efeitos. Um efeito e uma tupla
   ("strength", n)                Forca do jogador ate o fim do combate
   ("summon", n)                  Capimaga
   ("consume", n)                 consome ate n lacaios -> ctx["consumed"]
-  ("dmg_per_consumed", n, alvo)
+  ("dmg_per_consumed", n, alvo)  os dmg_per_* e dmg_block tambem somam ao golpe aberto
   ("dmg_per_minion", n, alvo)
   ("block_per_minion", n, teto)
   ("dmg_block", teto)            dano igual a Defesa atual do jogador
@@ -35,6 +36,10 @@ Cada carta e um CardDef com uma lista de efeitos. Um efeito e uma tupla
   ("redraw_hand",)               descarta a mao e compra o mesmo numero
   ("power", nome)                registra um poder persistente no combate
   ("if", condicao, [efeitos])    condicoes em combat.check_condition
+
+Golpe: o dano de uma carta e um golpe so, que resolve antes do proximo efeito que nao for
+dano (ou no fim da carta). "Causa 4 de dano duas vezes" sao dois ("dmg", 4, ...) seguidos;
+"Causa 6, +4 se..." e ("dmg", 6, ...) mais ("dmg_plus", 4, ...) dentro do "if".
 
 Regra de composicao (D28): todo arquetipo tem 5 cartas, com pelo menos 1 Ataque, 1 Defesa,
 1 Poder e 1 Utilidade. O arquetipo e um nicho dentro do jeito de jogar da classe, nao uma
@@ -233,11 +238,11 @@ LIGEIRA = [
        ("frail", 2, "enemy"), ("if", "impulso>=3", [("draw", 1)])),
     _c("lg_dentada", "Dentada Rápida", "ligeira", "Estocada", 1, "Ataque",
        "Causa 6 de dano. Se já jogou 2 cartas neste turno, causa 4 a mais.",
-       ("dmg", 6, "enemy"), ("if", "impulso>=2", [("dmg", 4, "enemy")])),
+       ("dmg", 6, "enemy"), ("if", "impulso>=2", [("dmg_plus", 4, "enemy")])),
     # Fumaca: Evasao e negacao de golpe
     _c("lg_bote", "Bote da Névoa", "ligeira", "Fumaça", 1, "Ataque",
        "Causa 5 de dano. Se tem Evasão, causa 5 a mais.",
-       ("dmg", 5, "enemy"), ("if", "evasion>=1", [("dmg", 5, "enemy")])),
+       ("dmg", 5, "enemy"), ("if", "evasion>=1", [("dmg_plus", 5, "enemy")])),
     _c("lg_lama", "Banho de Lama", "ligeira", "Fumaça", 1, "Defesa",
        "Ganha 1 de Evasão, ou 2 se já jogou 3 cartas neste turno.",
        ("evasion", 1), ("if", "impulso>=3", [("evasion", 1)])),

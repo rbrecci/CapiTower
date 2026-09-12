@@ -108,6 +108,7 @@ def _e(id, name, hp, pattern, flags=None, note=""):
 # acoes: ("attack", dano, vezes) ("block", n) ("strength", n) ("strength_all", n)
 #        ("weak", turnos) ("frail", turnos) ("poison", n) ("heal", n)
 #        ("heal_all", n) ("steal", 1) ("charge", 0)
+# flags: "fixed_start" nao sorteia a acao inicial (padrao que carrega um golpe).
 
 ENEMIES = {e.id: e for e in [
     # Bloco 1: O Poco
@@ -129,7 +130,7 @@ ENEMIES = {e.id: e for e in [
     _e("marmita", "Capivara de Marmita", 60, [[("attack", 11)], [("heal", 8), ("block", 6)]],
        note="se cura"),
     _e("garcom", "Garçom Bombado", 95, [[("charge", 0)], [("charge", 0)], [("attack", 30)]],
-       note="golpe devastador em 2 turnos"),
+       flags={"fixed_start": True}, note="golpe devastador em 2 turnos"),
     _e("sobremesa", "Sobremesa Viva", 42, [[("weak", 2), ("attack", 5)], [("attack", 12)]]),
     # Bloco 5: O Jardim Suspenso
     _e("guarda", "Guarda de Avental", 75, [[("block", 12), ("attack", 8)], [("attack", 14)]],
@@ -151,7 +152,7 @@ ENEMIES = {e.id: e for e in [
        flags={"elite": True, "thorns": 4}),
     # Chefes
     _e("dorival", "Dorival Supino", 75, [[("block", 10), ("charge", 0)], [("attack", 16)]],
-       flags={"boss": True}, note="carrega e golpeia. Lê a intenção."),
+       flags={"boss": True}, note="carrega e golpeia."),
     _e("marlene", "Marlene Cardio", 120, [[("attack", 5, 2)], [("attack", 4, 2), ("weak", 1)], [("block", 8), ("attack", 6, 2)]],
        flags={"boss": True}, note="age duas vezes por turno"),
     _e("helio", "Professor Hélio Whey", 190, [[("weak", 2), ("frail", 2)], [("attack", 14)], [("strength", 3), ("block", 10)], [("poison", 6), ("attack", 8)]],
