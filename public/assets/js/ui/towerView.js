@@ -3,6 +3,9 @@
 // permadeath, sem retomar). Segue o padrao dos outros arquivos de ui/: DOM puro, refaz o miolo
 // a cada render.
 
+import { somVitoria, somDerrota } from "../core/audio.js";
+import { mostrarTutorial } from "./tutorialView.js";
+
 // Fase 7: cenario de fundo por bloco (Assets/Cenario*.jpg, ver docs/09). `sala.bloco` e o
 // indice 0-4 gerado em core/tower.js:gerarTorre, na mesma ordem de NOMES_BLOCO.
 const CENARIOS_BLOCO = ["poco", "academia", "laboratorio", "refeitorio", "jardim"];
@@ -83,7 +86,12 @@ export function renderInicio(container, classes, onComecar, onVerPerfil) {
   botaoPerfil.textContent = "Ver perfil";
   botaoPerfil.addEventListener("click", onVerPerfil);
 
-  tela.appendChild(botaoPerfil);
+  const botaoTutorial = document.createElement("button");
+  botaoTutorial.className = "botao botao--fim-turno";
+  botaoTutorial.textContent = "Como jogar";
+  botaoTutorial.addEventListener("click", () => mostrarTutorial());
+
+  tela.append(botaoPerfil, botaoTutorial);
   container.appendChild(tela);
 }
 
@@ -140,9 +148,11 @@ export function renderFimDeRun(container, run, desbloqueios, onNovaRun, onVerPer
   if (run.status === "vitoria") {
     titulo.className = "tela-fim__titulo tela-fim__titulo--vitoria";
     titulo.textContent = "Vitoria! A torre caiu.";
+    somVitoria();
   } else {
     titulo.className = "tela-fim__titulo tela-fim__titulo--derrota";
     titulo.textContent = "Derrota";
+    somDerrota();
   }
 
   const resumo = document.createElement("p");

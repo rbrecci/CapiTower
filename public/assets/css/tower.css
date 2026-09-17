@@ -150,3 +150,26 @@
   text-decoration: underline;
   padding: 4px;
 }
+
+/* Fase 7: responsivo pra tela pequena (docs/06-roadmap.md). */
+@media (max-width: 640px) {
+  .tela-sala,
+  .tela-centro {
+    padding: 14px;
+  }
+
+  .logo-jogo {
+    width: min(240px, 70vw);
+  }
+
+  .opcao-recompensa,
+  .opcao-evento {
+    min-width: 0;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .tutorial-caixa {
+    padding: 18px;
+  }
+}

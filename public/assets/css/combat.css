@@ -1,6 +1,7 @@
 /* Paineis de combate: inimigo, jogador, log, tela de fim (docs/04-arquitetura.md secao 3). */
 
 .painel {
+  position: relative;
   background: var(--cor-painel);
   border: 1px solid var(--cor-borda);
   border-radius: 10px;
@@ -9,6 +10,124 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+}
+
+/* Fase 7: feedback visual de dano, cura e queda (docs/06-roadmap.md). Como a tela inteira e
+   redesenhada a cada mudanca de estado (sem diffing de DOM), a animacao roda uma vez so no
+   elemento recem-criado: nao ha "de" e "para" pra fazer transition, entao tudo aqui e keyframe
+   de um tiro so, disparado por classe que combatView.js adiciona comparando o estado de antes
+   e de depois da acao (ver aplicarEfeitosVisuais). */
+@keyframes tremor-impacto {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+@keyframes flash-impacto {
+  0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+  15% { box-shadow: 0 0 0 6px rgba(255, 107, 107, 0.55); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+}
+
+.painel--impacto {
+  animation: tremor-impacto 0.35s ease, flash-impacto 0.45s ease;
+}
+
+@keyframes flash-cura {
+  0% { box-shadow: 0 0 0 0 rgba(107, 255, 158, 0); }
+  20% { box-shadow: 0 0 0 6px rgba(107, 255, 158, 0.55); }
+  100% { box-shadow: 0 0 0 0 rgba(107, 255, 158, 0); }
+}
+
+.painel--cura {
+  animation: flash-cura 0.5s ease;
+}
+
+@keyframes inimigo-morre {
+  0% { opacity: 1; filter: grayscale(0); transform: scale(1); }
+  40% { opacity: 0.7; transform: scale(1.08); }
+  100% { opacity: 0.45; filter: grayscale(1); transform: scale(0.96); }
+}
+
+.painel--inimigo--morrendo {
+  animation: inimigo-morre 0.5s ease forwards;
+}
+
+@keyframes flutuar-sobe {
+  0% { transform: translate(-50%, 0) scale(0.8); opacity: 0; }
+  15% { transform: translate(-50%, -6px) scale(1.15); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--deslocamento-x, 0px)), -54px) scale(1); opacity: 0; }
+}
+
+.numero-flutuante {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+  pointer-events: none;
+  animation: flutuar-sobe 0.9s ease-out forwards;
+  z-index: 5;
+}
+
+.numero-flutuante--dano { color: var(--cor-perigo); }
+.numero-flutuante--cura { color: var(--cor-sucesso); }
+.numero-flutuante--bloco { color: var(--cor-bloco); }
+.numero-flutuante--invocacao { color: var(--cor-texto); }
+
+/* Fase 7: responsivo pra tela pequena (docs/06-roadmap.md). Paineis e retratos encolhem, o log
+   ocupa menos altura pra sobrar espaco pra mao de cartas. */
+@media (max-width: 640px) {
+  .painel {
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .painel--inimigo {
+    min-width: 128px;
+    flex: 1 1 128px;
+  }
+
+  .retrato {
+    font-size: 40px;
+  }
+
+  .retrato img {
+    width: 52px;
+    height: 52px;
+  }
+
+  .barra-hp {
+    height: 18px;
+  }
+
+  .barra-hp__texto {
+    line-height: 18px;
+    font-size: 0.78em;
+  }
+
+  .contadores {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .log {
+    max-height: 110px;
+    font-size: 0.82em;
+    padding: 8px 10px;
+  }
+
+  .botao {
+    padding: 9px 14px;
+    font-size: 0.9em;
+  }
+
+  .numero-flutuante {
+    font-size: 1em;
+  }
 }
 
 .retrato {

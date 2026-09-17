@@ -51,6 +51,39 @@
   opacity: 0.5;
 }
 
+/* Fase 7: a carta "sai" da mao voando antes de a jogada mudar o estado de verdade (ver
+   cardView.js:jogar e combatView.js, botao "Jogar"). animation-fill-mode: forwards segura o
+   opacity 0 ate o callback de animationend disparar a re-renderizacao. */
+@keyframes carta-sai {
+  0% { transform: translateY(0) scale(1); opacity: 1; }
+  30% { transform: translateY(-20px) scale(1.06); opacity: 1; }
+  100% { transform: translateY(-90px) scale(0.85); opacity: 0; }
+}
+
+.carta--jogada {
+  animation: carta-sai 0.32s ease-in forwards;
+  pointer-events: none;
+}
+
+/* Fase 7: responsivo pra tela pequena (docs/06-roadmap.md). Custo/nome/tipo/texto ficam em `em`
+   pra caber nas janelas fixas da moldura (posicionadas em % do proprio tamanho da carta, docs/09
+   Fase 7): encolher so a largura sem encolher a fonte na mesma proporcao faz o texto estourar a
+   janela. Por isso o font-size do `em` raiz mora em `.carta` (nao body), na mesma razao da
+   largura, e os elementos de dentro continuam com os mesmos multiplicadores de sempre. */
+@media (max-width: 640px) {
+  .carta {
+    width: 108px;
+    font-size: 11.7px; /* 16px * (108/148) */
+  }
+}
+
+@media (max-width: 420px) {
+  .carta {
+    width: 94px;
+    font-size: 10.2px; /* 16px * (94/148) */
+  }
+}
+
 .carta__custo {
   position: absolute;
   top: 8%;

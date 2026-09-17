@@ -47,3 +47,12 @@
   gap: 16px;
   text-align: center;
 }
+
+/* Fase 7: responsivo pra tela pequena (docs/06-roadmap.md). Os cenarios de fundo ja saem em
+   formato retrato pensando nisso (docs/09). */
+@media (max-width: 640px) {
+  .combate {
+    padding: 10px;
+    gap: 8px;
+  }
+}

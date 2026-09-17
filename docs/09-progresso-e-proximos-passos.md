@@ -15,7 +15,7 @@ design ja balanceada, nao faz parte desta lista.
 | 4. Banco e conta | Feita | Verificada criando conta, logando, salvando e retomando run entre andares. |
 | 5. Meta progressao | Feita, com uma pendencia | 12 objetivos em rascunho (secao 3), verificados ao vivo via banco e navegador. Precisam de revisao humana antes de virar lista definitiva. |
 | 6. Classes 2 e 3 | Feita, verificada ao vivo | Porte completo (motor, efeitos, banco, UI), jogado no navegador com as duas classes novas. Ver secao 3. |
-| 7. Acabamento | Comecada | Arte de IA integrada (logo, cenarios, molduras de carta). Ver secao 3. |
+| 7. Acabamento | Quase feita, falta so o deploy | Arte, animacao, som, tutorial e responsivo feitos e verificados ao vivo. So falta o deploy na InfinityFree, que precisa da conta do dono do projeto. Ver secao 3. |
 
 ## 2. O que existe hoje em `public/`
 
@@ -218,8 +218,86 @@ rodar de novo depois de mudar o catalogo e seguro).
     e selos colados; o dono do projeto corrigiu e a verificacao objetiva do canal alpha confirmou
     que os arquivos sempre foram limpos — sem transparencia real e sem badge nenhum. Registrado
     aqui so pra quem ler a sessao entender por que o retrato demorou uma rodada a mais pra entrar.)
-- Falta ainda: animacao, som, tutorial, responsivo mobile (os cenarios ja saem em formato retrato
-  768x1376, pensando nisso), deploy na InfinityFree.
+- **Animacao de carta, dano e invocacao integrada em 17/09/2026.** A tela de combate inteira e
+  redesenhada do zero a cada mudanca de estado (`combatView.js:renderizarCombate`, arquitetura da
+  Fase 1), entao nao ha "de" e "para" no DOM pra fazer `transition`: tudo virou `@keyframes` de
+  um tiro so, disparado por classe temporaria que `combatView.js` calcula comparando um retrato do
+  estado tirado logo antes de uma acao mutar `estado` (jogar carta, fim de turno) contra o estado
+  depois (`snapshotDe`/`aplicarEfeitosVisuais`). Sem isso a unica forma de saber "o que mudou"
+  seria remexer no motor (`core/combat.js`), que fica limpo, sem nenhum gancho de UI.
+  - Carta jogada: `cardView.js` adia a chamada de `aoJogarDuploClique` (dblclick, Enter/espaco, e
+    o botao "Jogar" em `combatView.js`) ate o `animationend` de `.carta--jogada` (voa pra cima e
+    desaparece, `cards.css`), com guarda contra reentrada (`classList.contains`) pra nao disparar
+    a jogada duas vezes se o jogador clicar de novo durante a animacao. Carta bloqueada
+    (`motivoBloqueio`) no anima: joga direto so pra mostrar o motivo no log, igual comportamento
+    de antes.
+  - Dano/cura/bloco: `painel--impacto` (tremor + flash vermelho) ou `painel--cura` (flash verde) na
+    `.painel` do alvo, mais um `<span class="numero-flutuante">` (`-N`, `+N`, `+N 🛡️`) que sobe e
+    some sozinho (remove-se no proprio `animationend`, sem vazar no DOM).
+  - Invocacao: ganho de lacaios (Legiao da Capimaga) mostra `+N 💀` flutuando no painel do
+    jogador, mesmo mecanismo.
+  - Queda de inimigo: `painel--inimigo--morrendo` (fade + grayscale + leve encolhida,
+    `animation-fill-mode: forwards`) toca uma vez quando o hp cruza de >0 pra 0 nessa mesma
+    renderizacao; o estado final bate com o `painel--inimigo--caido` estatico que ja existia,
+    entao nao ha salto visual quando a keyframe termina.
+  - **Verificado ao vivo** (server PHP solto em `localhost:8010` pra nao brigar com outra sessao
+    usando a porta 8000 do `php-web` de `.claude/launch.json`): joguei Costela Solta na Capimaga,
+    vi a carta voar e sumir da mao, o Sapo Musculoso tremer/flashar e o "-7" flutuar, e o contador
+    de Lacaios subir com o "+1 💀" (a carta tem efeito de invocar). Testei tambem o Escudo de
+    Carne (ganho de Bloco) e "Fim de turno". Sem erro no console em nenhum passo.
+  - **Falta testar ao vivo:** a queda de um inimigo de verdade (nao cheguei a matar o Sapo
+    Musculoso na sessao de verificacao, o codigo so foi inspecionado por leitura) e as classes
+    Brutamontes/Ligeira (Adrenalina/Impulso reaproveitam a mesma barra de HP e bloco, entao devem
+    funcionar sem mudanca, mas nao foram clicadas nesta sessao).
+- **Som, tutorial e responsivo mobile integrados em 17/09/2026 (mesmo dia, sessao seguinte, a
+  pedido do dono do projeto: "avance tudo que conseguir sem mim").** Sem o dono por perto pra
+  aprovar nada visual, entao as tres coisas usam so mecanismos que nao dependem de asset externo
+  nenhum:
+  - **Som** (`core/audio.js`, novo): nao ha nenhum arquivo de audio no projeto, e baixar de fonte
+    externa exige permissao explicita que nao fazia sentido pedir no meio de uma sessao autonoma
+    (docs raiz do agente). Solucao: efeitos curtos sintetizados na hora com a Web Audio API
+    (osciladores com envelope de ganho, sem asset nenhum) — carta jogada, dano, cura, bloco,
+    invocacao, morte de inimigo, vitoria e derrota (3 notas em arpejo pros dois ultimos). Todos os
+    ganchos moram nos mesmos pontos da animacao (`combatView.js:aplicarDiferencaEntidade`/
+    `aplicarEfeitosVisuais`, `cardView.js:jogar`, `towerView.js:renderFimDeRun`), reaproveitando o
+    diff de estado que ja existia pra animacao. Um botao de mudo fixo (`main.js:criarBotaoSom`,
+    preso a `document.body`, nao a `#app`, pra sobreviver a troca de tela) persiste a escolha em
+    `localStorage` (`capitower_som_mudo`); sem `localStorage` (aba privada) o som so nao persiste
+    a preferencia entre recarregamentos, nao quebra nada. AudioContext e criado sob demanda no
+    primeiro som (autoplay policy dos navegadores exige gesto do usuario antes).
+  - **Tutorial** (`ui/tutorialView.js`, novo): overlay de 5 passos curtos (Acao/cartas, Bloco/alvo,
+    Fim de turno, progressao entre andares) preso a `document.body` (mesma razao do botao de som:
+    sobrevive a qualquer `container.innerHTML = ""` de tela, e assim tanto faz de qual tela ele foi
+    aberto). Aparece sozinho na primeira visita a tela inicial (`screens.js:irParaInicio`, flag
+    `capitower_tutorial_visto` no `localStorage`) e fica disponivel de novo a qualquer momento pelo
+    botao "Como jogar" que entrou do lado de "Ver perfil" na tela inicial
+    (`towerView.js:renderInicio`). Nao interrompe nenhuma run em andamento: so aparece na tela
+    inicial, nunca no meio de um combate.
+  - **Responsivo mobile**: media queries `max-width: 640px`/`420px` acrescentadas ao fim de
+    `combat.css`, `cards.css`, `tower.css` e `layout.css` (paineis, retratos, barra de HP, log e
+    botoes encolhem; carta de 148px cai pra 108px e depois 94px). **Achado nao obvio:** o texto da
+    carta (`carta__nome`/`carta__tipo`/`carta__texto`/`carta__custo`) fica posicionado em % dentro
+    da moldura PNG (janelas medidas por canal alfa, ver acima), entao encolher só a largura da
+    carta sem encolher a fonte na mesma proporcao faz o texto estourar a janela e ser cortado pelo
+    `overflow: hidden` (vi isso acontecer ao vivo: "Explosao Ossea" perdendo a frase inteira). A
+    correcao foi mover o `font-size` pra `.carta` em vez de deixar cada filho com `em` solto: como
+    `font-size` em `em` e relativo ao font-size do proprio elemento (nao do body), definir
+    `.carta { font-size: 11.7px }` (= `16px * 108/148`) faz nome/tipo/texto/custo encolherem na
+    mesma razao da largura automaticamente, sem precisar sobrescrever cada um.
+  - **Verificado ao vivo** (mesmo server solto em `localhost:8010`): tutorial abre e fecha sem
+    erro (aberto via `import()` no console pra nao interromper a run ja em andamento da sessao de
+    verificacao anterior), botao de som alterna o icone e persiste em `localStorage`, todas as 8
+    funcoes de som de `core/audio.js` disparadas sem excecao no console. Layout mobile conferido
+    redimensionando a aba pra 375x812 (preset "mobile" do navegador da sessao): sem scroll
+    horizontal, cartas legiveis, nenhum texto cortado depois da correcao de `font-size`.
+  - **Falta testar ao vivo:** som de verdade (so confirmei que a Web Audio API nao lanca excecao,
+    nao "ouvi" nada por nao ter audio na sessao de verificacao) e o tutorial no fluxo real (fluxo
+    testado foi so via `import()` direto no console, nao pela tela inicial de verdade, porque a
+    conta usada na verificacao ja tinha uma run ativa no banco).
+- Falta so: **deploy na InfinityFree**, que nao da pra fazer sem a conta/credenciais do dono do
+  projeto — criar conta e entrar com senha em servico de terceiro sao acoes que o agente nao faz
+  sozinho por politica de seguranca, precisa ser o dono do projeto fazendo ou autorizando passo a
+  passo.
 
 ## 6. Decisoes que ainda precisam ser tomadas
 

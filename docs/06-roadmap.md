@@ -81,12 +81,12 @@ Criterio de saida: tres classes que vencem a torre por caminhos diferentes.
 
 ## Fase 7: acabamento
 
-- [ ] Arte gerada por IA substituindo os placeholders
-- [ ] Animacao de carta, dano e invocacao
-- [ ] Som
-- [ ] Tela de tutorial ou primeira run guiada
-- [ ] Responsivo para tela menor
-- [ ] Deploy na InfinityFree
+- [x] Arte gerada por IA substituindo os placeholders
+- [x] Animacao de carta, dano e invocacao
+- [x] Som
+- [x] Tela de tutorial ou primeira run guiada
+- [x] Responsivo para tela menor
+- [ ] Deploy na InfinityFree (precisa da conta/credenciais do dono do projeto, ver docs/09)
 
 ## Depois, se fizer sentido
 

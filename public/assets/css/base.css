@@ -69,3 +69,88 @@ ul {
   padding: 0;
   list-style: none;
 }
+
+/* Fase 7: tutorial (docs/06-roadmap.md), preso a document.body em vez de #app (ui/tutorialView.js)
+   pra empilhar por cima de qualquer tela sem depender de quem o abriu. */
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(8, 11, 15, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.tutorial-caixa {
+  position: relative;
+  background: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+}
+
+.tutorial-progresso {
+  color: var(--cor-texto-fraco);
+  font-size: 0.85em;
+  margin-bottom: 6px;
+}
+
+.tutorial-caixa h2 {
+  margin-bottom: 10px;
+}
+
+.tutorial-caixa p {
+  color: var(--cor-texto-fraco);
+  line-height: 1.4;
+}
+
+.tutorial-rodape {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.tutorial-fechar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--cor-texto-fraco);
+  font-size: 1.1em;
+  line-height: 1;
+  padding: 4px 6px;
+}
+
+.tutorial-fechar:hover {
+  color: var(--cor-texto);
+}
+
+/* Fase 7: alternador de som, preso a document.body igual ao tutorial (main.js), fixo no canto
+   pra ficar acessivel em qualquer tela sem entrar na renderizacao de nenhuma delas. */
+.botao-som {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 90;
+  background: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.botao-som:hover {
+  border-color: var(--cor-acento);
+}

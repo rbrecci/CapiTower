@@ -3,11 +3,80 @@
 // real, chefes com 2 inimigos como os Gemeos): cada inimigo vivo vira um painel clicavel que
 // seleciona o alvo das cartas.
 
-import { jogarCarta, fimDeTurno, intentAtual, selecionarAlvo } from "../core/combat.js";
+import { jogarCarta, fimDeTurno, intentAtual, selecionarAlvo, motivoBloqueio } from "../core/combat.js";
 import { criarElementoCarta } from "./cardView.js";
 import { RETRATOS_CLASSE } from "./towerView.js";
+import { somDano, somCura, somBloco, somInvocacao, somMorteInimigo, somCarta } from "../core/audio.js";
 
 let indiceSelecionado = null;
+
+// Fase 7: dano/cura/bloco/invocacao viram animacao comparando um retrato do estado tirado
+// imediatamente antes de uma acao mutar `estado` (jogar carta, fim de turno) contra o estado
+// depois da mutacao. Guardado aqui porque a tela e redesenhada do zero a cada renderizarCombate
+// (sem diffing de DOM), entao nao da pra descobrir "o que mudou" olhando so pro estado atual.
+let snapshotAntes = null;
+
+function snapshotDe(estado) {
+  return {
+    jogadorHp: estado.jogador.hp,
+    jogadorBloco: estado.jogador.bloco,
+    jogadorLacaios: estado.jogador.lacaios ?? 0,
+    inimigos: estado.inimigos.map((i) => ({ hp: i.hp, bloco: i.bloco })),
+  };
+}
+
+function mostrarNumeroFlutuante(ancora, texto, tipo) {
+  const numero = document.createElement("span");
+  numero.className = `numero-flutuante numero-flutuante--${tipo}`;
+  numero.textContent = texto;
+  numero.style.setProperty("--deslocamento-x", `${Math.round((Math.random() - 0.5) * 30)}px`);
+  ancora.appendChild(numero);
+  numero.addEventListener("animationend", () => numero.remove(), { once: true });
+}
+
+function aplicarDiferencaEntidade(painel, hpAntes, hpDepois, blocoAntes, blocoDepois) {
+  const dano = hpAntes - hpDepois;
+  if (dano > 0) {
+    painel.classList.add("painel--impacto");
+    mostrarNumeroFlutuante(painel, `-${dano}`, "dano");
+    somDano();
+  } else if (hpDepois > hpAntes) {
+    painel.classList.add("painel--cura");
+    mostrarNumeroFlutuante(painel, `+${hpDepois - hpAntes}`, "cura");
+    somCura();
+  }
+  const ganhoBloco = blocoDepois - blocoAntes;
+  if (ganhoBloco > 0) {
+    mostrarNumeroFlutuante(painel, `+${ganhoBloco} \u{1F6E1}\u{FE0F}`, "bloco");
+    somBloco();
+  }
+}
+
+function aplicarEfeitosVisuais(raiz, estado, antes) {
+  if (!antes) return;
+
+  const painelJogador = raiz.querySelector(".painel--jogador");
+  if (painelJogador) {
+    aplicarDiferencaEntidade(painelJogador, antes.jogadorHp, estado.jogador.hp, antes.jogadorBloco, estado.jogador.bloco);
+    const ganhoLacaios = (estado.jogador.lacaios ?? 0) - antes.jogadorLacaios;
+    if (ganhoLacaios > 0) {
+      mostrarNumeroFlutuante(painelJogador, `+${ganhoLacaios} \u{1F480}`, "invocacao");
+      somInvocacao();
+    }
+  }
+
+  raiz.querySelectorAll(".painel--inimigo").forEach((painel) => {
+    const indice = Number(painel.dataset.indice);
+    const snap = antes.inimigos[indice];
+    const inimigo = estado.inimigos[indice];
+    if (!snap || !inimigo) return;
+    aplicarDiferencaEntidade(painel, snap.hp, inimigo.hp, snap.bloco, inimigo.bloco);
+    if (snap.hp > 0 && inimigo.hp <= 0) {
+      painel.classList.add("painel--inimigo--morrendo");
+      somMorteInimigo();
+    }
+  });
+}
 
 // Fase 7: a Soberana Gertrudes e o unico inimigo com arte propria por enquanto
 // (Assets/SoberanaGertrudes.png, ver docs/09). O resto do bestiario continua no emoji generico.
@@ -102,6 +171,7 @@ function criarTagsEstado(entidade) {
 function criarPainelInimigo(inimigo, indice, estado, handlers) {
   const painel = document.createElement("div");
   painel.className = "painel painel--inimigo";
+  painel.dataset.indice = String(indice);
   const vivo = inimigo.hp > 0;
 
   if (!vivo) {
@@ -234,6 +304,8 @@ function criarPainelMao(estado, handlers) {
   const mao = document.createElement("div");
   mao.className = "mao";
 
+  const elementosCarta = [];
+
   estado.mao.forEach((carta, indice) => {
     const el = criarElementoCarta(carta, indice, estado, {
       selecionada: indice === indiceSelecionado,
@@ -242,11 +314,13 @@ function criarPainelMao(estado, handlers) {
         handlers.aoMudar();
       },
       aoJogarDuploClique: (i) => {
+        snapshotAntes = snapshotDe(estado);
         jogarCarta(estado, i);
         indiceSelecionado = null;
         handlers.aoMudar();
       },
     });
+    elementosCarta[indice] = el;
     mao.appendChild(el);
   });
 
@@ -254,13 +328,26 @@ function criarPainelMao(estado, handlers) {
   rodape.className = "rodape-mao";
 
   if (indiceSelecionado !== null && estado.mao[indiceSelecionado]) {
+    const idx = indiceSelecionado;
     const jogar = document.createElement("button");
     jogar.className = "botao botao--jogar";
-    jogar.textContent = `Jogar ${estado.mao[indiceSelecionado].nome}`;
+    jogar.textContent = `Jogar ${estado.mao[idx].nome}`;
     jogar.addEventListener("click", () => {
-      jogarCarta(estado, indiceSelecionado);
-      indiceSelecionado = null;
-      handlers.aoMudar();
+      const executar = () => {
+        snapshotAntes = snapshotDe(estado);
+        jogarCarta(estado, idx);
+        indiceSelecionado = null;
+        handlers.aoMudar();
+      };
+      const cartaEl = elementosCarta[idx];
+      const bloqueada = motivoBloqueio(estado, estado.mao[idx]) !== null;
+      if (cartaEl && !bloqueada) {
+        cartaEl.classList.add("carta--jogada");
+        somCarta();
+        cartaEl.addEventListener("animationend", executar, { once: true });
+      } else {
+        executar();
+      }
     });
     rodape.appendChild(jogar);
   }
@@ -270,6 +357,7 @@ function criarPainelMao(estado, handlers) {
   fimTurno.textContent = "Fim de turno";
   fimTurno.addEventListener("click", () => {
     indiceSelecionado = null;
+    snapshotAntes = snapshotDe(estado);
     fimDeTurno(estado);
     handlers.aoMudar();
   });
@@ -340,4 +428,7 @@ export function renderizarCombate(container, estado, handlers) {
     criarLog(estado)
   );
   container.appendChild(raiz);
+
+  aplicarEfeitosVisuais(raiz, estado, snapshotAntes);
+  snapshotAntes = null;
 }

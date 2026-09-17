@@ -23,6 +23,7 @@ import { renderEvento } from "./eventView.js";
 import { renderDesafio, renderSemDesafioDisponivel } from "./challengeView.js";
 import { renderAuth } from "./authView.js";
 import { renderPerfil } from "./profileView.js";
+import { mostrarTutorial, tutorialJaVisto } from "./tutorialView.js";
 import {
   usuarioAtual,
   login,
@@ -126,6 +127,7 @@ export async function iniciarJogo(container) {
 
   function irParaInicio() {
     renderInicio(container, estadoGlobal.classes, comecarRun, () => abrirPerfil(irParaInicio));
+    if (!tutorialJaVisto()) mostrarTutorial();
   }
 
   async function abrirPerfil(onVoltar) {
