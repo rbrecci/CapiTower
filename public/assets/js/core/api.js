@@ -40,8 +40,8 @@ export function carregarCatalogoDoServidor() {
   return chamar("catalog/bootstrap.php");
 }
 
-export function iniciarRunNoServidor() {
-  return chamar("run/start.php", { metodo: "POST" });
+export function iniciarRunNoServidor(classe) {
+  return chamar("run/start.php", { metodo: "POST", corpo: { classe } });
 }
 
 export function salvarRunNoServidor(runId, estadoJson) {

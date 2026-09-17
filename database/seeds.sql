@@ -42,9 +42,6 @@ ON DUPLICATE KEY UPDATE
   inicial = VALUES(inicial),
   ordem = VALUES(ordem);
 
--- Classes 2 e 3: Brutamontes (mecanica Adrenalina) e Ligeira (mecanica Impulso).
--- Entram no seed junto com as cartas delas, na Fase 6 do roadmap.
-
 -- ---------------------------------------------------------------------------
 -- HABILIDADE LEGIAO: NIVEIS 1 A 10
 -- ---------------------------------------------------------------------------
@@ -262,6 +259,477 @@ FROM arquetipos a WHERE a.slug = 'putrefacao'
 ON DUPLICATE KEY UPDATE
   nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
   texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+-- ---------------------------------------------------------------------------
+-- CLASSES: BRUTAMONTES E LIGEIRA (Fase 6)
+-- ---------------------------------------------------------------------------
+
+INSERT INTO classes
+  (slug, nome, descricao, mecanica_nome, mecanica_descricao,
+   habilidade_nome, habilidade_descricao, hp_inicial, acao_por_turno, inicial, ordem)
+VALUES
+  ('brutamontes', 'Brutamontes',
+   'Nunca chegou perto do poco de esteroides e faz questao de dizer isso. Tudo que tem veio de teimosia.',
+   'Adrenalina',
+   'Toda vez que perde vida (dano que passou pelo Bloco), ganha 1 de Adrenalina, no maximo 1 por instancia de dano. Cartas gastam Adrenalina ou escalam com a quantidade acumulada. Zera ao fim do combate.',
+   'Casca Grossa',
+   'Comeca cada combate com Adrenalina ja acumulada. A quantidade cresce com o nivel.',
+   80, 3, 1, 2),
+  ('ligeira', 'Ligeira',
+   'Capivara pequena e encharcada, impossivel de segurar. Rapida a ponto de ofender as leis da natureza.',
+   'Impulso',
+   'Contador de cartas jogadas no turno atual. Zera no fim de todo turno. Cartas consultam quantas vieram antes dela no mesmo turno.',
+   'Ligeireza',
+   'Ao jogar cartas suficientes no turno, ganha Acao extra (e compra, em niveis altos). Ativa uma vez por turno, duas a partir do nivel 9.',
+   80, 3, 1, 3)
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome),
+  descricao = VALUES(descricao),
+  mecanica_nome = VALUES(mecanica_nome),
+  mecanica_descricao = VALUES(mecanica_descricao),
+  habilidade_nome = VALUES(habilidade_nome),
+  habilidade_descricao = VALUES(habilidade_descricao),
+  hp_inicial = VALUES(hp_inicial),
+  acao_por_turno = VALUES(acao_por_turno),
+  inicial = VALUES(inicial),
+  ordem = VALUES(ordem);
+
+-- ---------------------------------------------------------------------------
+-- HABILIDADE CASCA GROSSA (Brutamontes): NIVEIS 1 A 10
+-- ---------------------------------------------------------------------------
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 1, 'Comeca cada combate com 2 de Adrenalina', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 2, '+1 de Adrenalina inicial (3)', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 3, '+1 de Adrenalina inicial (4)', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 4, 'A primeira vez que perde vida no combate rende 2', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 5, 'Ganha 1 tambem quando a Defesa absorve um ataque inteiro', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 6, '+1 de Adrenalina inicial (5)', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 7, 'Teto de Adrenalina sobe de 10 para 15', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 8, '+1 de Adrenalina inicial (6)', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 9, 'Ao cair a metade da vida, ganha 3 na hora (1x por combate)', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 10, 'Toda Adrenalina ganha e dobrada', '[]'
+FROM classes c WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+-- ---------------------------------------------------------------------------
+-- HABILIDADE LIGEIREZA (Ligeira): NIVEIS 1 A 10
+-- ---------------------------------------------------------------------------
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 1, 'Ao jogar a 5a carta do turno, ganha +1 Acao', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 2, 'Passa a ativar na 4a carta', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 3, 'A ativacao tambem compra 1 carta', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 4, 'Passa a ativar na 3a carta', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 5, 'Comeca cada combate com +1 Acao no primeiro turno', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 6, 'A ativacao passa a dar +2 Acao', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 7, 'Passa a ativar na 2a carta', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 8, 'A ativacao compra 2 cartas', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 9, 'Ativa duas vezes por turno (a 2a exige o dobro)', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+INSERT INTO habilidade_niveis (classe_id, nivel, descricao, efeitos)
+SELECT c.id, 10, 'A primeira carta de cada turno custa 0', '[]'
+FROM classes c WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE descricao = VALUES(descricao), efeitos = VALUES(efeitos);
+
+-- ---------------------------------------------------------------------------
+-- ARQUETIPOS DA BRUTAMONTES
+-- ---------------------------------------------------------------------------
+
+INSERT INTO arquetipos (classe_id, slug, nome, descricao, cor, ordem)
+SELECT c.id, v.slug, v.nome, v.descricao, v.cor, v.ordem
+FROM classes c
+JOIN (
+  SELECT 'suor' AS slug, 'Suor' AS nome, 'Gerar Adrenalina de proposito, pagando vida.' AS descricao, '#C97B4A' AS cor, 1 AS ordem
+  UNION ALL SELECT 'estouro' AS slug, 'Estouro' AS nome, 'Gastar Adrenalina de uma vez, em efeitos grandes e imediatos.' AS descricao, '#B03A48' AS cor, 2 AS ordem
+  UNION ALL SELECT 'couro' AS slug, 'Couro' AS nome, 'Adrenalina acumulada, sem gastar: vira Bloco e mitigacao.' AS descricao, '#8A6D3B' AS cor, 3 AS ordem
+  UNION ALL SELECT 'troco' AS slug, 'Troco' AS nome, 'Retaliacao: ganha por ser atingida, nao por atacar.' AS descricao, '#4A6B8A' AS cor, 4 AS ordem
+) v
+WHERE c.slug = 'brutamontes'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome),
+  descricao = VALUES(descricao),
+  cor = VALUES(cor),
+  ordem = VALUES(ordem);
+
+-- ---------------------------------------------------------------------------
+-- ARQUETIPOS DA LIGEIRA
+-- ---------------------------------------------------------------------------
+
+INSERT INTO arquetipos (classe_id, slug, nome, descricao, cor, ordem)
+SELECT c.id, v.slug, v.nome, v.descricao, v.cor, v.ordem
+FROM classes c
+JOIN (
+  SELECT 'corrente' AS slug, 'Corrente' AS nome, 'Esticar o turno com cartas de custo 0 e compra.' AS descricao, '#7FB0A0' AS cor, 1 AS ordem
+  UNION ALL SELECT 'estocada' AS slug, 'Estocada' AS nome, 'Finalizadores que escalam com o Impulso ja acumulado.' AS descricao, '#B0507F' AS cor, 2 AS ordem
+  UNION ALL SELECT 'fumaca' AS slug, 'Fumaca' AS nome, 'Evasao e negacao de golpe.' AS descricao, '#8E8E9E' AS cor, 3 AS ordem
+  UNION ALL SELECT 'contrabando' AS slug, 'Contrabando' AS nome, 'Mexer na mao e no descarte, da consistencia.' AS descricao, '#C9A24A' AS cor, 4 AS ordem
+) v
+WHERE c.slug = 'ligeira'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome),
+  descricao = VALUES(descricao),
+  cor = VALUES(cor),
+  ordem = VALUES(ordem);
+
+-- ---------------------------------------------------------------------------
+-- CARTAS DA BRUTAMONTES (20, portadas de flet_mvp/capitower/cards.py)
+-- ---------------------------------------------------------------------------
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_peitada', 'Peitada', 1, 'ataque', 'Causa 10 de dano. Perde 2 de vida.', '[{"op":"dano","alvo":"inimigo","valor":10},{"op":"perder_vida","valor":2}]', 1
+FROM arquetipos a WHERE a.slug = 'suor'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_sanguefrio', 'Sangue Frio', 1, 'defesa', 'Perde 2 de vida. Ganha 9 de Bloco.', '[{"op":"perder_vida","valor":2},{"op":"bloco","valor":9}]', 1
+FROM arquetipos a WHERE a.slug = 'suor'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_rugido', 'Rugido', 1, 'poder', 'Sempre que perder vida, ganha 1 de Adrenalina extra.', '[{"op":"poder","nome":"rugido"}]', 1
+FROM arquetipos a WHERE a.slug = 'suor'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_bufo', 'Bufo', 0, 'utilidade', 'Perde 2 de vida. Ganha 2 de Adrenalina. Compra 1 carta.', '[{"op":"perder_vida","valor":2},{"op":"ganhar_adrenalina","valor":2},{"op":"comprar","valor":1}]', 1
+FROM arquetipos a WHERE a.slug = 'suor'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_serie', 'Mais Uma Serie', 1, 'utilidade', 'Perde 3 de vida. Ganha 1 Acao e 2 de Adrenalina.', '[{"op":"perder_vida","valor":3},{"op":"ganhar_acao","valor":1},{"op":"ganhar_adrenalina","valor":2}]', 1
+FROM arquetipos a WHERE a.slug = 'suor'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_cabecada', 'Cabecada Final', 2, 'ataque', 'Consome ate 6 de Adrenalina. Causa 10 de dano, +3 por ponto consumido.', '[{"op":"consumir_adrenalina","valor":6},{"op":"dano","alvo":"inimigo","valor":10},{"op":"dano_por_consumido","alvo":"inimigo","valor":3}]', 1
+FROM arquetipos a WHERE a.slug = 'estouro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_pele', 'Pele de Bicho', 2, 'defesa', 'Consome ate 4 de Adrenalina. Ganha 6 de Bloco, +3 por ponto consumido.', '[{"op":"consumir_adrenalina","valor":4},{"op":"bloco","valor":6},{"op":"bloco_por_consumido","valor":3}]', 1
+FROM arquetipos a WHERE a.slug = 'estouro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_pavio', 'Pavio Curto', 2, 'poder', 'Sempre que gastar Adrenalina, causa 1 de dano a todos os inimigos por ponto gasto.', '[{"op":"poder","nome":"pavio_curto"}]', 1
+FROM arquetipos a WHERE a.slug = 'estouro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_folego', 'Explosao de Folego', 0, 'utilidade', 'Consome ate 2 de Adrenalina. Ganha 1 Acao por ponto consumido.', '[{"op":"consumir_adrenalina","valor":2},{"op":"acao_por_consumido","valor":1}]', 1
+FROM arquetipos a WHERE a.slug = 'estouro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_estampido', 'Estampido', 2, 'ataque', 'Consome ate 3 de Adrenalina. Causa 6 de dano a todos, +2 por ponto consumido.', '[{"op":"consumir_adrenalina","valor":3},{"op":"dano","alvo":"todos","valor":6},{"op":"dano_por_consumido","alvo":"todos","valor":2}]', 1
+FROM arquetipos a WHERE a.slug = 'estouro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_soco', 'Soco de Sobra', 1, 'ataque', 'Causa 7 de dano, +1 por Adrenalina acumulada (limite 8).', '[{"op":"dano","alvo":"inimigo","valor":7},{"op":"dano_por_adrenalina","alvo":"inimigo","valor":1,"teto":8}]', 1
+FROM arquetipos a WHERE a.slug = 'couro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_costado', 'Costado', 1, 'defesa', 'Ganha 6 de Bloco, +1 por Adrenalina acumulada (limite 8).', '[{"op":"bloco","valor":6},{"op":"bloco_por_adrenalina","valor":1,"teto":8}]', 1
+FROM arquetipos a WHERE a.slug = 'couro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_calo', 'Calo', 2, 'poder', 'No inicio do seu turno, ganha Bloco igual a metade da Adrenalina acumulada.', '[{"op":"poder","nome":"calo"}]', 1
+FROM arquetipos a WHERE a.slug = 'couro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_guardado', 'Folego Guardado', 1, 'utilidade', 'Compra 2 cartas. Se tem 5+ de Adrenalina, ganha 1 Acao.', '[{"op":"comprar","valor":2},{"op":"se","condicao":"adrenalina>=5","efeitos":[{"op":"ganhar_acao","valor":1}]}]', 1
+FROM arquetipos a WHERE a.slug = 'couro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_fincar', 'Fincar Pe', 1, 'defesa', 'Ganha 8 de Bloco. Se tem 5+ de Adrenalina, ganha 1 de Forca.', '[{"op":"bloco","valor":8},{"op":"se","condicao":"adrenalina>=5","efeitos":[{"op":"estado","alvo":"jogador","estado":"forca","valor":1}]}]', 1
+FROM arquetipos a WHERE a.slug = 'couro'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_cotovelada', 'Cotovelada', 1, 'ataque', 'Causa 6 de dano. Ganha Retaliacao 2 por 1 turno.', '[{"op":"dano","alvo":"inimigo","valor":6},{"op":"retaliacao","valor":2,"turnos":1}]', 1
+FROM arquetipos a WHERE a.slug = 'troco'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_naofaz', 'Nao Faz Isso', 1, 'defesa', 'Ganha Retaliacao 4 por 2 turnos.', '[{"op":"retaliacao","valor":4,"turnos":2}]', 1
+FROM arquetipos a WHERE a.slug = 'troco'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_olho', 'Olho por Olho', 2, 'poder', 'Sempre que perder vida para um ataque, causa 3 de dano ao atacante.', '[{"op":"poder","nome":"olho_por_olho"}]', 1
+FROM arquetipos a WHERE a.slug = 'troco'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_provocar', 'Provocar', 0, 'utilidade', 'Ganha 4 de Bloco e Retaliacao 2 por 1 turno.', '[{"op":"bloco","valor":4},{"op":"retaliacao","valor":2,"turnos":1}]', 1
+FROM arquetipos a WHERE a.slug = 'troco'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'bm_queixo', 'Queixo de Ferro', 2, 'defesa', 'Ganha 8 de Bloco e Retaliacao 3 por 2 turnos.', '[{"op":"bloco","valor":8},{"op":"retaliacao","valor":3,"turnos":2}]', 1
+FROM arquetipos a WHERE a.slug = 'troco'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+-- ---------------------------------------------------------------------------
+-- CARTAS DA LIGEIRA (20, portadas de flet_mvp/capitower/cards.py)
+-- ---------------------------------------------------------------------------
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_passo', 'Passo Curto', 0, 'ataque', 'Causa 2 de dano. Compra 1 carta.', '[{"op":"dano","alvo":"inimigo","valor":2},{"op":"comprar","valor":1}]', 1
+FROM arquetipos a WHERE a.slug = 'corrente'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_rolamento', 'Rolamento', 0, 'defesa', 'Ganha 3 de Bloco. Compra 1 carta.', '[{"op":"bloco","valor":3},{"op":"comprar","valor":1}]', 1
+FROM arquetipos a WHERE a.slug = 'corrente'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_segundo', 'Segundo Folego', 1, 'poder', 'Sempre que jogar a 3a carta do turno, compra 1 carta.', '[{"op":"poder","nome":"segundo_folego"}]', 1
+FROM arquetipos a WHERE a.slug = 'corrente'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_respiro', 'Respiro', 0, 'utilidade', 'Compra 1 carta. Se ja jogou 3 cartas neste turno, ganha 1 Acao.', '[{"op":"comprar","valor":1},{"op":"se","condicao":"impulso>=3","efeitos":[{"op":"ganhar_acao","valor":1}]}]', 1
+FROM arquetipos a WHERE a.slug = 'corrente'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_cambalhota', 'Cambalhota', 1, 'ataque', 'Causa 4 de dano duas vezes.', '[{"op":"dano","alvo":"inimigo","valor":4},{"op":"dano","alvo":"inimigo","valor":4}]', 1
+FROM arquetipos a WHERE a.slug = 'corrente'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_pontocego', 'Ponto Cego', 1, 'ataque', 'Causa 3 de dano por carta jogada antes desta neste turno (limite 5).', '[{"op":"dano_por_impulso","alvo":"inimigo","valor":3,"teto":5}]', 1
+FROM arquetipos a WHERE a.slug = 'estocada'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_finta', 'Finta', 1, 'defesa', 'Ganha 4 de Bloco, +2 por carta jogada antes desta neste turno (limite 3).', '[{"op":"bloco","valor":4},{"op":"bloco_por_impulso","valor":2,"teto":3}]', 1
+FROM arquetipos a WHERE a.slug = 'estocada'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_vista', 'Golpe de Vista', 2, 'poder', 'Sempre que jogar a 4a carta do turno, causa 6 de dano ao alvo.', '[{"op":"poder","nome":"golpe_de_vista"}]', 1
+FROM arquetipos a WHERE a.slug = 'estocada'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_rasteira', 'Rasteira', 1, 'utilidade', 'Aplica Fragilidade 2. Se ja jogou 3 cartas neste turno, compra 1 carta.', '[{"op":"estado","alvo":"inimigo","estado":"fragilidade","valor":2},{"op":"se","condicao":"impulso>=3","efeitos":[{"op":"comprar","valor":1}]}]', 1
+FROM arquetipos a WHERE a.slug = 'estocada'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_dentada', 'Dentada Rapida', 1, 'ataque', 'Causa 6 de dano. Se ja jogou 2 cartas neste turno, causa 4 a mais.', '[{"op":"dano_condicional","alvo":"inimigo","base":6,"extra":4,"condicao":"impulso>=2"}]', 1
+FROM arquetipos a WHERE a.slug = 'estocada'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_bote', 'Bote da Nevoa', 1, 'ataque', 'Causa 5 de dano. Se tem Evasao, causa 5 a mais.', '[{"op":"dano_condicional","alvo":"inimigo","base":5,"extra":5,"condicao":"evasao>=1"}]', 1
+FROM arquetipos a WHERE a.slug = 'fumaca'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_lama', 'Banho de Lama', 1, 'defesa', 'Ganha 1 de Evasao, ou 2 se ja jogou 3 cartas neste turno.', '[{"op":"evasao","valor":1},{"op":"se","condicao":"impulso>=3","efeitos":[{"op":"evasao","valor":1}]}]', 1
+FROM arquetipos a WHERE a.slug = 'fumaca'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_rastro', 'Rastro de Lama', 1, 'poder', 'Sempre que a Evasao anular um ataque, compra 1 carta.', '[{"op":"poder","nome":"rastro"}]', 1
+FROM arquetipos a WHERE a.slug = 'fumaca'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_truque', 'Truque de Fumaca', 1, 'utilidade', 'Compra 1 carta. Se tem Evasao, ganha 1 Acao.', '[{"op":"comprar","valor":1},{"op":"se","condicao":"evasao>=1","efeitos":[{"op":"ganhar_acao","valor":1}]}]', 1
+FROM arquetipos a WHERE a.slug = 'fumaca'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_cortina', 'Cortina de Lama', 2, 'defesa', 'Ganha 1 de Evasao. Aplica Fraqueza 2 a todos os inimigos.', '[{"op":"evasao","valor":1},{"op":"estado","alvo":"todos","estado":"fraqueza","valor":2}]', 1
+FROM arquetipos a WHERE a.slug = 'fumaca'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_golpebaixo', 'Golpe Baixo', 1, 'ataque', 'Causa 5 de dano. A proxima carta jogada neste turno custa 0.', '[{"op":"dano","alvo":"inimigo","valor":5},{"op":"proxima_gratis"}]', 1
+FROM arquetipos a WHERE a.slug = 'contrabando'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_troca', 'Troca Rapida', 1, 'defesa', 'Ganha 4 de Bloco. Descarta a mao e compra o mesmo numero de cartas.', '[{"op":"bloco","valor":4},{"op":"trocar_mao"}]', 1
+FROM arquetipos a WHERE a.slug = 'contrabando'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_bolso', 'Bolso Fundo', 1, 'poder', 'No fim do seu turno, guarda 1 carta aleatoria da mao em vez de descarta-la.', '[{"op":"poder","nome":"bolso_fundo"}]', 1
+FROM arquetipos a WHERE a.slug = 'contrabando'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_pega', 'Pega de Volta', 1, 'utilidade', 'Devolve a mao a ultima carta jogada neste turno (nao alcanca carta de custo 0).', '[{"op":"devolver_ultima"}]', 1
+FROM arquetipos a WHERE a.slug = 'contrabando'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
+INSERT INTO cartas (arquetipo_id, slug, nome, custo, tipo, texto, efeitos, inicial)
+SELECT a.id, 'lg_marcado', 'Baralho Marcado', 1, 'utilidade', 'Compra 1 carta. A proxima carta jogada neste turno custa 0.', '[{"op":"comprar","valor":1},{"op":"proxima_gratis"}]', 1
+FROM arquetipos a WHERE a.slug = 'contrabando'
+ON DUPLICATE KEY UPDATE
+  nome = VALUES(nome), custo = VALUES(custo), tipo = VALUES(tipo),
+  texto = VALUES(texto), efeitos = VALUES(efeitos), inicial = VALUES(inicial);
+
 
 -- ---------------------------------------------------------------------------
 -- INIMIGOS (bestiario completo, portado de flet_mvp/capitower/content.py)

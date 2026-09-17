@@ -24,3 +24,6 @@ flet_mvp/build/
 # apk baixado do Actions
 capitower-apk.zip
 capitower-apk/
+
+# fonte bruta da arte de IA (14MB, ja copiada/renomeada em public/assets/img/ui/)
+/Assets/

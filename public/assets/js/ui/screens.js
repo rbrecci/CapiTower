@@ -11,7 +11,13 @@ import { criarCombateDeSala } from "../core/combat.js";
 import { renderizarCombate } from "./combatView.js";
 import { embaralhar, escolher, derivarSeed } from "../core/rng.js";
 import { salaDaRecompensa } from "../core/tower.js";
-import { renderInicio, renderDescanso, renderFimDeRun, cabecalhoAndar } from "./towerView.js";
+import {
+  renderInicio,
+  renderDescanso,
+  renderFimDeRun,
+  cabecalhoAndar,
+  aplicarFundoDaSala,
+} from "./towerView.js";
 import { renderRecompensa } from "./rewardView.js";
 import { renderEvento } from "./eventView.js";
 import { renderDesafio, renderSemDesafioDisponivel } from "./challengeView.js";
@@ -119,7 +125,7 @@ export async function iniciarJogo(container) {
   }
 
   function irParaInicio() {
-    renderInicio(container, comecarRun, () => abrirPerfil(irParaInicio));
+    renderInicio(container, estadoGlobal.classes, comecarRun, () => abrirPerfil(irParaInicio));
   }
 
   async function abrirPerfil(onVoltar) {
@@ -130,9 +136,9 @@ export async function iniciarJogo(container) {
     renderPerfil(container, perfil, objetivosDados.objetivos, onVoltar);
   }
 
-  async function comecarRun() {
-    const resposta = await iniciarRunNoServidor();
-    const run = novaRun(resposta.run.seed);
+  async function comecarRun(classeSlug) {
+    const resposta = await iniciarRunNoServidor(classeSlug);
+    const run = novaRun(resposta.run.seed, classeSlug);
     run.id = resposta.run.id;
     await salvarProgresso();
     proximoAndar();
@@ -155,6 +161,7 @@ export async function iniciarJogo(container) {
   }
 
   function renderSala(sala) {
+    aplicarFundoDaSala(sala);
     if (sala.tipo === "descanso") {
       iniciarDescanso(sala);
     } else if (sala.tipo === "evento") {
@@ -218,6 +225,7 @@ export async function iniciarJogo(container) {
       forcaBonus: run.forcaPermanente,
       fraquezaInicial: fraqueza,
       nivelHabilidade: run.nivelHabilidade,
+      classe: run.classe,
     });
     estadoGlobal.combate = estadoCombate; // referencia para debug/QA, ver core/state.js
 
@@ -278,7 +286,7 @@ export async function iniciarJogo(container) {
     if (salaDaRecompensa(sala.tipo)) {
       run.pontosRecompensa += 1;
       const rngRecompensa = rngDoAndar(run, 4);
-      const cartaSorteada = cartaAleatoria(rngRecompensa);
+      const cartaSorteada = cartaAleatoria(run, rngRecompensa);
       renderRecompensa(
         container,
         run,

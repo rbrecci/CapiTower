@@ -5,8 +5,26 @@
 
 import { jogarCarta, fimDeTurno, intentAtual, selecionarAlvo } from "../core/combat.js";
 import { criarElementoCarta } from "./cardView.js";
+import { RETRATOS_CLASSE } from "./towerView.js";
 
 let indiceSelecionado = null;
+
+// Fase 7: a Soberana Gertrudes e o unico inimigo com arte propria por enquanto
+// (Assets/SoberanaGertrudes.png, ver docs/09). O resto do bestiario continua no emoji generico.
+const RETRATOS_INIMIGO = {
+  "Soberana Gertrudes": "assets/img/ui/personagens/soberana-gertrudes.png",
+};
+
+function preencherRetrato(el, src, emojiFallback) {
+  if (src) {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "";
+    el.appendChild(img);
+  } else {
+    el.textContent = emojiFallback;
+  }
+}
 
 function textoIntencao(inimigo) {
   const acoes = intentAtual(inimigo);
@@ -67,6 +85,9 @@ function criarTagsEstado(entidade) {
     ["fragilidade", "\u{1FA9E}", entidade.fragilidade],
     ["veneno", "\u{2620}\u{FE0F}", entidade.veneno],
   ];
+  // Retaliacao e Evasao so existem no jogador (Brutamontes/Ligeira), inimigos nao tem os campos.
+  if (entidade.retaliacao > 0) defs.push(["retaliacao", "\u{1F94A}", entidade.retaliacao]);
+  if (entidade.evasao > 0) defs.push(["evasao", "\u{1F4A8}", entidade.evasao]);
   for (const [nome, icone, valor] of defs) {
     if (valor > 0) {
       const tag = document.createElement("span");
@@ -104,7 +125,7 @@ function criarPainelInimigo(inimigo, indice, estado, handlers) {
 
   const retrato = document.createElement("div");
   retrato.className = "retrato retrato--inimigo";
-  retrato.textContent = vivo ? "\u{1F438}" : "\u{1F480}";
+  preencherRetrato(retrato, vivo ? RETRATOS_INIMIGO[inimigo.nome] : null, vivo ? "\u{1F438}" : "\u{1F480}");
 
   const nome = document.createElement("div");
   nome.className = "nome-entidade";
@@ -141,13 +162,24 @@ function criarPaineisInimigos(estado, handlers) {
   return wrapper;
 }
 
+// Recurso exclusivo de cada classe na HUD (flet_mvp/capitower/combat.py:resource_label).
+function textoRecurso(jogador) {
+  if (jogador.classe === "brutamontes") {
+    return `\u{1F525} Adrenalina ${jogador.adrenalina}/${jogador.adrenalinaCap}`;
+  }
+  if (jogador.classe === "ligeira") {
+    return `\u{1F4A8} Impulso ${jogador.cartasJogadasNoTurno}`;
+  }
+  return `\u{1F480} Lacaios ${jogador.lacaios}/${jogador.lacaiosCap}`;
+}
+
 function criarPainelJogador(estado) {
   const painel = document.createElement("div");
   painel.className = "painel painel--jogador";
 
   const retrato = document.createElement("div");
   retrato.className = "retrato retrato--jogador";
-  retrato.textContent = "\u{1F9AB}";
+  preencherRetrato(retrato, RETRATOS_CLASSE[estado.jogador.classe], "\u{1F9AB}");
 
   const contadores = document.createElement("div");
   contadores.className = "contadores";
@@ -156,11 +188,11 @@ function criarPainelJogador(estado) {
   acao.className = "contador contador--acao";
   acao.textContent = `\u{26A1} Acao ${estado.jogador.acao}/${estado.jogador.acaoMax}`;
 
-  const lacaios = document.createElement("span");
-  lacaios.className = "contador contador--lacaios";
-  lacaios.textContent = `\u{1F480} Lacaios ${estado.jogador.lacaios}/${estado.jogador.lacaiosCap}`;
+  const recurso = document.createElement("span");
+  recurso.className = "contador contador--lacaios";
+  recurso.textContent = textoRecurso(estado.jogador);
 
-  contadores.append(acao, lacaios);
+  contadores.append(acao, recurso);
 
   painel.append(retrato, criarBarraHp(estado.jogador.hp, estado.jogador.hpMax), contadores, criarTagsEstado(estado.jogador));
 
@@ -179,12 +211,20 @@ function criarPainelJogador(estado) {
   return painel;
 }
 
-// Nome visivel de cada poder da Capimaga na HUD (flet_mvp/capitower/cards.py:POWER_NAMES).
+// Nome visivel de cada poder das 3 classes na HUD (flet_mvp/capitower/cards.py:POWER_NAMES).
 const NOMES_PODER = {
   vala_comum: "Vala Comum",
   banquete: "Banquete",
   ossos_firmes: "Ossos Firmes",
   peste: "Peste Ossea",
+  rugido: "Rugido",
+  pavio_curto: "Pavio Curto",
+  calo: "Calo",
+  olho_por_olho: "Olho por Olho",
+  segundo_folego: "Segundo Folego",
+  golpe_de_vista: "Golpe de Vista",
+  rastro: "Rastro de Lama",
+  bolso_fundo: "Bolso Fundo",
 };
 
 function criarPainelMao(estado, handlers) {

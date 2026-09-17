@@ -11,8 +11,13 @@ Auth::iniciarSessao();
 Request::exigirMetodo('POST');
 $usuarioId = Auth::exigirLogin();
 
-// Unica classe pronta ate a Fase 6 (Brutamontes e Ligeira ainda nao tem cartas no banco).
-$classeSlug = 'capimaga';
+// Fase 6: as 3 classes tem cartas no banco. O cliente manda a escolhida em renderInicio
+// (ui/towerView.js); capimaga como padrao cobre chamadas antigas/testes sem o campo.
+const CLASSES_VALIDAS = ['capimaga', 'brutamontes', 'ligeira'];
+$classeSlug = Request::texto('classe', 'capimaga');
+if (!in_array($classeSlug, CLASSES_VALIDAS, true)) {
+    $classeSlug = 'capimaga';
+}
 
 try {
     $classeId = Catalog::classeIdPorSlug($classeSlug);

@@ -3,29 +3,87 @@
 // permadeath, sem retomar). Segue o padrao dos outros arquivos de ui/: DOM puro, refaz o miolo
 // a cada render.
 
-export function renderInicio(container, onComecar, onVerPerfil) {
+// Fase 7: cenario de fundo por bloco (Assets/Cenario*.jpg, ver docs/09). `sala.bloco` e o
+// indice 0-4 gerado em core/tower.js:gerarTorre, na mesma ordem de NOMES_BLOCO.
+const CENARIOS_BLOCO = ["poco", "academia", "laboratorio", "refeitorio", "jardim"];
+
+// Retrato de classe, reusado tambem no HUD de combate (ver combatView.js).
+export const RETRATOS_CLASSE = {
+  capimaga: "assets/img/ui/personagens/capimaga.png",
+  brutamontes: "assets/img/ui/personagens/brutamontes.png",
+  ligeira: "assets/img/ui/personagens/ligeira.png",
+};
+
+function aplicarFundo(chave) {
+  const el = document.getElementById("fundo-cenario");
+  if (!el) return;
+  el.style.backgroundImage = `url(assets/img/ui/cenarios/${chave}.jpg)`;
+}
+
+export function aplicarFundoMenu() {
+  aplicarFundo("menu");
+}
+
+export function aplicarFundoDaSala(sala) {
+  aplicarFundo(CENARIOS_BLOCO[sala.bloco] ?? "menu");
+}
+
+// Fase 6: 3 classes prontas, entao a tela inicial pede qual jogar em vez de comecar direto
+// (docs/09-progresso-e-proximos-passos.md). `classes` vem do bootstrap (app/models/Catalog.php),
+// ja na ordem certa; onComecar recebe o slug escolhido.
+export function renderInicio(container, classes, onComecar, onVerPerfil) {
+  aplicarFundoMenu();
   container.innerHTML = "";
   const tela = document.createElement("div");
   tela.className = "tela-centro";
 
+  const logo = document.createElement("img");
+  logo.className = "logo-jogo";
+  logo.src = "assets/img/ui/logo.png";
+  logo.alt = "CapiTower";
+
   const titulo = document.createElement("h1");
   titulo.textContent = "CapiTower";
+  titulo.className = "sr-somente";
 
   const subtitulo = document.createElement("p");
   subtitulo.className = "tela-centro__texto";
-  subtitulo.textContent = "51 andares, HP que persiste, permadeath. Jogue a Capimaga: 20 cartas, Legiao de 10 niveis, 5 chefes de bloco e a Soberana Gertrudes no topo.";
+  subtitulo.textContent = "51 andares, HP que persiste, permadeath. Escolha uma classe: 20 cartas, uma habilidade de 10 niveis, 5 chefes de bloco e a Soberana Gertrudes no topo.";
 
-  const botao = document.createElement("button");
-  botao.className = "botao botao--comecar";
-  botao.textContent = "Comecar a subir";
-  botao.addEventListener("click", onComecar);
+  tela.append(logo, titulo, subtitulo);
+
+  const opcoes = document.createElement("div");
+  opcoes.className = "opcoes-evento";
+
+  for (const classe of classes) {
+    const botao = document.createElement("button");
+    botao.className = "opcao-evento opcao-classe";
+    if (RETRATOS_CLASSE[classe.slug]) {
+      const icone = document.createElement("img");
+      icone.className = "opcao-classe__icone";
+      icone.src = RETRATOS_CLASSE[classe.slug];
+      icone.alt = "";
+      botao.appendChild(icone);
+    }
+    const nome = document.createElement("div");
+    nome.className = "opcao-evento__titulo";
+    nome.textContent = classe.nome;
+    const descricao = document.createElement("div");
+    descricao.className = "opcao-evento__texto";
+    descricao.textContent = `${classe.descricao} Mecanica: ${classe.mecanica_nome}, ${classe.mecanica_descricao}`;
+    botao.append(nome, descricao);
+    botao.addEventListener("click", () => onComecar(classe.slug));
+    opcoes.appendChild(botao);
+  }
+
+  tela.appendChild(opcoes);
 
   const botaoPerfil = document.createElement("button");
   botaoPerfil.className = "botao botao--fim-turno";
   botaoPerfil.textContent = "Ver perfil";
   botaoPerfil.addEventListener("click", onVerPerfil);
 
-  tela.append(titulo, subtitulo, botao, botaoPerfil);
+  tela.appendChild(botaoPerfil);
   container.appendChild(tela);
 }
 

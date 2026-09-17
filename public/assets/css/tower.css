@@ -40,6 +40,20 @@
   max-width: 520px;
 }
 
+.logo-jogo {
+  width: min(360px, 80vw);
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.5));
+}
+
+.sr-somente {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 .botao--comecar {
   padding: 14px 28px;
   font-size: 1.1em;
@@ -85,6 +99,19 @@
 .opcao-evento__texto {
   color: var(--cor-texto-fraco);
   font-size: 0.9em;
+}
+
+.opcao-classe {
+  align-items: center;
+  text-align: center;
+}
+
+.opcao-classe__icone {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  align-self: center;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
 }
 
 .form-auth {

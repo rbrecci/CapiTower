@@ -8,14 +8,15 @@ import { criarRng, derivarSeed, embaralhar, escolher } from "./rng.js";
 import { carregarCatalogoDoServidor } from "./api.js";
 
 export const HP_INICIAL = 80;
-export const MAX_NIVEL_HABILIDADE = 10; // Legiao: 10 niveis reais, ver LEGIAO_TEXTO abaixo
+export const MAX_NIVEL_HABILIDADE = 10; // 10 niveis reais nas tres habilidades, ver *_TEXTO abaixo
 export const MAX_MODIFICADORES_POR_RUN = 5; // D25
 export const CURA_DESCANSO_PCT = 0.3; // D07: cura escassa, so descanso e evento
 export const CARTAS_INICIAIS_SORTEADAS = 5; // D18: sorteia 5 cartas do catalogo, 2 copias cada = 10
+export const CLASSE_PADRAO = "capimaga";
 
-// Texto de cada nivel da Legiao, portado de flet_mvp/capitower/content.py:CLASSES.capimaga.
-// O efeito mecanico de cada nivel mora em core/combat.js (lacaios iniciais, chance de invocar
-// lacaio extra, "sem lacaios invoca 2" uma vez por combate e o dobro de lacaios no nivel 10).
+// Texto de cada nivel das tres habilidades, portado de flet_mvp/capitower/content.py:CLASSES.
+// O efeito mecanico de cada nivel mora em core/combat.js (lacaios/Adrenalina iniciais, gatilhos
+// de Legiao/Casca Grossa/Ligeireza).
 export const LEGIAO_TEXTO = {
   1: "Comeca o combate com 1 lacaio",
   2: "+1 lacaio inicial (2)",
@@ -29,7 +30,46 @@ export const LEGIAO_TEXTO = {
   10: "Comeca o combate com o dobro de lacaios",
 };
 
+export const CASCA_GROSSA_TEXTO = {
+  1: "Comeca cada combate com 2 de Adrenalina",
+  2: "+1 de Adrenalina inicial (3)",
+  3: "+1 de Adrenalina inicial (4)",
+  4: "A primeira vez que perde vida no combate rende 2",
+  5: "Ganha 1 tambem quando a Defesa absorve um ataque inteiro",
+  6: "+1 de Adrenalina inicial (5)",
+  7: "Teto de Adrenalina sobe de 10 para 15",
+  8: "+1 de Adrenalina inicial (6)",
+  9: "Ao cair a metade da vida, ganha 3 na hora (1x por combate)",
+  10: "Toda Adrenalina ganha e dobrada",
+};
+
+export const LIGEIREZA_TEXTO = {
+  1: "Ao jogar a 5a carta do turno, ganha +1 Acao",
+  2: "Passa a ativar na 4a carta",
+  3: "A ativacao tambem compra 1 carta",
+  4: "Passa a ativar na 3a carta",
+  5: "Comeca cada combate com +1 Acao no primeiro turno",
+  6: "A ativacao passa a dar +2 Acao",
+  7: "Passa a ativar na 2a carta",
+  8: "A ativacao compra 2 cartas",
+  9: "Ativa duas vezes por turno (a 2a exige o dobro)",
+  10: "A primeira carta de cada turno custa 0",
+};
+
+export const HABILIDADE_TEXTOS = {
+  capimaga: LEGIAO_TEXTO,
+  brutamontes: CASCA_GROSSA_TEXTO,
+  ligeira: LIGEIREZA_TEXTO,
+};
+
+export const HABILIDADE_NOMES = {
+  capimaga: "Legiao",
+  brutamontes: "Casca Grossa",
+  ligeira: "Ligeireza",
+};
+
 export const estadoGlobal = {
+  classes: null, // catalogo das 3 classes (nome/mecanica/habilidade), ver data/api/catalog/bootstrap.php
   catalogoCartas: null,
   inimigos: null, // { inimigos, blocos, finalId, fasesFinal }, ver data/enemy.json
   eventos: null,
@@ -42,11 +82,18 @@ export const estadoGlobal = {
 // em data/ (que continuam no repo so como seed/referencia, ver database/seeds.sql).
 export async function carregarCatalogo() {
   const dados = await carregarCatalogoDoServidor();
+  estadoGlobal.classes = dados.classes;
   estadoGlobal.catalogoCartas = dados.cartas;
   estadoGlobal.inimigos = dados.inimigos;
   estadoGlobal.eventos = dados.eventos;
   estadoGlobal.desafios = dados.desafios;
   return estadoGlobal;
+}
+
+// Cartas da classe escolhida dentro do catalogo desbloqueado (Fase 6: o catalogo tem as 3
+// classes juntas, ver app/models/Catalog.php::cartas).
+export function cartasDaClasse(classe) {
+  return estadoGlobal.catalogoCartas.filter((carta) => carta.classe === classe);
 }
 
 export function gerarSeed() {
@@ -55,15 +102,16 @@ export function gerarSeed() {
 
 // ------------------------------------------------------------------------- ciclo de vida da run
 
-export function novaRun(seed) {
+export function novaRun(seed, classe = CLASSE_PADRAO) {
   // D18: o baralho comeca com 5 cartas sorteadas do catalogo da classe, 2 copias de cada (10
   // cartas). Gerador proprio (sal fixo), separado do de tower.js, para nao consumir a mesma
   // sequencia de numeros que gera a ordem da torre a partir da mesma seed.
   const rngBaralho = criarRng(derivarSeed(seed, 999));
-  const cartasSorteadas = embaralhar(estadoGlobal.catalogoCartas, rngBaralho).slice(0, CARTAS_INICIAIS_SORTEADAS);
+  const cartasSorteadas = embaralhar(cartasDaClasse(classe), rngBaralho).slice(0, CARTAS_INICIAIS_SORTEADAS);
 
   const run = {
     seed,
+    classe,
     andar: 0, // 0 = ainda nao entrou na torre, current() so vale com andar >= 1
     torre: gerarTorre(seed),
     hp: HP_INICIAL,
@@ -135,8 +183,8 @@ export function sincronizarHpPosCombate(run, estadoCombate) {
 
 // ------------------------------------------------------------------------------ recompensas
 
-export function cartaAleatoria(rng) {
-  const pool = estadoGlobal.catalogoCartas;
+export function cartaAleatoria(run, rng) {
+  const pool = cartasDaClasse(run.classe);
   return pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))];
 }
 
@@ -213,7 +261,7 @@ export function aplicarEfeitoEvento(run, efeito, rng) {
     // Evento Vestiario: ganha 1 copia extra de uma carta aleatoria da classe, so ate o proximo
     // chefe de bloco (removida em removerCartasTemporarias). A copia e um clone com uma marca
     // propria, para nao remover por engano uma copia "de verdade" da mesma carta.
-    const original = cartaAleatoria(rng);
+    const original = cartaAleatoria(run, rng);
     const copia = { ...original, _temporaria: true };
     adicionarCartaAoDeck(run, copia);
     run.cartasTemporarias.push(copia);
@@ -252,7 +300,7 @@ export function consumirEfeitosPendentes(run) {
 export function serializarRun(run) {
   return {
     versao: 1,
-    classe: "capimaga",
+    classe: run.classe,
     seed: run.seed,
     andar: run.andar,
     hp: run.hp,
@@ -280,6 +328,7 @@ export function restaurarRun(estadoJson) {
 
   const run = {
     seed: estadoJson.seed,
+    classe: estadoJson.classe ?? CLASSE_PADRAO,
     andar: estadoJson.andar,
     torre: gerarTorre(estadoJson.seed),
     hp: estadoJson.hp,

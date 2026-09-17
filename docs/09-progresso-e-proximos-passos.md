@@ -14,23 +14,23 @@ design ja balanceada, nao faz parte desta lista.
 | 3. Conteudo da Capimaga | Feita, com uma pendencia | Ver secao 3. |
 | 4. Banco e conta | Feita | Verificada criando conta, logando, salvando e retomando run entre andares. |
 | 5. Meta progressao | Feita, com uma pendencia | 12 objetivos em rascunho (secao 3), verificados ao vivo via banco e navegador. Precisam de revisao humana antes de virar lista definitiva. |
-| 6. Classes 2 e 3 | Nao comecada | Conteudo de Brutamontes e Ligeira ja existe balanceado no MVP Python, falta portar. |
-| 7. Acabamento | Nao comecada | |
+| 6. Classes 2 e 3 | Feita, verificada ao vivo | Porte completo (motor, efeitos, banco, UI), jogado no navegador com as duas classes novas. Ver secao 3. |
+| 7. Acabamento | Comecada | Arte de IA integrada (logo, cenarios, molduras de carta). Ver secao 3. |
 
 ## 2. O que existe hoje em `public/`
-
-Nenhum destes arquivos foi commitado ainda.
 
 ```
 public/
   index.php
+  api/{auth,catalog,meta,run}/*.php
   assets/
     css/{base,layout,combat,cards,tower}.css
     js/
       main.js
       core/{rng,combat,effects,state,tower}.js
-      ui/{screens,cardView,combatView,towerView,rewardView,eventView,challengeView}.js
+      ui/{screens,cardView,combatView,towerView,rewardView,eventView,challengeView,authView,profileView}.js
       data/{cards.json,enemy.json,events.json,challenges.json}
+    img/ui/{logo.png,cenarios/*.jpg,frames/*.png,personagens/*.png}
 ```
 
 Resumo do que cada parte faz:
@@ -72,32 +72,81 @@ Resumo do que cada parte faz:
 - **Balanceamento nunca testado com gente de verdade.** A ultima simulacao registrada (bot
   ganancioso, `flet_mvp/README.md`) e do MVP Python, antes da Fase 3 portar o conteudo real pro PHP.
   Vale jogar sessoes manuais assim que a Fase 4 permitir persistir progresso.
+- **Fase 6 (Brutamontes e Ligeira): codigo escrito numa sessao so, nunca rodado.** Feito nesta
+  sessao, sem verificacao ao vivo ainda (sem XAMPP disponivel para testar no momento). Detalhe em
+  `02-classes-e-arquetipos.md` secoes 5 e 6 (numeros de referencia) e `flet_mvp/capitower/
+  {cards,content,combat}.py` (fonte da verdade, ja balanceada no MVP Python). O que foi feito:
+  - `core/combat.js`: `jogador.classe` guia setup (lacaios so pra Capimaga, Adrenalina inicial pra
+    Brutamontes por `TABELA_ADRENALINA_INICIAL`), `custoDe`/`motivoBloqueio`/`jogarCarta` levam
+    `estado` para checar Ligeira nivel 10 (1a carta gratis) e `proximaGratis`; `perderVidaJogador`
+    centraliza toda perda de vida do jogador (ataque, veneno, reflexo/espinhos) pra disparar
+    Adrenalina e Olho por Olho igual ao Python; `ganharAdrenalina`/`consumirAdrenalina`,
+    `verificarLigeireza` (gatilhos 1x/2x por turno, limiar por nivel), Retaliacao e Evasao em
+    `receberAtaque`, poderes novos (`rugido`, `pavio_curto`, `calo`, `olho_por_olho`,
+    `segundo_folego`, `golpe_de_vista`, `rastro`, `bolso_fundo`) nos pontos certos do turno.
+  - `core/effects.js`: 16 operacoes novas (`perder_vida`, `ganhar_adrenalina`,
+    `consumir_adrenalina`, `dano_por_adrenalina`, `bloco_por_adrenalina`, `dano_por_consumido`,
+    `bloco_por_consumido`, `acao_por_consumido`, `retaliacao`, `evasao`, `dano_por_impulso`,
+    `bloco_por_impulso`, `dano_condicional`, `devolver_ultima`, `proxima_gratis`, `trocar_mao`) e
+    condicoes `adrenalina>=N`/`evasao>=N`. `dano_condicional` e um desvio proposital do formato de
+    "golpe acumulado" do Python (`dmg_plus`/`_add_dmg`): em vez de reabrir um segundo golpe (o que
+    aplicaria Forca/Fraqueza duas vezes), embute o bonus condicional num unico efeito de dano.
+  - `core/state.js`, `core/api.js`, `ui/screens.js`: `novaRun`/`cartaAleatoria`/`serializarRun`/
+    `restaurarRun` agora levam `classe`; `iniciarRunNoServidor(classe)` manda pro servidor.
+  - `ui/towerView.js`: tela inicial virou selecao de classe (le `estadoGlobal.classes` do
+    bootstrap) em vez de "Comecar a subir" direto.
+  - `ui/rewardView.js`, `ui/combatView.js`: nome/texto da habilidade e o rotulo do recurso (HUD)
+    ficaram por classe (`HABILIDADE_TEXTOS`/`HABILIDADE_NOMES` em `state.js`).
+  - `public/api/run/start.php`: le `classe` do corpo da requisicao (era fixo em `capimaga`).
+  - `public/assets/js/data/cards.json`: as 40 cartas novas (20 Brutamontes, 20 Ligeira), formato
+    igual ao das 20 da Capimaga, com `origem` apontando pro `.py`. JSON validado (60 cartas, 20 por
+    classe).
+  - `database/seeds.sql`: `INSERT` de `brutamontes`/`ligeira` em `classes`, os 20 niveis de
+    habilidade de cada uma, os 8 arquetipos novos e as 40 cartas (efeitos como o mesmo JSON do
+    `cards.json`). Sintaxe JS (`node --check`) e PHP (`php -l`) passaram; **o SQL em si nao rodou
+    contra um banco** (sem `xampp2` de pe nesta sessao).
+  - **Verificado ao vivo em 17/09/2026.** `seeds.sql` rodado contra o banco local (ver secao 4
+    sobre a troca de XAMPP por Apache/MySQL80 standalone nesta maquina). Jogadas confirmadas sem
+    erro de servidor nem de console: Brutamontes (dano por Adrenalina de `Soco de Sobra`,
+    Adrenalina automatica por `perderVidaJogador` em `Mais Uma Serie`, consumo em `Explosao de
+    Folego`, Retaliacao em `Queixo de Ferro` disparando nos dois ataques do Rato de Academia,
+    overflow de dano matando um inimigo e sobrando pro outro) e Ligeira (compra de carta e ganho
+    de Impulso em `Passo Curto`). Run avancou do andar 1 ao 2 sem problema.
+  - **Falta ainda:** o passe de balanceamento comparando as tres classes lado a lado (numeros de
+    `02-classes-e-arquetipos.md` secoes 5.2/5.4/6.2/6.4), que e mais sessao de playtest humano do
+    que verificacao tecnica — nao fechei isso nesta sessao.
 
 ## 4. Ambiente local
 
-Esta maquina tem tres pastas de XAMPP em `C:\`, so uma funciona:
+**Atualizado em 17/09/2026: o XAMPP (`C:\xampp2`) descrito antes nao existe mais nesta maquina.**
+Foi substituido por uma instalacao "solta" de Apache 2.4 + PHP 8.4 + MySQL 8.0 (nao XAMPP/WAMP),
+rodando como servicos Windows (`Apache2.4`, `MySQL80`), provavelmente porque a maquina e
+compartilhada com outros projetos da escola (ha `C:\CT_Dev`, `C:\Apache\htdocs\FichaDigital` etc.
+usando o mesmo MySQL). Detalhe:
 
-| Pasta | Estado | Uso |
-| --- | --- | --- |
-| `C:\xampp` | So `phpMyAdmin/` e `php_old/`, sem `mysql/` nem `apache/` | Nao usar |
-| `C:\xamppp` | So `htdocs/` e `phpMyAdmin/`, sem `mysql/` nem `apache/` | Nao usar |
-| `C:\xampp2` | Instalacao completa: `mysql/`, `apache/`, `mysql_start.bat`, `xampp-control.exe` | **Esta e a que funciona** |
+| Item | Caminho / valor |
+| --- | --- |
+| PHP | `C:\php\php.exe` (8.4.1, ja no PATH) |
+| MySQL client | `C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe` (8.0.40, ja no PATH) |
+| Servico MySQL | `MySQL80`, porta 3306, `root` **com senha** (nao mais vazio como no XAMPP) |
+| Servico Apache | `Apache2.4`, mas sem vhost pro CapiTower — nao serve este projeto |
+| `app/config/config.php` | Criado nesta sessao, fora do git. `senha` = a mesma usada pelo
+  `FichaDigital` (outro projeto PHP nesta maquina, `C:\Apache\htdocs\FichaDigital\config\app.local.php`) |
 
-Testado em 16/09/2026: `C:\xampp2\mysql_start.bat` sobe o MySQL (MariaDB 10.4.32) na porta 3306,
-conexao PDO como `root` sem senha funciona, batendo com os valores padrao ja documentados em
-`app/config/config.example.php`. `htdocs/` do `xampp2` e onde o projeto precisa ficar acessivel
-para rodar via Apache do XAMPP (ou seguir usando `php -S`, que nao depende do Apache).
+Como nao ha vhost do Apache pro projeto, a forma de rodar continua sendo `php -S` (ja configurado
+em `.claude/launch.json` como `php-web`, porta 8000), que so precisa do MySQL de pe — nao do
+Apache. `database/schema.sql` e `database/seeds.sql` ja foram aplicados contra o banco `capitower`
+nesta maquina (ambos sao idempotentes: `CREATE TABLE IF NOT EXISTS` e `ON DUPLICATE KEY UPDATE`,
+rodar de novo depois de mudar o catalogo e seguro).
 
 ## 5. Proximos passos, em ordem
 
-### Fase 4: banco e conta
+### Fase 4: banco e conta (feita — lista abaixo e o registro historico da implementacao, nao um TODO)
 
-1. Copiar `app/config/config.example.php` para `app/config/config.php` (fica fora do git) apontando
-   pro `xampp2`.
-2. Rodar `database/schema.sql` e depois `database/seeds.sql` no MySQL do `xampp2` (via phpMyAdmin ou
-   `mysql` CLI). **Antes disso, revisar se o `seeds.sql` atual bate com o catalogo real que ja saiu
-   nos JSON da Fase 3** (20 cartas da Capimaga, bestiario completo, 3 eventos): o schema foi escrito
-   na Fase 0, antes desse conteudo existir, e pode estar com dados de exemplo desatualizados.
+1. Copiar `app/config/config.example.php` para `app/config/config.php` (fica fora do git, ver
+   secao 4 para os valores atuais desta maquina).
+2. Rodar `database/schema.sql` e depois `database/seeds.sql` no MySQL local (via phpMyAdmin ou
+   `mysql` CLI).
 3. Implementar `app/core/{Database,Response,Auth,Request}.php` conforme `04-arquitetura.md` secao 3
    e 7 (PDO preparado, `password_hash`, sessao com `httponly`/`samesite=Lax`, rate limit de login).
 4. Implementar os endpoints de `04-arquitetura.md` secao 4: `api/auth/{register,login,logout,me}.php`,
@@ -131,16 +180,46 @@ para rodar via Apache do XAMPP (ou seguir usando `php -S`, que nao depende do Ap
 
 ### Fase 6: classes 2 e 3
 
-- Brutamontes e Ligeira ja tem mecanica, estado exclusivo, 4 arquetipos e 20 cartas cada desenhados
-  e testados no MVP Python (`flet_mvp/capitower/{cards,content}.py`). O trabalho aqui e
-  majoritariamente porte, no mesmo padrao usado na Fase 3 para a Capimaga.
-- Falta o passe de balanceamento comparando as tres classes.
+- Porte feito e verificado ao vivo nesta sessao (ver secao 3): motor (`core/combat.js`,
+  `core/effects.js`), banco (`database/seeds.sql`) e UI (selecao de classe, HUD por recurso) para
+  Brutamontes (Adrenalina) e Ligeira (Impulso), no mesmo padrao usado na Fase 3 para a Capimaga.
+- **Falta so o passe de balanceamento** comparando as tres classes lado a lado (playtest humano,
+  nao verificacao tecnica).
 
-### Fase 7: acabamento
+### Fase 7: acabamento (comecada em 17/09/2026)
 
-- Arte de IA no lugar dos placeholders (o MVP Flet ja tem sprites gerados em `flet_mvp/assets/`,
-  ver `08-prompts-de-assets.md` pelos prompts usados).
-- Animacao, som, tutorial, responsivo, deploy na InfinityFree.
+- **Arte integrada nesta sessao**, a partir de arquivos que apareceram em `Assets/` (raiz do
+  projeto, nao versionado, gerados por IA em 11/09/2026) e foram copiados para
+  `public/assets/img/ui/`:
+  - `logo.png`: logo do jogo na tela inicial (`towerView.js:renderInicio`).
+  - `cenarios/{poco,academia,laboratorio,refeitorio,jardim,menu}.jpg`: fundo de tela cheio,
+    trocado por bloco atual via `towerView.js:aplicarFundoDaSala()` (chamado em
+    `screens.js:renderSala`) contra um `<div id="fundo-cenario">` fixo atras de `#app`
+    (`public/index.php`, CSS em `base.css`). **Achado nao obvio:** um `background` solido em
+    `html, body` vira o "canvas" do viewport e a spec CSS pinta isso abaixo de qualquer
+    descendente, mesmo com `z-index` negativo — teve que sair do `html, body` e morar so no
+    `#fundo-cenario` pro cenario aparecer.
+  - `frames/{ataque,defesa,poder,utilidade}.png`: moldura ilustrada por tipo de carta, uma pra
+    cada um dos 4 tipos que ja existem no catalogo. `cardView.js` agora poe
+    `carta--tipo-<tipo>` no elemento; `cards.css` usa a moldura como `background-image` da carta
+    inteira (`aspect-ratio: 848/1264`, igual ao PNG de origem, pra nunca esticar) e posiciona
+    custo/nome+tipo/texto em cima das 3 "janelas" transparentes desenhadas na moldura (custo no
+    circulo de gema, nome+tipo na janela de arte — nao ha arte propria por carta ainda, entao essa
+    janela virou a area do titulo —, texto na janela inferior). As coordenadas das janelas foram
+    medidas escaneando o canal alpha do PNG (script Python de uso unico, nao versionado), nao
+    chutadas visualmente.
+  - `personagens/{capimaga,brutamontes,ligeira,soberana-gertrudes}.png`: retrato de classe na
+    tela inicial (`towerView.js:renderInicio`, `.opcao-classe`) e no painel do jogador durante o
+    combate (`combatView.js:criarPainelJogador`, por `estado.jogador.classe`); a Soberana
+    Gertrudes tambem ganhou retrato proprio no painel de inimigo (`RETRATOS_INIMIGO`, casado pelo
+    nome exato em `enemy.json`). O resto do bestiario continua no emoji generico (🐸 vivo / 💀
+    caido) — sem arte por inimigo ainda. (Nota da sessao: cheguei a achar, por erro de leitura
+    visual da minha parte, que esses 4 PNGs eram previa de marketplace de clip-art com fundo sujo
+    e selos colados; o dono do projeto corrigiu e a verificacao objetiva do canal alpha confirmou
+    que os arquivos sempre foram limpos — sem transparencia real e sem badge nenhum. Registrado
+    aqui so pra quem ler a sessao entender por que o retrato demorou uma rodada a mais pra entrar.)
+- Falta ainda: animacao, som, tutorial, responsivo mobile (os cenarios ja saem em formato retrato
+  768x1376, pensando nisso), deploy na InfinityFree.
 
 ## 6. Decisoes que ainda precisam ser tomadas
 

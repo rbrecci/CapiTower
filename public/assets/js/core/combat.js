@@ -3,6 +3,10 @@
 // efeito em JSON. Fase 3 troca o inimigo unico da Fase 1/2 por uma lista de inimigos
 // (necessario para o chefe Gemeos Rosca Direta, que herda Forca do irmao ao morrer, e
 // para o bestiario de verdade, que poe mais de um inimigo na mesma sala de combate comum).
+// Fase 6 acrescenta as mecanicas exclusivas de Brutamontes (Adrenalina, Casca Grossa,
+// Retaliacao) e Ligeira (Impulso, Ligeireza, Evasao), guardadas atras de checagens de
+// `jogador.classe` para nao mudar nada do comportamento da Capimaga (flet_mvp/capitower/
+// combat.py e a fonte da verdade dos tres, ver docs/02-classes-e-arquetipos.md).
 
 import { criarRng, embaralhar, inteiroAleatorio } from "./rng.js";
 import { resolverEfeitos } from "./effects.js";
@@ -12,12 +16,17 @@ export const TAMANHO_MAO = 5;
 export const LACAIOS_CAP = 10;
 export const MORDIDA_LACAIO = 2; // dano de cada lacaio no fim do turno do jogador
 export const COPIAS_POR_CARTA = 2; // D18: cada carta sorteada do baralho inicial entra em 2 copias
+export const ADRENALINA_CAP_BASE = 10;
+export const ADRENALINA_CAP_NIVEL7 = 15; // Casca Grossa nivel 7: teto sobe de 10 para 15
 
 // Legiao: lacaios iniciais por nivel de habilidade (flet_mvp/capitower/combat.py:_setup_class).
 // Nivel 5+: 20% de chance de invocar 1 lacaio a mais toda vez que invoca (ver invocarLacaios).
 // Nivel 9+: uma vez por combate, ao ficar com 0 lacaios depois de consumir, invoca 2 (ver
 // verificarLegiao9). Nivel 10: comeca com o dobro da tabela.
 const TABELA_LACAIOS_INICIAIS = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 4, 6: 5, 7: 6, 8: 7, 9: 7, 10: 7 };
+
+// Casca Grossa: Adrenalina inicial por nivel (flet_mvp/capitower/combat.py:_setup_class).
+const TABELA_ADRENALINA_INICIAL = { 1: 2, 2: 3, 3: 4, 4: 4, 5: 4, 6: 5, 7: 5, 8: 6, 9: 6, 10: 6 };
 
 function lacaiosIniciaisPorNivel(nivel) {
   const base = TABELA_LACAIOS_INICIAIS[nivel] ?? 1;
@@ -66,15 +75,19 @@ export function criarCombateDeSala({
   forcaBonus = 0,
   fraquezaInicial = 0,
   nivelHabilidade = 1,
+  classe = "capimaga",
 }) {
   const rng = criarRng(seed >>> 0);
-  const lacaiosIniciais = lacaiosIniciaisPorNivel(nivelHabilidade);
+  const lacaiosIniciais = classe === "capimaga" ? lacaiosIniciaisPorNivel(nivelHabilidade) : 0;
+  const adrenalinaCap = nivelHabilidade >= 7 ? ADRENALINA_CAP_NIVEL7 : ADRENALINA_CAP_BASE;
+  const adrenalinaInicial = classe === "brutamontes" ? Math.min(adrenalinaCap, TABELA_ADRENALINA_INICIAL[nivelHabilidade] ?? 2) : 0;
   const estado = {
     turno: 0,
     status: "andamento", // andamento | vitoria | derrota
     log: [],
     rng,
     jogador: {
+      classe,
       hp: hpAtual,
       hpMax,
       bloco: 0,
@@ -89,6 +102,16 @@ export function criarCombateDeSala({
       roubarProximo: 0,
       lacaios: lacaiosIniciais,
       lacaiosCap: LACAIOS_CAP,
+      adrenalina: adrenalinaInicial,
+      adrenalinaCap,
+      primeiraPerdaUsada: false,
+      metadeVidaUsada: false,
+      retaliacao: 0,
+      retaliacaoTurnos: 0,
+      evasao: 0,
+      ligeirezaGatilhos: 0,
+      ultimaJogada: null,
+      proximaGratis: false,
       nivelHabilidade,
       legiao9Usado: false,
       poderes: [],
@@ -103,6 +126,9 @@ export function criarCombateDeSala({
   };
   if (lacaiosIniciais > 0) {
     estado.log.push(`Legiao: comeca com ${lacaiosIniciais} lacaio(s).`);
+  }
+  if (classe === "brutamontes") {
+    estado.log.push(`Casca Grossa: comeca com ${adrenalinaInicial} de Adrenalina.`);
   }
   if (fraquezaInicial > 0) {
     estado.log.push(`Chega neste combate com Fraqueza ${fraquezaInicial}.`);
@@ -216,13 +242,7 @@ function absorverOuPerderJogador(estado, dano) {
   estado.jogador.bloco -= absorvido;
   const passou = dano - absorvido;
   if (passou > 0) {
-    estado.jogador.hp -= passou;
-    estado.log.push(`Voce perde ${passou} de vida.`);
-    if (estado.jogador.hp <= 0) {
-      estado.jogador.hp = 0;
-      estado.status = "derrota";
-      estado.log.push("Voce caiu.");
-    }
+    perderVidaJogador(estado, passou);
   }
 }
 
@@ -309,6 +329,89 @@ export function registrarPoder(estado, nome) {
   estado.log.push("Poder em campo.");
 }
 
+// ------------------------------------------------------------------- Brutamontes: Adrenalina
+export function ganharAdrenalina(estado, n) {
+  if (estado.jogador.classe !== "brutamontes" || n <= 0) return;
+  const nivel = estado.jogador.nivelHabilidade;
+  const total = nivel >= 10 ? n * 2 : n;
+  const antes = estado.jogador.adrenalina;
+  estado.jogador.adrenalina = Math.min(estado.jogador.adrenalinaCap, estado.jogador.adrenalina + total);
+  const ganho = estado.jogador.adrenalina - antes;
+  if (ganho > 0) estado.log.push(`+${ganho} de Adrenalina.`);
+}
+
+export function consumirAdrenalina(estado, n) {
+  const usados = Math.min(n, estado.jogador.adrenalina);
+  estado.jogador.adrenalina -= usados;
+  if (usados > 0) {
+    estado.log.push(`Gasta ${usados} de Adrenalina.`);
+    if (estado.jogador.poderes.includes("pavio_curto")) {
+      for (const inimigo of inimigosVivos(estado)) {
+        aplicarDanoInimigo(estado, inimigo, usados, false);
+      }
+    }
+  }
+  return usados;
+}
+
+// Perda de vida direta (nao passa por Bloco): cartas "perder_vida" e o dano que atravessou o
+// Bloco em receberAtaque/venenoTickJogador. Espelha flet_mvp/capitower/combat.py:_lose_hp,
+// incluindo o gatilho de Adrenalina da Brutamontes (so acontece nessa classe) e Olho por Olho.
+export function perderVidaJogador(estado, valor, { deAtaque = false, atacante = null } = {}) {
+  if (valor <= 0) return;
+  estado.jogador.hp -= valor;
+  estado.log.push(`Voce perde ${valor} de vida.`);
+  if (estado.jogador.classe === "brutamontes") {
+    let ganho = 1;
+    if (estado.jogador.nivelHabilidade >= 4 && !estado.jogador.primeiraPerdaUsada) ganho = 2;
+    estado.jogador.primeiraPerdaUsada = true;
+    if (estado.jogador.poderes.includes("rugido")) ganho += 1;
+    ganharAdrenalina(estado, ganho);
+    if (
+      estado.jogador.nivelHabilidade >= 9 &&
+      !estado.jogador.metadeVidaUsada &&
+      estado.jogador.hp <= estado.jogador.hpMax / 2
+    ) {
+      estado.jogador.metadeVidaUsada = true;
+      ganharAdrenalina(estado, 3);
+    }
+  }
+  if (deAtaque && atacante && atacante.hp > 0 && estado.jogador.poderes.includes("olho_por_olho")) {
+    aplicarDanoInimigo(estado, atacante, 3, false);
+  }
+  if (estado.jogador.hp <= 0) {
+    estado.jogador.hp = 0;
+    estado.status = "derrota";
+    estado.log.push("Voce caiu.");
+  }
+}
+
+// -------------------------------------------------------------------------- Ligeira: Ligeireza
+function verificarLigeireza(estado) {
+  if (estado.jogador.classe !== "ligeira") return;
+  const nivel = estado.jogador.nivelHabilidade;
+  let limiar = 5;
+  if (nivel >= 2) limiar = 4;
+  if (nivel >= 4) limiar = 3;
+  if (nivel >= 7) limiar = 2;
+  const maxGatilhos = nivel >= 9 ? 2 : 1;
+  if (estado.jogador.ligeirezaGatilhos >= maxGatilhos) return;
+  const necessario = limiar * (estado.jogador.ligeirezaGatilhos + 1);
+  if (estado.jogador.cartasJogadasNoTurno < necessario) return;
+  estado.jogador.ligeirezaGatilhos += 1;
+  const ganho = nivel >= 6 ? 2 : 1;
+  estado.jogador.acao += ganho;
+  let msg = `Ligeireza: +${ganho} Acao`;
+  if (nivel >= 8) {
+    comprarCartas(estado, 2);
+    msg += ", compra 2";
+  } else if (nivel >= 3) {
+    comprarCartas(estado, 1);
+    msg += ", compra 1";
+  }
+  estado.log.push(msg + ".");
+}
+
 export function invocarLacaios(estado, n) {
   if (n <= 0) return;
   let total = n;
@@ -349,7 +452,18 @@ export function consumirLacaios(estado, n) {
 }
 
 // ---------------------------------------------------------------- jogador
-export function custoDe(carta) {
+// Ligeira nivel 10: a primeira carta de cada turno custa 0. "proxima_gratis" (Golpe Baixo,
+// Baralho Marcado) tem prioridade e vale para qualquer classe (flet_mvp/capitower/combat.py:
+// cost_of).
+export function custoDe(estado, carta) {
+  if (estado.jogador.proximaGratis) return 0;
+  if (
+    estado.jogador.classe === "ligeira" &&
+    estado.jogador.nivelHabilidade >= 10 &&
+    estado.jogador.cartasJogadasNoTurno === 0
+  ) {
+    return 0;
+  }
   return carta.custo;
 }
 
@@ -364,7 +478,7 @@ export function motivoBloqueio(estado, carta) {
     const nome = nomePoder(carta);
     if (nome && estado.jogador.poderes.includes(nome)) return "Poder ja em campo";
   }
-  if (estado.jogador.acao < custoDe(carta)) return "Acao insuficiente";
+  if (estado.jogador.acao < custoDe(estado, carta)) return "Acao insuficiente";
   return null;
 }
 
@@ -380,7 +494,8 @@ export function jogarCarta(estado, indiceMao) {
     estado.log.push(motivo + ".");
     return;
   }
-  estado.jogador.acao -= custoDe(carta);
+  estado.jogador.acao -= custoDe(estado, carta);
+  estado.jogador.proximaGratis = false;
   estado.mao.splice(indiceMao, 1);
   const ctx = { consumidos: 0, impulso: estado.jogador.cartasJogadasNoTurno };
   estado.log.push(`Joga ${carta.nome}.`);
@@ -389,6 +504,22 @@ export function jogarCarta(estado, indiceMao) {
     estado.descarte.push(carta);
   }
   estado.jogador.cartasJogadasNoTurno += 1;
+  if (carta.custo > 0 && !carta.efeitos.some((e) => e.op === "devolver_ultima")) {
+    estado.jogador.ultimaJogada = carta;
+  }
+  if (estado.jogador.poderes.includes("segundo_folego") && estado.jogador.cartasJogadasNoTurno === 3) {
+    comprarCartas(estado, 1);
+    estado.log.push("Segundo Folego: compra 1.");
+  }
+  if (
+    estado.jogador.poderes.includes("golpe_de_vista") &&
+    estado.jogador.cartasJogadasNoTurno === 4 &&
+    inimigosVivos(estado).length > 0
+  ) {
+    estado.log.push("Golpe de Vista!");
+    causarDano(estado, "inimigo", 6);
+  }
+  verificarLigeireza(estado);
   verificarFim(estado);
 }
 
@@ -397,16 +528,31 @@ function iniciarTurnoJogador(estado) {
   estado.turno += 1;
   if (!estado.jogador.manterBloco) estado.jogador.bloco = 0;
   estado.jogador.manterBloco = false;
+  if (estado.jogador.poderes.includes("calo") && estado.jogador.adrenalina >= 2) {
+    const ganho = Math.floor(estado.jogador.adrenalina / 2);
+    ganharBloco(estado, "jogador", ganho);
+    estado.log.push(`Calo: +${ganho} de Bloco.`);
+  }
   if (estado.jogador.poderes.includes("vala_comum")) {
     invocarLacaios(estado, 1);
   }
+  estado.jogador.acao = ACAO_POR_TURNO - estado.jogador.roubarProximo;
+  estado.jogador.roubarProximo = 0;
+  estado.jogador.cartasJogadasNoTurno = 0;
+  estado.jogador.ultimaJogada = null;
+  estado.jogador.proximaGratis = false;
+  estado.jogador.ligeirezaGatilhos = 0;
   if (estado.jogador.fraqueza > 0 && !estado.jogador.fraquezaFresca) estado.jogador.fraqueza -= 1;
   if (estado.jogador.fragilidade > 0 && !estado.jogador.fragilidadeFresca) estado.jogador.fragilidade -= 1;
   estado.jogador.fraquezaFresca = false;
   estado.jogador.fragilidadeFresca = false;
-  estado.jogador.acao = ACAO_POR_TURNO - estado.jogador.roubarProximo;
-  estado.jogador.roubarProximo = 0;
-  estado.jogador.cartasJogadasNoTurno = 0;
+  if (estado.jogador.retaliacaoTurnos > 0) {
+    estado.jogador.retaliacaoTurnos -= 1;
+    if (estado.jogador.retaliacaoTurnos === 0) estado.jogador.retaliacao = 0;
+  }
+  if (estado.turno === 1 && estado.jogador.classe === "ligeira" && estado.jogador.nivelHabilidade >= 5) {
+    estado.jogador.acao += 1;
+  }
   comprarCartas(estado, TAMANHO_MAO);
   estado.log.push(`--- Turno ${estado.turno} ---`);
 }
@@ -426,14 +572,8 @@ function mordidaDosLacaios(estado) {
 
 function venenoTickJogador(estado) {
   if (estado.jogador.veneno <= 0) return;
-  estado.jogador.hp -= estado.jogador.veneno;
-  estado.log.push(`Voce sofre ${estado.jogador.veneno} de Veneno.`);
+  perderVidaJogador(estado, estado.jogador.veneno);
   estado.jogador.veneno -= 1;
-  if (estado.jogador.hp <= 0) {
-    estado.jogador.hp = 0;
-    estado.status = "derrota";
-    estado.log.push("Voce caiu.");
-  }
   verificarFim(estado);
 }
 
@@ -441,22 +581,29 @@ function receberAtaque(estado, inimigo, valorBase) {
   let dmg = valorBase + inimigo.forca;
   if (inimigo.fraqueza > 0) dmg = Math.floor(dmg * 0.75);
   if (estado.jogador.fragilidade > 0) dmg = Math.floor(dmg * 1.5);
+  if (estado.jogador.evasao > 0) {
+    estado.jogador.evasao -= 1;
+    estado.log.push(`Evasao anula o ataque de ${inimigo.nome}.`);
+    if (estado.jogador.poderes.includes("rastro")) {
+      comprarCartas(estado, 1);
+      estado.log.push("Rastro de Lama: compra 1.");
+    }
+    return;
+  }
   const absorvido = Math.min(estado.jogador.bloco, dmg);
   estado.jogador.bloco -= absorvido;
   const passou = dmg - absorvido;
   if (passou === 0 && dmg > 0) {
     estado.log.push(`Bloco absorve ${absorvido} de ${inimigo.nome}.`);
-    return;
-  }
-  if (absorvido > 0) estado.log.push(`Bloco absorve ${absorvido}.`);
-  if (passou > 0) {
-    estado.jogador.hp -= passou;
-    estado.log.push(`Voce recebe ${passou} de dano.`);
-    if (estado.jogador.hp <= 0) {
-      estado.jogador.hp = 0;
-      estado.status = "derrota";
-      estado.log.push("Voce caiu.");
+    if (estado.jogador.classe === "brutamontes" && estado.jogador.nivelHabilidade >= 5) {
+      ganharAdrenalina(estado, 1);
     }
+  } else if (passou > 0) {
+    if (absorvido > 0) estado.log.push(`Bloco absorve ${absorvido}.`);
+    perderVidaJogador(estado, passou, { deAtaque: true, atacante: inimigo });
+  }
+  if (estado.jogador.retaliacao > 0) {
+    aplicarDanoInimigo(estado, inimigo, estado.jogador.retaliacao, false);
   }
 }
 
@@ -533,7 +680,15 @@ export function fimDeTurno(estado) {
     estado.log.push("Peste Ossea: Veneno 2 em todos.");
   }
   if (estado.status === "andamento") venenoTickJogador(estado);
+  let guardada = null;
+  if (estado.jogador.poderes.includes("bolso_fundo") && estado.mao.length > 0) {
+    const indice = inteiroAleatorio(estado.rng, estado.mao.length);
+    guardada = estado.mao[indice];
+    estado.mao.splice(indice, 1);
+    estado.log.push(`Bolso Fundo: guarda ${guardada.nome}.`);
+  }
   descartarMao(estado);
+  if (guardada) estado.mao.push(guardada);
   verificarFim(estado);
   if (estado.status !== "andamento") return;
 

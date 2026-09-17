@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="assets/css/tower.css">
 </head>
 <body>
+  <div id="fundo-cenario"></div>
   <div id="app"></div>
   <script type="module" src="assets/js/main.js"></script>
 </body>

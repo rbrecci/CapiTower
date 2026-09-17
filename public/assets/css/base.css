@@ -24,7 +24,8 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: var(--cor-fundo);
+  /* Sem background aqui: viraria o "canvas" do viewport, que a spec pinta abaixo de
+     tudo, inclusive de #fundo-cenario com z-index negativo. A cor de fallback mora la. */
   color: var(--cor-texto);
   font-family: var(--fonte);
 }
@@ -33,6 +34,25 @@ html, body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+/* Cenario do bloco atual, atras de tudo. Trocado via towerView.js:aplicarFundo(). */
+#fundo-cenario {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: var(--cor-fundo);
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.25s ease;
+}
+
+#fundo-cenario::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 16, 21, 0.72);
 }
 
 h1, h2, h3, p {
