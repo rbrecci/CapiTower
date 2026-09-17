@@ -30,7 +30,11 @@ public/
       core/{rng,combat,effects,state,tower}.js
       ui/{screens,cardView,combatView,towerView,rewardView,eventView,challengeView,authView,profileView}.js
       data/{cards.json,enemy.json,events.json,challenges.json}
-    img/ui/{logo.png,cenarios/*.jpg,frames/*.png,personagens/*.png}
+    img/
+      ui/{icon.png,logo.png,cenarios/*.jpg,frames/*.png,personagens/*.png}
+      enemies/*.png  # copiados nesta sessao, ainda NAO usados por nenhum .js (ver secao 5)
+      cards/.gitkeep # vazio: nenhuma arte por carta existe em lugar nenhum ainda
+    fonts/LuckiestGuy-Regular.ttf  # copiada nesta sessao, ainda NAO referenciada em nenhum .css
 ```
 
 Resumo do que cada parte faz:
@@ -141,6 +145,11 @@ Resumo do que cada parte faz:
   - **Falta ainda:** o passe de balanceamento comparando as tres classes lado a lado (numeros de
     `02-classes-e-arquetipos.md` secoes 5.2/5.4/6.2/6.4), que e mais sessao de playtest humano do
     que verificacao tecnica — nao fechei isso nesta sessao.
+- **Retratos de inimigo, favicon e fonte de exibicao: arquivos copiados, codigo nao mexido.** Os
+  27 retratos do bestiario (`assets/img/enemies/`), o icone do MVP Flet e a fonte LuckiestGuy
+  estao em `public/` desde 17/09/2026, mas nenhum `.js`/`.css`/`.php` foi alterado pra usa-los —
+  o jogo continua igual visualmente. Passo a passo de como ligar cada um, ver a secao "Assets do
+  MVP" no fim da secao 5.
 
 ## 4. Ambiente local
 
@@ -324,6 +333,64 @@ rodar de novo depois de mudar o catalogo e seguro).
   projeto — criar conta e entrar com senha em servico de terceiro sao acoes que o agente nao faz
   sozinho por politica de seguranca, precisa ser o dono do projeto fazendo ou autorizando passo a
   passo.
+
+### Assets do MVP: copiados em 17/09/2026, ainda NAO ligados ao jogo (proximo passo)
+
+A pedido do dono do projeto ("copia todos os assets ja presentes na pasta de assets do mvp pra
+nao ter que gerar tudo de novo"), copiei pra `public/assets/` tudo que existia em
+`flet_mvp/assets/` e ainda nao tinha equivalente no trilha PHP/JS. **So copiei os arquivos —
+nenhum `.js`/`.css`/`.php` foi tocado, o jogo continua se comportando exatamente como antes.**
+Isto aqui e o mapa de como usar o que ja esta copiado, pra economizar o trabalho de descoberta na
+proxima sessao.
+
+**O que foi copiado, e o que ficou de fora:**
+
+- `public/assets/img/enemies/<id>.png` (27 arquivos novos): os retratos do bestiario inteiro —
+  15 monstros comuns, 5 elites, 6 chefes de bloco e a Soberana Gertrudes — gerados via os prompts
+  de `08-prompts-de-assets.md` (estilo cartoon consistente com a Capimaga, 512px RGBA, fundo
+  branco). O `<id>` de cada arquivo bate exatamente com a chave de `data/enemy.json` (`inimigos`)
+  e com `inimigo.id` no motor (`combat.js:criarInimigo`), entao nao precisa de tabela de
+  conversao nenhuma.
+- `public/assets/img/ui/icon.png` (1 arquivo): icone que o MVP Flet usa no launcher do APK. Nunca
+  foi pensado pra favicon de navegador (arquivo grande, resolucao pra icone de app), so serve como
+  ponto de partida.
+- `public/assets/fonts/LuckiestGuy-Regular.ttf` (1 arquivo): fonte de exibicao usada no MVP Flet
+  (Google Font, licenca OFL, pode embutir sem problema). Nenhuma tela hoje usa fonte custom, so
+  `--fonte` de `base.css` (system font stack).
+- **Nao copiei** (ja existe versao equivalente e melhor em `public/`, copiar por cima seria
+  regressao): `logo.png`, os 6 `bg_*.jpg` (cenarios) e as 4 `frame_*.png`, alem dos retratos de
+  `capimaga`/`brutamontes`/`ligeira.png`. Esses vieram de uma leva de arte diferente e mais
+  recente (pasta `Assets/` na raiz do projeto, nao versionada, ver secao 3 mais acima) — sao
+  arquivos maiores/mais nitidos que os equivalentes do MVP Flet (conferido por tamanho de arquivo,
+  ex.: `logo.png` do MVP tem 290KB contra 415KB do que ja esta em uso).
+- **Nao existe em lugar nenhum ainda** (nem MVP Python, nem `Assets/`): arte individual por carta.
+  `public/assets/img/cards/` continua vazio de proposito — so ha as 4 molduras por tipo
+  (Ataque/Defesa/Poder/Utilidade), sem ilustracao propria por carta.
+
+**Como ligar cada coisa no jogo (nenhuma feita ainda, so o mapa do trabalho):**
+
+1. **Retratos de inimigo** (o maior ganho visual, substitui os emojis genericos 🐸/💀 de quase
+   todo o bestiario): `combatView.js` tem um `RETRATOS_INIMIGO` que hoje so cobre a Soberana
+   Gertrudes, mapeado por **nome exato**. Trocar por um mapa por **id** (a chave dos 27 arquivos
+   novos), lido de `inimigo.id` (ja existe no objeto, vem de `criarInimigo`/`resolverDefInimigo`
+   em `combat.js`/`state.js`, nao precisa mudar o motor). Decisao pendente: a Gertrudes agora tem
+   dois retratos — `personagens/soberana-gertrudes.png` (ja em uso, estilo "retrato de hero card",
+   maior) e o novo `enemies/gertrudes.png` (mesmo traco/tamanho dos outros 26). Escolher qual usar
+   no painel de combate; a outra sobra pra outro lugar (ex.: tela de fim de run) ou fica sem uso.
+2. **Favicon**: acrescentar `<link rel="icon" href="assets/img/ui/icon.png">` no `<head>` de
+   `index.php`. Como o arquivo e grande/pensado pra launcher de app (nao pra navegador), vale
+   redimensionar antes (32x32 ou 64x64 costuma bastar pra favicon; 180x180 se quiser
+   apple-touch-icon tambem) em vez de servir o PNG original direto.
+3. **Fonte de exibicao**: `@font-face` em `base.css` apontando pra
+   `assets/fonts/LuckiestGuy-Regular.ttf`, aplicada em titulos/telas de destaque (`h1`,
+   `.tela-fim__titulo`, talvez `.cabecalho-andar`) mantendo o corpo do texto (cartas, log, botoes)
+   na fonte de sistema atual — texto pequeno numa fonte tao estilizada perde legibilidade.
+4. **Arte por carta**: e trabalho de geracao nova, nao de porte (nao existe em lugar nenhum pra
+   copiar). Precisaria de um doc de prompts novo nos moldes de `08-prompts-de-assets.md`, cobrindo
+   as 60 cartas (20 por classe), e de mudar `cards.css` (`.carta__arte` hoje e ocupada por
+   nome+tipo, porque nao ha arte propria; sobraria pra ilustracao e nome/tipo mudariam de lugar na
+   moldura). Vale avaliar se compensa o esforco antes de comecar — cada carta ja mostra nome e
+   tipo com clareza sem arte propria.
 
 ## 6. Decisoes que ainda precisam ser tomadas
 
