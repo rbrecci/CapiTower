@@ -76,6 +76,7 @@ export function criarCombateDeSala({
   fraquezaInicial = 0,
   nivelHabilidade = 1,
   classe = "capimaga",
+  modificadores = [],
 }) {
   const rng = criarRng(seed >>> 0);
   const lacaiosIniciais = classe === "capimaga" ? lacaiosIniciaisPorNivel(nivelHabilidade) : 0;
@@ -86,6 +87,7 @@ export function criarCombateDeSala({
     status: "andamento", // andamento | vitoria | derrota
     log: [],
     rng,
+    modificadores, // ids dos desafios opcionais ativos na run (D25), ver core/state.js:aplicarModificador
     jogador: {
       classe,
       hp: hpAtual,
@@ -286,13 +288,18 @@ function aplicarDanoInimigo(estado, inimigo, dmg, ehAtaque) {
 
 export function ganharBloco(estado, quem, valor) {
   if (valor <= 0) return;
+  let total = valor;
   if (quem === "jogador") {
-    estado.jogador.bloco += valor;
+    // Desafio "Casco Duro" (flet_mvp/capitower/content.py:MODIFIERS): +1 em todo ganho de Bloco
+    // do jogador. Fica aqui, no unico lugar por onde todo bloco do jogador passa (cartas e
+    // poderes como Calo/Ossos Firmes), em vez de espalhar a checagem em cada efeito.
+    if (estado.modificadores?.includes("casco_duro")) total += 1;
+    estado.jogador.bloco += total;
   } else {
     const alvo = alvoAtual(estado);
-    if (alvo) alvo.bloco += valor;
+    if (alvo) alvo.bloco += total;
   }
-  estado.log.push(`+${valor} de Bloco.`);
+  estado.log.push(`+${total} de Bloco.`);
 }
 
 export function aplicarEstado(estado, alvo, nomeEstado, valor) {
@@ -553,7 +560,16 @@ function iniciarTurnoJogador(estado) {
   if (estado.turno === 1 && estado.jogador.classe === "ligeira" && estado.jogador.nivelHabilidade >= 5) {
     estado.jogador.acao += 1;
   }
+  // Desafios "Largada" e "Mao Firme" (flet_mvp/capitower/content.py:MODIFIERS): so no primeiro
+  // turno de cada combate, nao em todo turno.
+  if (estado.turno === 1 && estado.modificadores?.includes("largada")) {
+    estado.jogador.acao += 1;
+  }
   comprarCartas(estado, TAMANHO_MAO);
+  if (estado.turno === 1 && estado.modificadores?.includes("mao_firme")) {
+    comprarCartas(estado, 1);
+    estado.log.push("Mao Firme: compra 1 carta extra.");
+  }
   estado.log.push(`--- Turno ${estado.turno} ---`);
 }
 

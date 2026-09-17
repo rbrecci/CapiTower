@@ -228,6 +228,7 @@ export async function iniciarJogo(container) {
       fraquezaInicial: fraqueza,
       nivelHabilidade: run.nivelHabilidade,
       classe: run.classe,
+      modificadores: run.modificadores,
     });
     estadoGlobal.combate = estadoCombate; // referencia para debug/QA, ver core/state.js
 

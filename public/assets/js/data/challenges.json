@@ -1,5 +1,5 @@
 {
-  "_origem": "Modificadores de desafio opcional (D25, docs/07-decisoes.md Q4). D25 pede modificador aditivo e de valor fixo; a Fase 2 implementa 2 dos possiveis, a lista completa e trabalho posterior.",
+  "_origem": "Modificadores de desafio opcional (D25, docs/07-decisoes.md Q4), portados de flet_mvp/capitower/content.py:MODIFIERS. So um espelho de referencia: quem serve de verdade e database/seeds.sql (tabela `desafios`), via api/catalog/bootstrap.php (docs/09). Os 3 ultimos sao checados pelo id direto no motor (core/combat.js:estado.modificadores), nao pelo campo 'op' do efeito.",
   "desafios": [
     {
       "id": "forca_bruta",
@@ -12,6 +12,24 @@
       "nome": "Folego Extra",
       "texto": "+5 de HP maximo permanente na run, cura 5 agora.",
       "efeito": { "op": "hp_max_permanente", "valor": 5 }
+    },
+    {
+      "id": "casco_duro",
+      "nome": "Casco Duro",
+      "texto": "+1 de Bloco toda vez que ganhar Bloco, pelo resto da run.",
+      "efeito": { "op": "bloco_extra", "valor": 1 }
+    },
+    {
+      "id": "largada",
+      "nome": "Largada",
+      "texto": "+1 Acao no primeiro turno de cada combate.",
+      "efeito": { "op": "acao_extra_turno1", "valor": 1 }
+    },
+    {
+      "id": "mao_firme",
+      "nome": "Mao Firme",
+      "texto": "Compra +1 carta no primeiro turno de cada combate.",
+      "efeito": { "op": "compra_extra_turno1", "valor": 1 }
     }
   ]
 }

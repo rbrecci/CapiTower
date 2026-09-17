@@ -1032,6 +1032,18 @@ ON DUPLICATE KEY UPDATE nome = VALUES(nome), texto = VALUES(texto), efeito = VAL
 INSERT INTO desafios (slug, nome, texto, efeito, ordem) VALUES ('folego_extra', 'Folego Extra', '+5 de HP maximo permanente na run, cura 5 agora.', '{"op":"hp_max_permanente","valor":5}', 2)
 ON DUPLICATE KEY UPDATE nome = VALUES(nome), texto = VALUES(texto), efeito = VALUES(efeito), ordem = VALUES(ordem);
 
+-- Os 3 abaixo sao checados pelo slug direto no motor de combate (core/combat.js:
+-- estado.modificadores), nao pelo campo "op": sao efeitos por-combate (repetem em toda sala),
+-- nao delta permanente de stat da run como os dois acima. O "op" e so documentacao.
+INSERT INTO desafios (slug, nome, texto, efeito, ordem) VALUES ('casco_duro', 'Casco Duro', '+1 de Bloco toda vez que ganhar Bloco, pelo resto da run.', '{"op":"bloco_extra","valor":1}', 3)
+ON DUPLICATE KEY UPDATE nome = VALUES(nome), texto = VALUES(texto), efeito = VALUES(efeito), ordem = VALUES(ordem);
+
+INSERT INTO desafios (slug, nome, texto, efeito, ordem) VALUES ('largada', 'Largada', '+1 Acao no primeiro turno de cada combate.', '{"op":"acao_extra_turno1","valor":1}', 4)
+ON DUPLICATE KEY UPDATE nome = VALUES(nome), texto = VALUES(texto), efeito = VALUES(efeito), ordem = VALUES(ordem);
+
+INSERT INTO desafios (slug, nome, texto, efeito, ordem) VALUES ('mao_firme', 'Mao Firme', 'Compra +1 carta no primeiro turno de cada combate.', '{"op":"compra_extra_turno1","valor":1}', 5)
+ON DUPLICATE KEY UPDATE nome = VALUES(nome), texto = VALUES(texto), efeito = VALUES(efeito), ordem = VALUES(ordem);
+
 -- ---------------------------------------------------------------------------
 -- OBJETIVOS (Fase 5: meta progressao, D12/D13)
 -- ---------------------------------------------------------------------------

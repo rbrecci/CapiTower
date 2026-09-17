@@ -52,7 +52,8 @@ Resumo do que cada parte faz:
 - `data/enemy.json`: bestiario completo dos 5 blocos, os 5 chefes nomeados e a Soberana Gertrudes
   com 3 fases, portados de `flet_mvp/capitower/content.py`.
 - `data/events.json`: 3 eventos (Bebedouro, Halteres Perdida, Vestiario). Ver pendencia abaixo.
-- `data/challenges.json`: 2 modificadores de desafio opcional (de um total de 5 desenhados no MVP).
+- `data/challenges.json`: os 5 modificadores de desafio opcional desenhados no MVP (espelho de
+  referencia; quem serve de verdade e a tabela `desafios` via `database/seeds.sql`).
 
 ## 3. Desvios e pendencias conhecidas
 
@@ -60,8 +61,33 @@ Resumo do que cada parte faz:
   qualquer lugar (docs ou MVP Python). Os 3 foram portados, os outros 5 a 9 nao foram inventados de
   proposito, porque isso e conteudo/roteiro novo, decisao de design e nao de codigo. **Precisa de
   uma passada de brainstorm de eventos antes de fechar a Fase 3 de verdade.**
-- **Modificadores de desafio incompletos.** So 2 dos 5 modificadores do MVP Python foram portados
-  para `challenges.json`. Os outros 3 sao so trabalho de porte, sem decisao nova.
+- **Modificadores de desafio: os 5 portados em 17/09/2026.** Faltavam Casco Duro, Largada e Mao
+  Firme (`flet_mvp/capitower/content.py:MODIFIERS`); Forca Bruta e Folego Extra ja existiam.
+  Diferente dos dois primeiros (que so somam num campo da run, `core/state.js:aplicarModificador`),
+  esses tres sao efeitos que se repetem em todo combate da run, entao precisaram de um mecanismo
+  novo: `criarCombateDeSala` agora recebe `modificadores` (`screens.js` passa `run.modificadores`)
+  e guarda em `estado.modificadores`; o motor checa o id direto nesse array em vez de interpretar
+  o campo `efeito.op` do desafio (que continua so documentacao pra esses tres).
+  - Casco Duro (+1 Bloco em todo ganho de Bloco do jogador): centralizado em
+    `combat.js:ganharBloco`, o unico lugar por onde todo Bloco do jogador passa (cartas e poderes
+    como Calo/Ossos Firmes), em vez de espalhar a checagem em cada efeito.
+  - Largada (+1 Acao no primeiro turno de cada combate) e Mao Firme (compra +1 carta no primeiro
+    turno de cada combate): checados em `combat.js:iniciarTurnoJogador` com `estado.turno === 1`,
+    no mesmo padrao ja usado ali pro bonus de Acao da Ligeira nivel 5+.
+  - `database/seeds.sql` ganhou os 3 `INSERT ... ON DUPLICATE KEY UPDATE` novos na tabela
+    `desafios` (e quem serve pro jogo de verdade, via `api/catalog/bootstrap.php` — Fase 4 trocou
+    o catalogo do JSON estatico pelo banco, ver secao 5); `data/challenges.json` so foi atualizado
+    a titulo de espelho de referencia.
+  - **Verificado**: script Node avulso importando `core/combat.js` direto (sem navegador, sem
+    DOM) confirmando os 3 efeitos isolados — Casco Duro somando +1 sobre um ganho de Bloco de
+    teste, Largada dando Acao 4/3 no turno 1, Mao Firme puxando a 6a carta no turno 1 — e o caso
+    sem nenhum modificador continuando igual a antes (regressao). Rodei tambem `seeds.sql` contra
+    o banco local (os 5 desafios aparecem com `SELECT slug, nome, ordem FROM desafios`) e joguei
+    uma carta de verdade no navegador depois da mudanca em `ganharBloco`, sem erro no console.
+    **Nao cheguei a jogar uma run de verdade que sorteasse um dos 3 desafios novos na sala de
+    desafio opcional** (a escolha e aleatoria entre 2 de N disponiveis, `screens.js:iniciarDesafio`),
+    entao o caminho "escolher na tela e ver refletido nas rodadas seguintes" so foi coberto pelo
+    teste isolado, nao ponta a ponta pela UI.
 - **3 chefes nao verificados ao vivo.** Dorival, Sargento Capitolino e a Soberana Gertrudes foram
   jogados de verdade em combate. Marlene Cardio, Professor Helio Whey e os Gemeos Rosca Direta
   foram conferidos so por varredura automatica dos dados (todas as operacoes de efeito existem e
