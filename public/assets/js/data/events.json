@@ -1,0 +1,78 @@
+{
+  "_origem": "Os 3 eventos que existem de verdade em docs/03-conteudo.md secao 7 e flet_mvp/capitower/content.py:EVENTS (Bebedouro, Halteres Perdida, Vestiario). O roadmap da Fase 3 pede de 8 a 12 eventos, mas so estes 3 estao desenhados; o resto fica em aberto (nao e trabalho de conteudo desta tarefa inventar roteiro novo). Regra: nenhum evento da ponto de recompensa nem remove carta do deck do jogador.",
+  "eventos": [
+    {
+      "id": "bebedouro",
+      "titulo": "O Bebedouro",
+      "texto": "Uma fonte de agua suspeita borbulhando sozinha.",
+      "escolhas": [
+        {
+          "texto": "Beber",
+          "resultado": "Cura 20% do HP maximo. 50% de chance de comecar o proximo combate com Fraqueza 1.",
+          "efeitos": [
+            { "op": "curar_pct", "valor": 0.2 },
+            { "op": "chance_fraqueza", "chance": 0.5, "valor": 1 }
+          ]
+        },
+        {
+          "texto": "Encher o cantil",
+          "resultado": "Cura 10% agora e mais 10% depois do proximo combate.",
+          "efeitos": [
+            { "op": "curar_pct", "valor": 0.1 },
+            { "op": "curar_pct_diferido", "valor": 0.1 }
+          ]
+        },
+        {
+          "texto": "Seguir",
+          "resultado": "Nada acontece.",
+          "efeitos": [
+            { "op": "nada" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "halteres_perdida",
+      "titulo": "A Halteres Perdida",
+      "texto": "Um halter esquecido no corredor, pesado demais para carregar.",
+      "escolhas": [
+        {
+          "texto": "Levantar",
+          "resultado": "Perde 8 de vida, ganha 1 de Forca permanente na run.",
+          "efeitos": [
+            { "op": "perder_hp", "valor": 8 },
+            { "op": "forca_permanente", "valor": 1 }
+          ]
+        },
+        {
+          "texto": "Deixar",
+          "resultado": "Nada acontece.",
+          "efeitos": [
+            { "op": "nada" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vestiario",
+      "titulo": "O Vestiario",
+      "texto": "Armarios abertos, cheiro forte, alguem esqueceu alguma coisa.",
+      "escolhas": [
+        {
+          "texto": "Vasculhar",
+          "resultado": "Ganha uma carta aleatoria da sua classe ate o proximo chefe de bloco.",
+          "efeitos": [
+            { "op": "carta_temporaria" }
+          ]
+        },
+        {
+          "texto": "Descansar ali mesmo",
+          "resultado": "Cura 15% do HP maximo.",
+          "efeitos": [
+            { "op": "curar_pct", "valor": 0.15 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,303 @@
+// Renderiza a tela de combate inteira a cada mudanca de estado. Sem framework: refaz o
+// miolo do DOM a cada render (Fase 1). A Fase 3 troca o inimigo unico por uma lista (bestiario
+// real, chefes com 2 inimigos como os Gemeos): cada inimigo vivo vira um painel clicavel que
+// seleciona o alvo das cartas.
+
+import { jogarCarta, fimDeTurno, intentAtual, selecionarAlvo } from "../core/combat.js";
+import { criarElementoCarta } from "./cardView.js";
+
+let indiceSelecionado = null;
+
+function textoIntencao(inimigo) {
+  const acoes = intentAtual(inimigo);
+  return acoes
+    .map((acao) => {
+      const vezes = acao.vezes ?? 1;
+      const sufixoVezes = vezes > 1 ? ` x${vezes}` : "";
+      if (acao.tipo === "ataque") {
+        let dmg = acao.valor + inimigo.forca;
+        if (inimigo.fraqueza > 0) dmg = Math.floor(dmg * 0.75);
+        return `Ataca ${dmg}${sufixoVezes}`;
+      }
+      if (acao.tipo === "bloco") return `Defende ${acao.valor}`;
+      if (acao.tipo === "veneno") return `Aplica Veneno ${acao.valor}`;
+      if (acao.tipo === "fraqueza") return `Aplica Fraqueza ${acao.valor}`;
+      if (acao.tipo === "fragilidade") return `Aplica Fragilidade ${acao.valor}`;
+      if (acao.tipo === "forca") return `Ganha ${acao.valor} de Forca`;
+      if (acao.tipo === "forca_todos") return `Toda a sala ganha ${acao.valor} de Forca`;
+      if (acao.tipo === "curar") return `Cura ${acao.valor}`;
+      if (acao.tipo === "curar_todos") return `Cura a sala em ${acao.valor}`;
+      if (acao.tipo === "roubar") return "Rouba 1 Acao do seu proximo turno";
+      if (acao.tipo === "carregar") return "Carregando o proximo golpe";
+      return acao.tipo;
+    })
+    .join(" + ");
+}
+
+function iconeIntencao(inimigo) {
+  const primeira = intentAtual(inimigo)[0];
+  if (!primeira) return "\u{2753}";
+  if (primeira.tipo === "bloco") return "\u{1F6E1}\u{FE0F}";
+  if (primeira.tipo === "carregar") return "\u{23F3}";
+  if (["forca", "forca_todos", "curar", "curar_todos"].includes(primeira.tipo)) return "\u{2728}";
+  if (["veneno", "fraqueza", "fragilidade", "roubar"].includes(primeira.tipo)) return "\u{2620}\u{FE0F}";
+  return "\u{2694}\u{FE0F}";
+}
+
+function criarBarraHp(hp, hpMax) {
+  const barra = document.createElement("div");
+  barra.className = "barra-hp";
+  const preenchido = document.createElement("div");
+  preenchido.className = "barra-hp__preenchido";
+  preenchido.style.width = `${Math.max(0, Math.min(100, (hp / hpMax) * 100))}%`;
+  const texto = document.createElement("span");
+  texto.className = "barra-hp__texto";
+  texto.textContent = `${hp}/${hpMax}`;
+  barra.append(preenchido, texto);
+  return barra;
+}
+
+function criarTagsEstado(entidade) {
+  const tags = document.createElement("div");
+  tags.className = "tags-estado";
+  const defs = [
+    ["bloco", "\u{1F6E1}\u{FE0F}", entidade.bloco],
+    ["forca", "\u{1F4AA}", entidade.forca],
+    ["fraqueza", "\u{1F4C9}", entidade.fraqueza],
+    ["fragilidade", "\u{1FA9E}", entidade.fragilidade],
+    ["veneno", "\u{2620}\u{FE0F}", entidade.veneno],
+  ];
+  for (const [nome, icone, valor] of defs) {
+    if (valor > 0) {
+      const tag = document.createElement("span");
+      tag.className = `tag tag--${nome}`;
+      tag.textContent = `${icone} ${valor}`;
+      tags.appendChild(tag);
+    }
+  }
+  return tags;
+}
+
+function criarPainelInimigo(inimigo, indice, estado, handlers) {
+  const painel = document.createElement("div");
+  painel.className = "painel painel--inimigo";
+  const vivo = inimigo.hp > 0;
+
+  if (!vivo) {
+    painel.classList.add("painel--inimigo--caido");
+  } else if (indice === estado.alvo) {
+    painel.classList.add("painel--inimigo--alvo");
+  }
+
+  if (vivo) {
+    const intencao = document.createElement("div");
+    intencao.className = "intencao";
+    const iconeSpan = document.createElement("span");
+    iconeSpan.className = "intencao__icone";
+    iconeSpan.textContent = iconeIntencao(inimigo);
+    const textoSpan = document.createElement("span");
+    textoSpan.className = "intencao__texto";
+    textoSpan.textContent = textoIntencao(inimigo);
+    intencao.append(iconeSpan, textoSpan);
+    painel.appendChild(intencao);
+  }
+
+  const retrato = document.createElement("div");
+  retrato.className = "retrato retrato--inimigo";
+  retrato.textContent = vivo ? "\u{1F438}" : "\u{1F480}";
+
+  const nome = document.createElement("div");
+  nome.className = "nome-entidade";
+  nome.textContent = inimigo.nome;
+
+  painel.append(retrato, nome, criarBarraHp(inimigo.hp, inimigo.hpMax), criarTagsEstado(inimigo));
+
+  if (vivo) {
+    painel.setAttribute("role", "button");
+    painel.setAttribute("tabindex", "0");
+    painel.title = indice === estado.alvo ? "Alvo atual" : "Selecionar como alvo";
+    const selecionar = () => {
+      selecionarAlvo(estado, indice);
+      handlers.aoMudar();
+    };
+    painel.addEventListener("click", selecionar);
+    painel.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") {
+        ev.preventDefault();
+        selecionar();
+      }
+    });
+  }
+
+  return painel;
+}
+
+function criarPaineisInimigos(estado, handlers) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "paineis-inimigos";
+  estado.inimigos.forEach((inimigo, indice) => {
+    wrapper.appendChild(criarPainelInimigo(inimigo, indice, estado, handlers));
+  });
+  return wrapper;
+}
+
+function criarPainelJogador(estado) {
+  const painel = document.createElement("div");
+  painel.className = "painel painel--jogador";
+
+  const retrato = document.createElement("div");
+  retrato.className = "retrato retrato--jogador";
+  retrato.textContent = "\u{1F9AB}";
+
+  const contadores = document.createElement("div");
+  contadores.className = "contadores";
+
+  const acao = document.createElement("span");
+  acao.className = "contador contador--acao";
+  acao.textContent = `\u{26A1} Acao ${estado.jogador.acao}/${estado.jogador.acaoMax}`;
+
+  const lacaios = document.createElement("span");
+  lacaios.className = "contador contador--lacaios";
+  lacaios.textContent = `\u{1F480} Lacaios ${estado.jogador.lacaios}/${estado.jogador.lacaiosCap}`;
+
+  contadores.append(acao, lacaios);
+
+  painel.append(retrato, criarBarraHp(estado.jogador.hp, estado.jogador.hpMax), contadores, criarTagsEstado(estado.jogador));
+
+  if (estado.jogador.poderes.length > 0) {
+    const poderes = document.createElement("div");
+    poderes.className = "tags-estado";
+    for (const nome of estado.jogador.poderes) {
+      const tag = document.createElement("span");
+      tag.className = "tag tag--poder";
+      tag.textContent = `\u{2B50} ${NOMES_PODER[nome] ?? nome}`;
+      poderes.appendChild(tag);
+    }
+    painel.appendChild(poderes);
+  }
+
+  return painel;
+}
+
+// Nome visivel de cada poder da Capimaga na HUD (flet_mvp/capitower/cards.py:POWER_NAMES).
+const NOMES_PODER = {
+  vala_comum: "Vala Comum",
+  banquete: "Banquete",
+  ossos_firmes: "Ossos Firmes",
+  peste: "Peste Ossea",
+};
+
+function criarPainelMao(estado, handlers) {
+  const painel = document.createElement("div");
+  painel.className = "painel-mao";
+
+  const mao = document.createElement("div");
+  mao.className = "mao";
+
+  estado.mao.forEach((carta, indice) => {
+    const el = criarElementoCarta(carta, indice, estado, {
+      selecionada: indice === indiceSelecionado,
+      aoClicar: (i) => {
+        indiceSelecionado = indiceSelecionado === i ? null : i;
+        handlers.aoMudar();
+      },
+      aoJogarDuploClique: (i) => {
+        jogarCarta(estado, i);
+        indiceSelecionado = null;
+        handlers.aoMudar();
+      },
+    });
+    mao.appendChild(el);
+  });
+
+  const rodape = document.createElement("div");
+  rodape.className = "rodape-mao";
+
+  if (indiceSelecionado !== null && estado.mao[indiceSelecionado]) {
+    const jogar = document.createElement("button");
+    jogar.className = "botao botao--jogar";
+    jogar.textContent = `Jogar ${estado.mao[indiceSelecionado].nome}`;
+    jogar.addEventListener("click", () => {
+      jogarCarta(estado, indiceSelecionado);
+      indiceSelecionado = null;
+      handlers.aoMudar();
+    });
+    rodape.appendChild(jogar);
+  }
+
+  const fimTurno = document.createElement("button");
+  fimTurno.className = "botao botao--fim-turno";
+  fimTurno.textContent = "Fim de turno";
+  fimTurno.addEventListener("click", () => {
+    indiceSelecionado = null;
+    fimDeTurno(estado);
+    handlers.aoMudar();
+  });
+  rodape.appendChild(fimTurno);
+
+  painel.append(mao, rodape);
+  return painel;
+}
+
+function criarLog(estado) {
+  const painel = document.createElement("div");
+  painel.className = "log";
+  const lista = document.createElement("ul");
+  const recentes = estado.log.slice(-14);
+  for (const linha of recentes) {
+    const li = document.createElement("li");
+    li.textContent = linha;
+    lista.appendChild(li);
+  }
+  painel.appendChild(lista);
+  painel.scrollTop = painel.scrollHeight;
+  return painel;
+}
+
+function criarTelaFim(estado, handlers) {
+  const tela = document.createElement("div");
+  tela.className = "tela-fim";
+
+  const titulo = document.createElement("h1");
+  if (estado.status === "vitoria") {
+    titulo.className = "tela-fim__titulo tela-fim__titulo--vitoria";
+    titulo.textContent = "Vitoria!";
+  } else {
+    titulo.className = "tela-fim__titulo tela-fim__titulo--derrota";
+    titulo.textContent = "Derrota";
+  }
+
+  const resumo = document.createElement("p");
+  resumo.className = "tela-fim__resumo";
+  resumo.textContent = `Combate encerrado no turno ${estado.turno}.`;
+
+  const botao = document.createElement("button");
+  botao.className = "botao botao--reiniciar";
+  botao.textContent = "Jogar novamente";
+  botao.addEventListener("click", () => {
+    indiceSelecionado = null;
+    handlers.aoReiniciar();
+  });
+
+  tela.append(titulo, resumo, botao);
+  return tela;
+}
+
+export function renderizarCombate(container, estado, handlers) {
+  container.innerHTML = "";
+
+  if (estado.status !== "andamento") {
+    container.appendChild(criarTelaFim(estado, handlers));
+    return;
+  }
+
+  const raiz = document.createElement("div");
+  raiz.className = "combate";
+  raiz.append(
+    criarPaineisInimigos(estado, handlers),
+    criarPainelJogador(estado),
+    criarPainelMao(estado, handlers),
+    criarLog(estado)
+  );
+  container.appendChild(raiz);
+}

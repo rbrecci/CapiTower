@@ -1,0 +1,17 @@
+{
+  "_origem": "Modificadores de desafio opcional (D25, docs/07-decisoes.md Q4). D25 pede modificador aditivo e de valor fixo; a Fase 2 implementa 2 dos possiveis, a lista completa e trabalho posterior.",
+  "desafios": [
+    {
+      "id": "forca_bruta",
+      "nome": "Forca Bruta",
+      "texto": "+1 de Forca permanente pelo resto da run.",
+      "efeito": { "op": "forca_permanente", "valor": 1 }
+    },
+    {
+      "id": "folego_extra",
+      "nome": "Folego Extra",
+      "texto": "+5 de HP maximo permanente na run, cura 5 agora.",
+      "efeito": { "op": "hp_max_permanente", "valor": 5 }
+    }
+  ]
+}

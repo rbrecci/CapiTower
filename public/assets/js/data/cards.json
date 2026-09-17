@@ -1,0 +1,284 @@
+{
+  "_origem": "As 20 cartas da Capimaga, portadas de flet_mvp/capitower/cards.py (lista CAPIMAGA) para o formato de efeito descrito em docs/04-arquitetura.md secao 6. Cada carta tem o campo 'origem' com o id original em Python. 4 arquetipos: Enxame, Sacrificio, Ossada, Putrefacao, 5 cartas cada, com pelo menos 1 Ataque, 1 Defesa, 1 Poder e 1 Utilidade por arquetipo (D28).",
+  "cartas": [
+    {
+      "id": "cm_costela",
+      "origem": "flet_mvp/capitower/cards.py:cm_costela",
+      "nome": "Costela Solta",
+      "classe": "capimaga",
+      "arquetipo": "Enxame",
+      "custo": 1,
+      "tipo": "Ataque",
+      "texto": "Causa 7 de dano. Invoca 1 lacaio.",
+      "efeitos": [
+        { "op": "dano", "alvo": "inimigo", "valor": 7 },
+        { "op": "invocar", "valor": 1 }
+      ]
+    },
+    {
+      "id": "cm_amontoado",
+      "origem": "flet_mvp/capitower/cards.py:cm_amontoado",
+      "nome": "Amontoado",
+      "classe": "capimaga",
+      "arquetipo": "Enxame",
+      "custo": 1,
+      "tipo": "Defesa",
+      "texto": "Ganha 3 de Bloco. Invoca 2 lacaios.",
+      "efeitos": [
+        { "op": "bloco", "valor": 3 },
+        { "op": "invocar", "valor": 2 }
+      ]
+    },
+    {
+      "id": "cm_vala",
+      "origem": "flet_mvp/capitower/cards.py:cm_vala",
+      "nome": "Vala Comum",
+      "classe": "capimaga",
+      "arquetipo": "Enxame",
+      "custo": 2,
+      "tipo": "Poder",
+      "texto": "No inicio do seu turno, invoca 1 lacaio.",
+      "efeitos": [
+        { "op": "poder", "nome": "vala_comum" }
+      ]
+    },
+    {
+      "id": "cm_chamado",
+      "origem": "flet_mvp/capitower/cards.py:cm_chamado",
+      "nome": "Chamado da Vala",
+      "classe": "capimaga",
+      "arquetipo": "Enxame",
+      "custo": 1,
+      "tipo": "Utilidade",
+      "texto": "Invoca 3 lacaios.",
+      "efeitos": [
+        { "op": "invocar", "valor": 3 }
+      ]
+    },
+    {
+      "id": "cm_marcha",
+      "origem": "flet_mvp/capitower/cards.py:cm_marcha",
+      "nome": "Marcha dos Ossos",
+      "classe": "capimaga",
+      "arquetipo": "Enxame",
+      "custo": 2,
+      "tipo": "Ataque",
+      "texto": "Causa 4 de dano por lacaio em campo.",
+      "efeitos": [
+        { "op": "dano_por_lacaio", "alvo": "inimigo", "valor": 4 }
+      ]
+    },
+    {
+      "id": "cm_explosao",
+      "origem": "flet_mvp/capitower/cards.py:cm_explosao",
+      "nome": "Explosao Ossea",
+      "classe": "capimaga",
+      "arquetipo": "Sacrificio",
+      "custo": 1,
+      "tipo": "Ataque",
+      "texto": "Consome ate 2 lacaios. Causa 6 de dano por lacaio consumido.",
+      "efeitos": [
+        { "op": "consumir_lacaios", "valor": 2 },
+        { "op": "dano_por_lacaio", "alvo": "inimigo", "valor": 6, "fonte": "consumidos" }
+      ]
+    },
+    {
+      "id": "cm_carne",
+      "origem": "flet_mvp/capitower/cards.py:cm_carne",
+      "nome": "Escudo de Carne",
+      "classe": "capimaga",
+      "arquetipo": "Sacrificio",
+      "custo": 1,
+      "tipo": "Defesa",
+      "texto": "Consome ate 2 lacaios. Ganha 3 de Bloco, +4 por lacaio consumido.",
+      "efeitos": [
+        { "op": "consumir_lacaios", "valor": 2 },
+        { "op": "bloco", "valor": 3 },
+        { "op": "bloco_por_lacaio", "valor": 4, "fonte": "consumidos" }
+      ]
+    },
+    {
+      "id": "cm_banquete",
+      "origem": "flet_mvp/capitower/cards.py:cm_banquete",
+      "nome": "Banquete",
+      "classe": "capimaga",
+      "arquetipo": "Sacrificio",
+      "custo": 2,
+      "tipo": "Poder",
+      "texto": "Sempre que consumir pelo menos 1 lacaio, compra 1 carta.",
+      "efeitos": [
+        { "op": "poder", "nome": "banquete" }
+      ]
+    },
+    {
+      "id": "cm_oferenda",
+      "origem": "flet_mvp/capitower/cards.py:cm_oferenda",
+      "nome": "Oferenda",
+      "classe": "capimaga",
+      "arquetipo": "Sacrificio",
+      "custo": 0,
+      "tipo": "Utilidade",
+      "texto": "Consome 1 lacaio. Se consumiu, ganha 1 Acao e compra 1 carta.",
+      "efeitos": [
+        { "op": "consumir_lacaios", "valor": 1 },
+        { "op": "se", "condicao": "consumidos>=1", "efeitos": [
+          { "op": "ganhar_acao", "valor": 1 },
+          { "op": "comprar", "valor": 1 }
+        ] }
+      ]
+    },
+    {
+      "id": "cm_ritual",
+      "origem": "flet_mvp/capitower/cards.py:cm_ritual",
+      "nome": "Ritual Ganancioso",
+      "classe": "capimaga",
+      "arquetipo": "Sacrificio",
+      "custo": 2,
+      "tipo": "Ataque",
+      "texto": "Consome ate 3 lacaios. Causa 4 de dano a todos os inimigos por lacaio consumido.",
+      "efeitos": [
+        { "op": "consumir_lacaios", "valor": 3 },
+        { "op": "dano_por_lacaio", "alvo": "todos", "valor": 4, "fonte": "consumidos" }
+      ]
+    },
+    {
+      "id": "cm_ariete",
+      "origem": "flet_mvp/capitower/cards.py:cm_ariete",
+      "nome": "Ariete de Costelas",
+      "classe": "capimaga",
+      "arquetipo": "Ossada",
+      "custo": 1,
+      "tipo": "Ataque",
+      "texto": "Causa dano igual ao seu Bloco atual (limite 10).",
+      "efeitos": [
+        { "op": "dano_defesa", "alvo": "inimigo", "teto": 10 }
+      ]
+    },
+    {
+      "id": "cm_muralha",
+      "origem": "flet_mvp/capitower/cards.py:cm_muralha",
+      "nome": "Muralha de Costelas",
+      "classe": "capimaga",
+      "arquetipo": "Ossada",
+      "custo": 1,
+      "tipo": "Defesa",
+      "texto": "Ganha 4 de Bloco, +1 por lacaio em campo (limite 8).",
+      "efeitos": [
+        { "op": "bloco", "valor": 4 },
+        { "op": "bloco_por_lacaio", "valor": 1, "teto": 8 }
+      ]
+    },
+    {
+      "id": "cm_ossos",
+      "origem": "flet_mvp/capitower/cards.py:cm_ossos",
+      "nome": "Ossos Firmes",
+      "classe": "capimaga",
+      "arquetipo": "Ossada",
+      "custo": 2,
+      "tipo": "Poder",
+      "texto": "No fim do seu turno, ganha 1 de Bloco por lacaio em campo.",
+      "efeitos": [
+        { "op": "poder", "nome": "ossos_firmes" }
+      ]
+    },
+    {
+      "id": "cm_cimento",
+      "origem": "flet_mvp/capitower/cards.py:cm_cimento",
+      "nome": "Cimento de Osso",
+      "classe": "capimaga",
+      "arquetipo": "Ossada",
+      "custo": 1,
+      "tipo": "Utilidade",
+      "texto": "Ganha 2 de Bloco. O seu Bloco nao se perde no fim deste turno.",
+      "efeitos": [
+        { "op": "bloco", "valor": 2 },
+        { "op": "manter_bloco" }
+      ]
+    },
+    {
+      "id": "cm_escudo",
+      "origem": "flet_mvp/capitower/cards.py:cm_escudo",
+      "nome": "Escudo de Craneos",
+      "classe": "capimaga",
+      "arquetipo": "Ossada",
+      "custo": 1,
+      "tipo": "Defesa",
+      "texto": "Ganha 5 de Bloco. Invoca 1 lacaio.",
+      "efeitos": [
+        { "op": "bloco", "valor": 5 },
+        { "op": "invocar", "valor": 1 }
+      ]
+    },
+    {
+      "id": "cm_baforada",
+      "origem": "flet_mvp/capitower/cards.py:cm_baforada",
+      "nome": "Baforada Podre",
+      "classe": "capimaga",
+      "arquetipo": "Putrefacao",
+      "custo": 1,
+      "tipo": "Ataque",
+      "texto": "Aplica 5 de Veneno.",
+      "efeitos": [
+        { "op": "estado", "alvo": "inimigo", "estado": "veneno", "valor": 5 }
+      ]
+    },
+    {
+      "id": "cm_pus",
+      "origem": "flet_mvp/capitower/cards.py:cm_pus",
+      "nome": "Pus Endurecido",
+      "classe": "capimaga",
+      "arquetipo": "Putrefacao",
+      "custo": 1,
+      "tipo": "Defesa",
+      "texto": "Ganha 4 de Bloco. Aplica 2 de Veneno.",
+      "efeitos": [
+        { "op": "bloco", "valor": 4 },
+        { "op": "estado", "alvo": "inimigo", "estado": "veneno", "valor": 2 }
+      ]
+    },
+    {
+      "id": "cm_peste",
+      "origem": "flet_mvp/capitower/cards.py:cm_peste",
+      "nome": "Peste Ossea",
+      "classe": "capimaga",
+      "arquetipo": "Putrefacao",
+      "custo": 2,
+      "tipo": "Poder",
+      "texto": "No fim do seu turno, aplica 2 de Veneno a todos os inimigos.",
+      "efeitos": [
+        { "op": "poder", "nome": "peste" }
+      ]
+    },
+    {
+      "id": "cm_contagio",
+      "origem": "flet_mvp/capitower/cards.py:cm_contagio",
+      "nome": "Contagio",
+      "classe": "capimaga",
+      "arquetipo": "Putrefacao",
+      "custo": 1,
+      "tipo": "Utilidade",
+      "texto": "Espalha o Veneno do alvo para os outros inimigos. Compra 1 carta.",
+      "efeitos": [
+        { "op": "espalhar_veneno" },
+        { "op": "comprar", "valor": 1 }
+      ]
+    },
+    {
+      "id": "cm_mordida",
+      "origem": "flet_mvp/capitower/cards.py:cm_mordida",
+      "nome": "Mordida Gangrenada",
+      "classe": "capimaga",
+      "arquetipo": "Putrefacao",
+      "custo": 1,
+      "tipo": "Ataque",
+      "texto": "Causa 6 de dano. Se o alvo esta envenenado, invoca 1 lacaio e aplica Fraqueza 1.",
+      "efeitos": [
+        { "op": "dano", "alvo": "inimigo", "valor": 6 },
+        { "op": "se", "condicao": "alvo_envenenado", "efeitos": [
+          { "op": "invocar", "valor": 1 },
+          { "op": "estado", "alvo": "inimigo", "estado": "fraqueza", "valor": 1 }
+        ] }
+      ]
+    }
+  ]
+}

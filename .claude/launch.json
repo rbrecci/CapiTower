@@ -6,6 +6,12 @@
       "runtimeExecutable": "flet",
       "runtimeArgs": ["run", "--web", "--port", "8550", "flet_mvp/main.py"],
       "port": 8550
+    },
+    {
+      "name": "php-web",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["-S", "localhost:8000", "-t", "public"],
+      "port": 8000
     }
   ]
 }

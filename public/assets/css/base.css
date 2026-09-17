@@ -1,0 +1,51 @@
+/* Reset, variaveis e tipografia (docs/04-arquitetura.md secao 3). */
+
+:root {
+  --cor-fundo: #12181f;
+  --cor-painel: #1c2530;
+  --cor-painel-claro: #26313f;
+  --cor-borda: #3a4757;
+  --cor-texto: #e8edf3;
+  --cor-texto-fraco: #9aa8b8;
+  --cor-acento: #5cc8ff;
+  --cor-perigo: #ff6b6b;
+  --cor-sucesso: #6bff9e;
+  --cor-veneno: #9dff5c;
+  --cor-bloco: #5cc8ff;
+  --cor-forca: #ffb85c;
+  --fonte: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  font-family: var(--fonte);
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

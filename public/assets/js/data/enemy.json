@@ -1,0 +1,363 @@
+{
+  "_origem": "Bestiario completo, portado de flet_mvp/capitower/content.py (ENEMIES, BLOCKS, FINAL_BOSS, GERTRUDES_PHASES). 'inimigos' e um dicionario plano com todos os ids (comuns, elites, chefes de bloco e a Soberana), igual ao ENEMIES do Python; 'blocos[i].combates' e a lista de composicoes de sala de combate comum daquele bloco, cada uma com 1 a 3 ids (alguns cruzam blocos, como spinning+capivarinha no bloco 2, exatamente como no Python). tipo de acao: ataque, bloco, forca, forca_todos, fraqueza, fragilidade, veneno, curar, curar_todos, roubar, carregar. flags: elite, chefe, inicioFixo (nao sorteia o passo inicial), mudaPadrao (muda de padrao ao levar dano), reflete (fracao do dano recebido devolvida), espinhos (contra-ataque fixo), crescimento (Forca ganha a cada turno que age), blocoTodoTurno (Bloco fixo ganho todo turno, alem do padrao), gemeo (Forca herdada pelo irmao ao morrer), fases (usa fasesFinal em vez do padrao fixo).",
+  "inimigos": {
+    "capivarinha": {
+      "nome": "Capivarinha Encharcada",
+      "hp": 8,
+      "nota": "fraca, ataca todo turno, aparece em grupo",
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 3 } ],
+        [ { "tipo": "ataque", "valor": 4 } ]
+      ]
+    },
+    "sapo": {
+      "nome": "Sapo Musculoso",
+      "hp": 26,
+      "nota": "Alterna entre defesa e golpe. Leia a intencao antes de agir.",
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 6 } ],
+        [ { "tipo": "ataque", "valor": 8 } ]
+      ]
+    },
+    "rato": {
+      "nome": "Rato de Academia",
+      "hp": 18,
+      "nota": "rouba Acao",
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 3, "vezes": 2 } ],
+        [ { "tipo": "roubar", "valor": 1 } ],
+        [ { "tipo": "ataque", "valor": 4, "vezes": 2 } ]
+      ]
+    },
+    "halter": {
+      "nome": "Halter Vivo",
+      "hp": 50,
+      "nota": "alto HP, dano baixo, cansa o jogador",
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 6 } ],
+        [ { "tipo": "bloco", "valor": 8 }, { "tipo": "ataque", "valor": 4 } ]
+      ]
+    },
+    "spinning": {
+      "nome": "Capivara do Spinning",
+      "hp": 26,
+      "nota": "age varias vezes, dano baixo",
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 4, "vezes": 2 } ],
+        [ { "tipo": "ataque", "valor": 3, "vezes": 2 } ],
+        [ { "tipo": "bloco", "valor": 5 }, { "tipo": "ataque", "valor": 4 } ]
+      ]
+    },
+    "personal": {
+      "nome": "Personal Trainer",
+      "hp": 28,
+      "nota": "buffa os outros inimigos da sala",
+      "padrao": [
+        [ { "tipo": "forca_todos", "valor": 1 } ],
+        [ { "tipo": "ataque", "valor": 7 } ]
+      ]
+    },
+    "frasco": {
+      "nome": "Frasco Ambulante",
+      "hp": 38,
+      "nota": "aplica Veneno",
+      "padrao": [
+        [ { "tipo": "veneno", "valor": 3 } ],
+        [ { "tipo": "ataque", "valor": 8 } ],
+        [ { "tipo": "veneno", "valor": 4 }, { "tipo": "ataque", "valor": 4 } ]
+      ]
+    },
+    "experimental": {
+      "nome": "Capivara Experimental",
+      "hp": 48,
+      "nota": "muda de padrao ao levar dano",
+      "flags": { "mudaPadrao": true },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 10 } ],
+        [ { "tipo": "bloco", "valor": 10 } ],
+        [ { "tipo": "ataque", "valor": 6, "vezes": 2 } ],
+        [ { "tipo": "fraqueza", "valor": 2 } ]
+      ]
+    },
+    "bolha": {
+      "nome": "Bolha de Soro",
+      "hp": 45,
+      "nota": "reflete 25% do dano recebido",
+      "flags": { "reflete": 0.25 },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 7 } ],
+        [ { "tipo": "bloco", "valor": 12 } ]
+      ]
+    },
+    "marmita": {
+      "nome": "Capivara de Marmita",
+      "hp": 60,
+      "nota": "se cura",
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 11 } ],
+        [ { "tipo": "curar", "valor": 8 }, { "tipo": "bloco", "valor": 6 } ]
+      ]
+    },
+    "garcom": {
+      "nome": "Garcom Bombado",
+      "hp": 95,
+      "nota": "HP muito alto, golpe unico devastador telegrafado com 2 turnos",
+      "flags": { "inicioFixo": true },
+      "padrao": [
+        [ { "tipo": "carregar" } ],
+        [ { "tipo": "carregar" } ],
+        [ { "tipo": "ataque", "valor": 30 } ]
+      ]
+    },
+    "sobremesa": {
+      "nome": "Sobremesa Viva",
+      "hp": 42,
+      "nota": "aplica Fraqueza",
+      "padrao": [
+        [ { "tipo": "fraqueza", "valor": 2 }, { "tipo": "ataque", "valor": 5 } ],
+        [ { "tipo": "ataque", "valor": 12 } ]
+      ]
+    },
+    "guarda": {
+      "nome": "Guarda de Avental",
+      "hp": 75,
+      "nota": "contra ataca com 3",
+      "flags": { "espinhos": 3 },
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 12 }, { "tipo": "ataque", "valor": 8 } ],
+        [ { "tipo": "ataque", "valor": 14 } ]
+      ]
+    },
+    "jardineira": {
+      "nome": "Jardineira Furiosa",
+      "hp": 65,
+      "nota": "+2 de Forca por turno",
+      "flags": { "crescimento": 2 },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 8 } ],
+        [ { "tipo": "ataque", "valor": 10 } ]
+      ]
+    },
+    "vaso": {
+      "nome": "Vaso Sentinela",
+      "hp": 40,
+      "nota": "nao ataca, buffa e cura o resto da sala",
+      "padrao": [
+        [ { "tipo": "curar_todos", "valor": 6 } ],
+        [ { "tipo": "forca_todos", "valor": 2 } ]
+      ]
+    },
+    "elite1": {
+      "nome": "Capivara de Pulso",
+      "hp": 48,
+      "flags": { "elite": true },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 4, "vezes": 2 } ],
+        [ { "tipo": "bloco", "valor": 8 }, { "tipo": "ataque", "valor": 5 } ],
+        [ { "tipo": "ataque", "valor": 10 } ]
+      ]
+    },
+    "elite2": {
+      "nome": "Instrutora de Cross",
+      "hp": 70,
+      "flags": { "elite": true },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 5, "vezes": 2 } ],
+        [ { "tipo": "forca", "valor": 1 } ],
+        [ { "tipo": "ataque", "valor": 8, "vezes": 2 } ]
+      ]
+    },
+    "elite3": {
+      "nome": "Cobaia Alfa",
+      "hp": 100,
+      "flags": { "elite": true },
+      "padrao": [
+        [ { "tipo": "veneno", "valor": 5 } ],
+        [ { "tipo": "fragilidade", "valor": 2 }, { "tipo": "ataque", "valor": 8 } ],
+        [ { "tipo": "ataque", "valor": 16 } ]
+      ]
+    },
+    "elite4": {
+      "nome": "Chef de Cozinha",
+      "hp": 130,
+      "flags": { "elite": true },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 14 } ],
+        [ { "tipo": "curar", "valor": 12 }, { "tipo": "bloco", "valor": 10 } ],
+        [ { "tipo": "ataque", "valor": 18 } ]
+      ]
+    },
+    "elite5": {
+      "nome": "Capita da Guarda",
+      "hp": 150,
+      "flags": { "elite": true, "espinhos": 4 },
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 15 }, { "tipo": "ataque", "valor": 12 } ],
+        [ { "tipo": "ataque", "valor": 10, "vezes": 2 } ],
+        [ { "tipo": "forca", "valor": 3 } ]
+      ]
+    },
+    "dorival": {
+      "nome": "Dorival Supino",
+      "hp": 75,
+      "nota": "carrega e golpeia",
+      "flags": { "chefe": true },
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 10 }, { "tipo": "carregar" } ],
+        [ { "tipo": "ataque", "valor": 16 } ]
+      ]
+    },
+    "marlene": {
+      "nome": "Marlene Cardio",
+      "hp": 120,
+      "nota": "age duas vezes por turno",
+      "flags": { "chefe": true },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 5, "vezes": 2 } ],
+        [ { "tipo": "ataque", "valor": 4, "vezes": 2 }, { "tipo": "fraqueza", "valor": 1 } ],
+        [ { "tipo": "bloco", "valor": 8 }, { "tipo": "ataque", "valor": 6, "vezes": 2 } ]
+      ]
+    },
+    "helio": {
+      "nome": "Professor Helio Whey",
+      "hp": 190,
+      "nota": "estados e buff proprio",
+      "flags": { "chefe": true },
+      "padrao": [
+        [ { "tipo": "fraqueza", "valor": 2 }, { "tipo": "fragilidade", "valor": 2 } ],
+        [ { "tipo": "ataque", "valor": 14 } ],
+        [ { "tipo": "forca", "valor": 3 }, { "tipo": "bloco", "valor": 10 } ],
+        [ { "tipo": "veneno", "valor": 6 }, { "tipo": "ataque", "valor": 8 } ]
+      ]
+    },
+    "gemeo_a": {
+      "nome": "Gemeo Rosca (Esq.)",
+      "hp": 120,
+      "nota": "o irmao herda +5 de Forca",
+      "flags": { "chefe": true, "gemeo": 5 },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 11 } ],
+        [ { "tipo": "bloco", "valor": 8 }, { "tipo": "ataque", "valor": 6 } ]
+      ]
+    },
+    "gemeo_b": {
+      "nome": "Gemeo Rosca (Dir.)",
+      "hp": 120,
+      "nota": "o irmao herda +5 de Forca",
+      "flags": { "chefe": true, "gemeo": 5 },
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 8 }, { "tipo": "ataque", "valor": 6 } ],
+        [ { "tipo": "ataque", "valor": 11 } ]
+      ]
+    },
+    "capitolino": {
+      "nome": "Sargento Capitolino",
+      "hp": 260,
+      "nota": "ganha 12 de Bloco todo turno",
+      "flags": { "chefe": true, "blocoTodoTurno": 12 },
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 16 } ],
+        [ { "tipo": "ataque", "valor": 10 }, { "tipo": "fraqueza", "valor": 1 } ],
+        [ { "tipo": "ataque", "valor": 20 } ]
+      ]
+    },
+    "gertrudes": {
+      "nome": "Soberana Gertrudes",
+      "hp": 340,
+      "nota": "tres fases",
+      "flags": { "chefe": true, "fases": true },
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 14 }, { "tipo": "carregar" } ],
+        [ { "tipo": "ataque", "valor": 26 } ]
+      ]
+    }
+  },
+  "blocos": [
+    {
+      "nome": "O Poco",
+      "combates": [
+        ["capivarinha", "capivarinha", "capivarinha"],
+        ["sapo"],
+        ["rato", "capivarinha"],
+        ["sapo", "capivarinha"],
+        ["rato"]
+      ],
+      "eliteId": "elite1",
+      "chefeIds": ["dorival"]
+    },
+    {
+      "nome": "A Academia",
+      "combates": [
+        ["halter"],
+        ["spinning", "spinning"],
+        ["personal", "spinning"],
+        ["halter", "personal"],
+        ["spinning", "capivarinha", "capivarinha"]
+      ],
+      "eliteId": "elite2",
+      "chefeIds": ["marlene"]
+    },
+    {
+      "nome": "O Laboratorio",
+      "combates": [
+        ["frasco", "frasco"],
+        ["experimental"],
+        ["bolha"],
+        ["frasco", "bolha"],
+        ["experimental", "frasco"]
+      ],
+      "eliteId": "elite3",
+      "chefeIds": ["helio"]
+    },
+    {
+      "nome": "O Refeitorio",
+      "combates": [
+        ["marmita"],
+        ["sobremesa", "sobremesa"],
+        ["garcom"],
+        ["marmita", "sobremesa"],
+        ["garcom", "sobremesa"]
+      ],
+      "eliteId": "elite4",
+      "chefeIds": ["gemeo_a", "gemeo_b"]
+    },
+    {
+      "nome": "O Jardim Suspenso",
+      "combates": [
+        ["guarda"],
+        ["jardineira"],
+        ["vaso", "guarda"],
+        ["jardineira", "vaso"],
+        ["guarda", "guarda"]
+      ],
+      "eliteId": "elite5",
+      "chefeIds": ["capitolino"]
+    }
+  ],
+  "finalId": "gertrudes",
+  "fasesFinal": [
+    {
+      "fracaoMin": 0.66,
+      "padrao": [
+        [ { "tipo": "bloco", "valor": 14 }, { "tipo": "carregar" } ],
+        [ { "tipo": "ataque", "valor": 26 } ]
+      ]
+    },
+    {
+      "fracaoMin": 0.33,
+      "padrao": [
+        [ { "tipo": "ataque", "valor": 7, "vezes": 3 } ],
+        [ { "tipo": "ataque", "valor": 6, "vezes": 2 }, { "tipo": "fraqueza", "valor": 1 } ],
+        [ { "tipo": "forca", "valor": 2 }, { "tipo": "bloco", "valor": 10 } ]
+      ]
+    },
+    {
+      "fracaoMin": 0.0,
+      "padrao": [
+        [ { "tipo": "fragilidade", "valor": 2 }, { "tipo": "veneno", "valor": 6 } ],
+        [ { "tipo": "ataque", "valor": 18 } ],
+        [ { "tipo": "curar", "valor": 15 }, { "tipo": "bloco", "valor": 20 } ]
+      ]
+    }
+  ]
+}

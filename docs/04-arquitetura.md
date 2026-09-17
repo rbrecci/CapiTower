@@ -152,7 +152,11 @@ Cartas nao guardam codigo, guardam dados. Um interpretador em `effects.js` execu
 ```
 
 Operacoes previstas na primeira versao: `dano`, `dano_por_lacaio`, `bloco`, `bloco_por_lacaio`,
-`estado`, `invocar`, `consumir_lacaios`, `comprar`, `ganhar_acao`, `curar`, `repetir`.
+`estado`, `invocar`, `consumir_lacaios`, `comprar`, `ganhar_acao`, `curar`, `repetir`. A Fase 3
+acrescentou `dano_defesa` (dano igual ao Bloco atual), `manter_bloco` (Bloco nao zera no fim do
+turno), `espalhar_veneno`, `poder` (registra um poder persistente, ex: Vala Comum) e `se`
+(condicional, com uma lista de efeitos que so resolve se a condicao bater), todas para cobrir o
+vocabulario que as 20 cartas da Capimaga usam de verdade (`flet_mvp/capitower/cards.py`).
 
 Vantagem: cartas novas entram por linha no banco, sem tocar em JavaScript. Limite conhecido:
 efeitos muito exoticos vao acabar precisando de uma operacao propria, e tudo bem.

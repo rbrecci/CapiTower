@@ -1,0 +1,49 @@
+/* Layout geral da pagina unica (docs/04-arquitetura.md secao 3). */
+
+.combate {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto 1fr;
+  grid-template-areas:
+    "inimigo"
+    "jogador"
+    "mao"
+    "log";
+  gap: 12px;
+  padding: 16px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.paineis-inimigos {
+  grid-area: inimigo;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.painel--jogador {
+  grid-area: jogador;
+}
+
+.painel-mao {
+  grid-area: mao;
+}
+
+.log {
+  grid-area: log;
+}
+
+.tela-fim {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+}

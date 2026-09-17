@@ -1,0 +1,125 @@
+/* Telas da torre: inicio, cabecalho de andar, descanso, evento, desafio, recompensa e fim de
+   run (docs/06-roadmap.md Fase 2). Reusa as variaveis de base.css e as classes .botao/.painel
+   /.tela-fim ja definidas em combat.css/layout.css. */
+
+.tela-sala {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 16px;
+  gap: 12px;
+}
+
+.cabecalho-andar {
+  text-align: center;
+  background: var(--cor-painel-claro);
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-weight: bold;
+  color: var(--cor-texto-fraco);
+  align-self: center;
+}
+
+.tela-centro {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 24px;
+}
+
+.tela-centro__texto {
+  color: var(--cor-texto-fraco);
+  max-width: 520px;
+}
+
+.botao--comecar {
+  padding: 14px 28px;
+  font-size: 1.1em;
+}
+
+.opcoes-recompensa,
+.opcoes-evento {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  justify-content: center;
+}
+
+.opcao-recompensa,
+.opcao-evento {
+  background: var(--cor-painel);
+  border: 2px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 220px;
+  max-width: 320px;
+  text-align: left;
+  color: var(--cor-texto);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.opcao-recompensa:hover,
+.opcao-evento:hover {
+  transform: translateY(-4px);
+  border-color: var(--cor-acento);
+}
+
+.opcao-recompensa__titulo,
+.opcao-evento__titulo {
+  font-weight: bold;
+  font-size: 1.05em;
+}
+
+.opcao-recompensa__texto,
+.opcao-evento__texto {
+  color: var(--cor-texto-fraco);
+  font-size: 0.9em;
+}
+
+.form-auth {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.form-auth input {
+  background: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--cor-texto);
+  font-family: inherit;
+  font-size: 1em;
+}
+
+.form-auth input:focus {
+  outline: none;
+  border-color: var(--cor-acento);
+}
+
+.form-auth__erro {
+  color: var(--cor-perigo);
+  font-size: 0.9em;
+  min-height: 1.2em;
+}
+
+.form-auth__alterna {
+  background: none;
+  border: none;
+  color: var(--cor-acento);
+  text-decoration: underline;
+  padding: 4px;
+}
