@@ -27,3 +27,6 @@ capitower-apk/
 
 # fonte bruta da arte de IA (14MB, ja copiada/renomeada em public/assets/img/ui/)
 /Assets/
+
+# pacote de deploy (contem senha real do banco de producao)
+/deploy/
