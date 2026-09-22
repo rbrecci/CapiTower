@@ -1,6 +1,6 @@
 # 01. Game design
 
-> Numeros marcados como `[ajustar]` sao pontos de partida para playtest, nao valores finais.
+> Números marcados como `[ajustar]` são pontos de partida para playtest, não valores finais.
 
 ## 1. Loop principal
 
@@ -14,29 +14,29 @@ Menu -> escolher classe -> sortear 5 cartas iniciais (1 re-roll) -> entrar na to
 
 ## 2. Combate
 
-### 2.1 Recurso: Acao
+### 2.1 Recurso: Ação
 
-O recurso de turno se chama **Acao**. O jogador comeca com **3 Acao** por turno `[ajustar]`, e o
-valor reseta no inicio de cada turno (nao acumula). O custo das cartas fica na faixa de 0 a 3.
+O recurso de turno se chama **Ação**. O jogador começa com **3 Ação** por turno `[ajustar]`, e o
+valor reseta no início de cada turno (não acumula). O custo das cartas fica na faixa de 0 a 3.
 
 ### 2.2 Estrutura do turno
 
-1. **Inicio do turno do jogador**: Bloco restante zera, efeitos de duracao caem 1, compra ate a mao.
-2. **Fase de acoes**: joga cartas gastando Acao, em qualquer ordem, ate acabar a Acao ou passar.
-3. **Fim do turno**: cartas restantes na mao vao para o descarte.
-4. **Turno inimigo**: cada inimigo executa a intencao que estava telegrafada.
+1. **Início do turno do jogador**: Bloco restante zera, efeitos de duração caem 1, compra até a mão.
+2. **Fase de ações**: joga cartas gastando Ação, em qualquer ordem, até acabar a Ação ou passar.
+3. **Fim do turno**: cartas restantes na mão vão para o descarte.
+4. **Turno inimigo**: cada inimigo executa a intenção que estava telegrafada.
 5. Volta ao passo 1.
 
-Quando o deck de compra esvazia, o descarte e embaralhado e vira o novo deck.
+Quando o deck de compra esvazia, o descarte é embaralhado e vira o novo deck.
 
-### 2.3 Mao e compra
+### 2.3 Mão e compra
 
-- Mao padrao: **5 cartas** `[ajustar]`.
-- Sem limite de mao alem do que a compra entrega.
-- Cartas jogadas vao para o descarte, salvo texto em contrario.
+- Mão padrão: **5 cartas** `[ajustar]`.
+- Sem limite de mão além do que a compra entrega.
+- Cartas jogadas vão para o descarte, salvo texto em contrário.
 
-O deck comeca com 10 cartas justamente para que a mao de 5 nunca compre o deck inteiro (ver 4.1).
-No pior caso, o jogador ve metade do deck por turno, o que preserva sorte de compra e decisao de
+O deck começa com 10 cartas justamente para que a mão de 5 nunca compre o deck inteiro (ver 4.1).
+No pior caso, o jogador vê metade do deck por turno, o que preserva sorte de compra e decisão de
 sequenciamento desde o andar 1.
 
 ### 2.4 Inimigos por sala
@@ -45,111 +45,111 @@ Definido por tipo de sala:
 
 | Tipo | Formato |
 | --- | --- |
-| Combate comum | 1 a 3 inimigos, todos alvejaveis |
-| Elite | 1 inimigo forte, as vezes com apoios alvejaveis que buffam ou atrapalham |
-| Chefe | duelo unico com multiplas fases, muda de padrao conforme perde vida |
+| Combate comum | 1 a 3 inimigos, todos alvejáveis |
+| Elite | 1 inimigo forte, às vezes com apoios alvejáveis que buffam ou atrapalham |
+| Chefe | duelo único com múltiplas fases, muda de padrão conforme perde vida |
 
-Todo inimigo telegrafa a intencao do proximo turno (icone + valor).
+Todo inimigo telegrafa a intenção do próximo turno (ícone + valor).
 
 ### 2.5 Lacaios
 
-Lacaios da classe Capimaga **aparecem em campo como elemento visual e nao sao alvejaveis**.
-Nao possuem HP, nao recebem dano e nao ocupam espaco de alvo. Mecanicamente sao contadores
+Lacaios da classe Capimaga **aparecem em campo como elemento visual e não são alvejáveis**.
+Não possuem HP, não recebem dano e não ocupam espaço de alvo. Mecanicamente são contadores
 persistentes que disparam efeitos (dano no fim do turno, bloco, gatilhos), representados na
 interface como capivaras esqueleto acumulando ao lado do jogador.
 
-Consequencia de design: lacaio nunca e removido pelo inimigo por dano, apenas por efeitos que
-digam explicitamente "consome" ou "dissipa". Isso deixa a fantasia de exercito viavel sem
-precisar de um sistema de unidades no campo, e evita o problema classico de o inimigo limpar o
+Consequência de design: lacaio nunca é removido pelo inimigo por dano, apenas por efeitos que
+digam explicitamente "consome" ou "dissipa". Isso deixa a fantasia de exército viável sem
+precisar de um sistema de unidades no campo, e evita o problema clássico de o inimigo limpar o
 tabuleiro e apagar a build inteira do jogador.
 
 ### 2.6 Estados compartilhados
 
-Vocabulario unico para as tres classes, para manter a leitura previsivel:
+Vocabulário único para as três classes, para manter a leitura previsível:
 
 | Estado | Efeito |
 | --- | --- |
-| Bloco | Absorve dano. Zera no inicio do seu turno. |
-| Forca | +X de dano por ataque. |
+| Bloco | Absorve dano. Zera no início do seu turno. |
+| Força | +X de dano por ataque. |
 | Fragilidade | Alvo recebe +50% de dano `[ajustar]`, dura N turnos. |
 | Fraqueza | Alvo causa -25% de dano `[ajustar]`, dura N turnos. |
 | Veneno | Perde X de vida no fim do turno, X cai 1 depois. |
-| Atordoamento | Pula a proxima intencao. Raro e caro por design. |
+| Atordoamento | Pula a próxima intenção. Raro e caro por design. |
 
-Cada classe adiciona no maximo **um** estado exclusivo proprio:
+Cada classe adiciona no máximo **um** estado exclusivo próprio:
 
 | Estado | Classe | Efeito |
 | --- | --- | --- |
-| Retaliacao | Brutamontes | Todo ataque recebido devolve X de dano ao atacante. |
-| Evasao | Ligeira | Anula por completo o proximo ataque, uma instancia por ponto. |
+| Retaliação | Brutamontes | Todo ataque recebido devolve X de dano ao atacante. |
+| Evasão | Ligeira | Anula por completo o próximo ataque, uma instância por ponto. |
 
-A Capimaga nao tem estado exclusivo: os lacaios ja cumprem esse papel.
+A Capimaga não tem estado exclusivo: os lacaios já cumprem esse papel.
 Detalhes em `docs/02-classes-e-arquetipos.md`.
 
 ## 3. A torre
 
 ### 3.1 Estrutura
 
-- 50 andares em linha reta, sem ramificacao de rota.
-- Divididos em **5 blocos de 10 andares**. O andar 10 de cada bloco e sempre um chefe.
-- Andar 51: Soberana Gertrudes, chefao final.
-- A **ordem dos encontros dentro de cada bloco e embaralhada** por run, a partir de uma seed
+- 50 andares em linha reta, sem ramificação de rota.
+- Divididos em **5 blocos de 10 andares**. O andar 10 de cada bloco é sempre um chefe.
+- Andar 51: Soberana Gertrudes, chefão final.
+- A **ordem dos encontros dentro de cada bloco é embaralhada** por run, a partir de uma seed
   guardada no banco (permite reproduzir a run em caso de bug).
 
-### 3.2 Composicao de um bloco `[ajustar]`
+### 3.2 Composição de um bloco `[ajustar]`
 
 Cada bloco de 10 andares contem:
 
 | Quantidade | Encontro |
 | --- | --- |
 | 5 | Combate comum |
-| 1 | Elite (posicao sorteada entre os andares 3 e 8 do bloco) |
+| 1 | Elite (posição sorteada entre os andares 3 e 8 do bloco) |
 | 1 | Evento narrativo com escolha |
 | 1 | Descanso |
 | 1 | Desafio opcional |
-| 1 | Chefe (sempre o ultimo andar do bloco) |
+| 1 | Chefe (sempre o último andar do bloco) |
 
-Os 9 primeiros sao embaralhados dentro do bloco, o chefe fica fixo na posicao 10. Isso garante
-ritmo (sempre um descanso e um elite por bloco) sem tornar a ordem previsivel.
+Os 9 primeiros são embaralhados dentro do bloco, o chefe fica fixo na posição 10. Isso garante
+ritmo (sempre um descanso e um elite por bloco) sem tornar a ordem previsível.
 
 ### 3.3 Tipos de encontro
 
 **Combate comum.** Base do jogo. Sem recompensa de deck, apenas progresso.
 
-**Elite.** Bem mais dificil que o comum. **Da um ponto de recompensa.**
+**Elite.** Bem mais difícil que o comum. **Dá um ponto de recompensa.**
 
-**Chefe.** Fim de bloco, duelo com fases. **Da um ponto de recompensa.**
+**Chefe.** Fim de bloco, duelo com fases. **Dá um ponto de recompensa.**
 
-**Evento narrativo.** Texto curto com 2 ou 3 escolhas e consequencia imediata (vida, estado
-persistente, carta temporaria, risco x recompensa). Nunca da ponto de recompensa.
+**Evento narrativo.** Texto curto com 2 ou 3 escolhas e consequência imediata (vida, estado
+persistente, carta temporária, risco x recompensa). Nunca dá ponto de recompensa.
 
-**Descanso.** Recupera **30% do HP maximo** `[ajustar]`. Unica cura confiavel do jogo.
+**Descanso.** Recupera **30% do HP máximo** `[ajustar]`. Única cura confiável do jogo.
 
 **Desafio opcional.** O jogador pode pular sem custo nenhum. Aceitando, enfrenta um combate mais
-duro com uma condicao extra (limite de turnos, inimigo com buff, comecar sem Bloco). Vencendo,
-ganha um **modificador de run**: um bonus permanente e pequeno que vale ate o fim da run.
+duro com uma condição extra (limite de turnos, inimigo com buff, começar sem Bloco). Vencendo,
+ganha um **modificador de run**: um bônus permanente e pequeno que vale até o fim da run.
 
-Sao no maximo 5 modificadores por run, um por bloco. Pool inicial `[ajustar]`:
+São no máximo 5 modificadores por run, um por bloco. Pool inicial `[ajustar]`:
 
 | Modificador | Efeito |
 | --- | --- |
 | Casco Duro | +1 de Bloco toda vez que ganhar Bloco |
-| Musculo Teimoso | +1 de Forca permanente |
-| Folego | +5 de HP maximo, e cura os 5 na hora |
-| Largada | +1 Acao no primeiro turno de cada combate |
-| Mao Firme | Compra +1 carta no primeiro turno de cada combate |
+| Músculo Teimoso | +1 de Força permanente |
+| Fôlego | +5 de HP máximo, e cura os 5 na hora |
+| Largada | +1 Ação no primeiro turno de cada combate |
+| Mão Firme | Compra +1 carta no primeiro turno de cada combate |
 
 Regras do pool:
-- Todo modificador e **aditivo e de valor fixo**. Nada percentual, nada multiplicativo, porque com
+- Todo modificador é **aditivo e de valor fixo**. Nada percentual, nada multiplicativo, porque com
   5 acumulados o efeito composto sai do controle.
-- Nenhum modificador pode interagir com a mecanica exclusiva de uma classe so, senao o desafio
+- Nenhum modificador pode interagir com a mecânica exclusiva de uma classe só, senão o desafio
   vale mais para uma classe que para as outras e quebra a paridade.
-- O jogador escolhe 1 entre 2 sorteados, nao recebe aleatorio.
+- O jogador escolhe 1 entre 2 sorteados, não recebe aleatório.
 
 ### 3.4 Escalada de dificuldade
 
-Por bloco, nao continua. Cada bloco tem seu proprio pool de inimigos, com HP e dano proprios.
-Isso mantem o balanceamento legivel: um inimigo pertence ao bloco 3 e ponto final, sem formula de
+Por bloco, não continua. Cada bloco tem seu próprio pool de inimigos, com HP e dano próprios.
+Isso mantém o balanceamento legível: um inimigo pertence ao bloco 3 e ponto final, sem fórmula de
 escala global para depurar depois.
 
 ## 4. Deck
@@ -158,84 +158,84 @@ escala global para depurar depois.
 
 - Ao escolher a classe, o jogo sorteia **5 cartas distintas** entre as 20 da classe (apenas as
   desbloqueadas). O sorteio **nunca repete carta**.
-- Cada carta sorteada entra no deck em **2 copias**. Deck inicial: **10 cartas**.
-- O jogador pode **re-roletar 1 das 5**, uma unica vez. A troca leva as duas copias junto, e a
-  carta trocada nao volta ao sorteio.
+- Cada carta sorteada entra no deck em **2 cópias**. Deck inicial: **10 cartas**.
+- O jogador pode **re-roletar 1 das 5**, uma única vez. A troca leva as duas cópias junto, e a
+  carta trocada não volta ao sorteio.
 
-O sorteio e a fonte de variedade entre runs. Comecar com 3 cartas do mesmo arquetipo significa 6
-copias dele no deck, uma identidade de build forte desde o primeiro combate, e um convite a
-especializar. Comecar com 5 arquetipos diferentes e um convite a generalizar.
+O sorteio é a fonte de variedade entre runs. Começar com 3 cartas do mesmo arquetipo significa 6
+cópias dele no deck, uma identidade de build forte desde o primeiro combate, e um convite a
+especializar. Começar com 5 arquetipos diferentes e um convite a generalizar.
 
-A duplicacao existe por dois motivos: garante que a mao de 5 nao compre o deck inteiro, e faz o
+A duplicação existe por dois motivos: garante que a mão de 5 não compre o deck inteiro, e faz o
 sorteio inicial pesar de verdade na identidade da run.
 
 ### 4.2 Crescimento
 
-10 pontos de recompensa por run (5 elites + 5 chefes). Em cada um, o jogador escolhe **uma** opcao:
+10 pontos de recompensa por run (5 elites + 5 chefes). Em cada um, o jogador escolhe **uma** opção:
 
-- **Carta nova**: escolhe 1 entre 3 cartas sorteadas da propria classe (nunca oferece carta que ja
-  esta no deck), e ela entra em **1 copia**, ou
-- **+1 nivel de habilidade** da classe.
+- **Carta nova**: escolhe 1 entre 3 cartas sorteadas da própria classe (nunca oferece carta que já
+  está no deck), e ela entra em **1 cópia**, ou
+- **+1 nível de habilidade** da classe.
 
-Deck no fim de uma run completa: **10 iniciais + ate 10 de recompensa = 20 cartas**, e menos que
+Deck no fim de uma run completa: **10 iniciais + até 10 de recompensa = 20 cartas**, e menos que
 isso se o jogador investir na habilidade.
 
-Sem remocao de carta. Sem upgrade de carta. Sem loja. Sem moeda.
+Sem remoção de carta. Sem upgrade de carta. Sem loja. Sem moeda.
 
-### 4.3 A decisao central
+### 4.3 A decisão central
 
 | Estilo | Como se forma | Ganho |
 | --- | --- | --- |
-| Especialista | Sorteio ja entregou 3 ou mais cartas de um arquetipo. Sobra recompensa para a habilidade. | Habilidade em nivel alto, combos consistentes, deck previsivel. |
-| Generalista | Sorteio veio espalhado. Gasta recompensas fechando arquetipos. | Mais respostas para situacoes diferentes, habilidade fraca. |
+| Especialista | Sorteio já entregou 3 ou mais cartas de um arquetipo. Sobra recompensa para a habilidade. | Habilidade em nível alto, combos consistentes, deck previsível. |
+| Generalista | Sorteio veio espalhado. Gasta recompensas fechando arquetipos. | Mais respostas para situações diferentes, habilidade fraca. |
 
-Como a habilidade tem **nivel maximo 10** e comeca no **nivel 1**, existem no maximo **9**
-aprimoramentos possiveis. Com 10 pontos de recompensa, pelo menos **1 ponto sempre vira carta**.
-Nao existe build 100% habilidade, e isso e proposital.
+Como a habilidade tem **nível máximo 10** e começa no **nível 1**, existem no máximo **9**
+aprimoramentos possíveis. Com 10 pontos de recompensa, pelo menos **1 ponto sempre vira carta**.
+Não existe build 100% habilidade, e isso é proposital.
 
 ## 5. Vida e derrota
 
-- HP inicial: **70** `[ajustar]`, igual para as tres classes. A diferenca entre classes vem das
+- HP inicial: **70** `[ajustar]`, igual para as três classes. A diferença entre classes vem das
   cartas e da habilidade, nunca de vida base.
-- HP persiste entre andares. Cura so em descanso e em eventos.
-- **Permadeath**: morreu, a run acabou. Nao ha checkpoint nem ressurreicao.
-- **Bonus de derrota**: o progresso de meta e proporcional ao andar alcancado, entao subir mais
+- HP persiste entre andares. Cura só em descanso e em eventos.
+- **Permadeath**: morreu, a run acabou. Não há checkpoint nem ressurreição.
+- **Bônus de derrota**: o progresso de meta é proporcional ao andar alcançado, então subir mais
   alto sempre vale a pena mesmo perdendo.
 
-Formula inicial de pontos de meta `[ajustar]`:
+Fórmula inicial de pontos de meta `[ajustar]`:
 
 ```
 pontos = andar_alcancado + (chefes_derrotados * 10) + bonus_vitoria
 bonus_vitoria = 50 se venceu, 0 se nao
 ```
 
-## 6. Meta progressao
+## 6. Meta progressão
 
 ### 6.1 O que persiste entre runs
 
-- Personagens desbloqueados (comeca com 1).
-- Cartas desbloqueadas por classe (comeca com um subconjunto, ver 6.2).
-- Habilidades alternativas de classe (fase pos MVP).
-- Objetivos cumpridos, estatisticas e recordes.
+- Personagens desbloqueados (começa com 1).
+- Cartas desbloqueadas por classe (começa com um subconjunto, ver 6.2).
+- Habilidades alternativas de classe (fase pós MVP).
+- Objetivos cumpridos, estatísticas e recordes.
 
 ### 6.2 Pool inicial
 
-O jogador nao comeca com as 20 cartas de uma classe disponiveis no sorteio. Comeca com um pool
+O jogador não começa com as 20 cartas de uma classe disponíveis no sorteio. Começa com um pool
 reduzido `[ajustar: 10 cartas, 2 ou 3 de cada arquetipo]` e desbloqueia o resto cumprindo
-objetivos. Isso serve a dois propositos: reduz a carga cognitiva do primeiro contato e da funcao
+objetivos. Isso serve a dois propósitos: reduz a carga cognitiva do primeiro contato e da função
 real ao sistema de conquistas.
 
 ### 6.3 Desbloqueios
 
-Todo desbloqueio vem de **objetivo nomeado**, nunca de acumulo passivo de moeda ou XP. Exemplos:
+Todo desbloqueio vem de **objetivo nomeado**, nunca de acúmulo passivo de moeda ou XP. Exemplos:
 
 | Objetivo | Recompensa |
 | --- | --- |
-| Alcancar o andar 20 | Carta do arquetipo X |
+| Alcançar o andar 20 | Carta do arquetipo X |
 | Vencer um chefe sem tomar dano | Carta do arquetipo Y |
 | Terminar uma run com um arquetipo completo | Nova carta |
 | Vencer a torre pela primeira vez | Segunda classe |
-| Vencer com a habilidade no nivel 10 | Terceira classe |
+| Vencer com a habilidade no nível 10 | Terceira classe |
 
-Os pontos de meta acumulados servem como estatistica e como criterio de alguns objetivos, nunca
+Os pontos de meta acumulados servem como estatística e como critério de alguns objetivos, nunca
 como moeda gasta em loja.
