@@ -1,14 +1,14 @@
 # 05. Banco de dados
 
 Estrutura completa em [`database/schema.sql`](../database/schema.sql). Este documento explica o
-porque de cada decisao de modelagem.
+porquê de cada decisão de modelagem.
 
-## 1. Principio
+## 1. Princípio
 
-**Conteudo de jogo mora no banco, nao no codigo.** Carta, inimigo, evento, objetivo e nivel de
-habilidade sao linhas de tabela. Balancear o jogo vira um `UPDATE`, e nao um deploy.
+**Conteúdo de jogo mora no banco, não no código.** Carta, inimigo, evento, objetivo e nível de
+habilidade são linhas de tabela. Balancear o jogo vira um `UPDATE`, e não um deploy.
 
-O preco disso e um interpretador de efeitos no cliente (`effects.js`). Vale a pena: sem isso, cada
+O preço disso é um interpretador de efeitos no cliente (`effects.js`). Vale a pena: sem isso, cada
 ajuste de dano exigiria mexer em JavaScript e subir arquivo por FTP.
 
 ## 2. Grupos de tabelas
@@ -16,62 +16,62 @@ ajuste de dano exigiria mexer em JavaScript e subir arquivo por FTP.
 | Grupo | Tabelas | Muda quando |
 | --- | --- | --- |
 | Contas | `usuarios`, `login_tentativas` | O jogador se cadastra |
-| Catalogo de classe | `classes`, `habilidade_niveis`, `arquetipos`, `cartas` | O designer balanceia |
-| Catalogo de mundo | `inimigos`, `inimigo_acoes`, `encontros`, `eventos` | O designer adiciona conteudo |
+| Catálogo de classe | `classes`, `habilidade_niveis`, `arquetipos`, `cartas` | O designer balanceia |
+| Catálogo de mundo | `inimigos`, `inimigo_acoes`, `encontros`, `eventos` | O designer adiciona conteúdo |
 | Run | `runs`, `run_cartas` | O jogador joga |
 | Meta | `objetivos`, `usuario_objetivos`, `usuario_desbloqueios`, `usuario_estatisticas` | O jogador progride |
 
-## 3. Decisoes que merecem explicacao
+## 3. Decisões que merecem explicação
 
 ### 3.1 Por que `slug` em tudo
 
-Toda entidade de catalogo tem `slug` unico alem do `id`. O codigo e os seeds referenciam slug,
-nunca id numerico. Isso permite recriar o banco do zero sem quebrar referencias e deixa o SQL
-legivel: `carta = 'costela-solta'` diz mais que `carta_id = 47`.
+Toda entidade de catálogo tem `slug` único além do `id`. O código e os seeds referenciam slug,
+nunca id numérico. Isso permite recriar o banco do zero sem quebrar referências e deixa o SQL
+legível: `carta = 'costela-solta'` diz mais que `carta_id = 47`.
 
-### 3.2 Por que `run_cartas` alem do `estado_json`
+### 3.2 Por que `run_cartas` além do `estado_json`
 
-O deck aparece nos dois lugares de proposito:
+O deck aparece nos dois lugares de propósito:
 
-- `estado_json` e a fonte de verdade para **retomar a run**. Snapshot rapido, uma leitura so.
-- `run_cartas` e a fonte de verdade para **analisar o jogo**. Com ela da para perguntar ao banco
-  quais cartas aparecem em runs vencedoras e quais nunca sao escolhidas. Isso e o dado que vai
+- `estado_json` é a fonte de verdade para **retomar a run**. Snapshot rápido, uma leitura só.
+- `run_cartas` é a fonte de verdade para **analisar o jogo**. Com ela dá para perguntar ao banco
+  quais cartas aparecem em runs vencedoras e quais nunca são escolhidas. Isso é o dado que vai
   guiar o balanceamento depois.
 
-Se as duas divergirem, `estado_json` ganha e `run_cartas` e reescrita no proximo save.
+Se as duas divergirem, `estado_json` ganha e `run_cartas` é reescrita no próximo save.
 
-### 3.3 Por que a ordem dos andares nao e salva
+### 3.3 Por que a ordem dos andares não é salva
 
-A torre e gerada a partir da `seed` da run com um RNG deterministico (mulberry32). Mesma seed,
-mesma torre. Guardar a seed em vez da lista de andares mantem o save pequeno e serve de rede de
-seguranca: com a seed da para reproduzir exatamente a run de um bug reportado.
+A torre é gerada a partir da `seed` da run com um RNG determinístico (mulberry32). Mesma seed,
+mesma torre. Guardar a seed em vez da lista de andares mantém o save pequeno e serve de rede de
+segurança: com a seed dá para reproduzir exatamente a run de um bug reportado.
 
-Cuidado: qualquer mudanca no algoritmo de geracao invalida as runs ativas. Por isso `estado_json`
+Cuidado: qualquer mudança no algoritmo de geração invalida as runs ativas. Por isso `estado_json`
 tem campo `versao`.
 
-### 3.4 Por que `inimigo_acoes` e tabela separada
+### 3.4 Por que `inimigo_acoes` é tabela separada
 
-Chefes tem fases, e fase e so um conjunto diferente de acoes. Modelar acao como linha permite:
-- ciclo fixo (`ordem` > 0) para inimigos previsiveis, que ensinam o jogador,
+Chefes têm fases, e fase é só um conjunto diferente de ações. Modelar ação como linha permite:
+- ciclo fixo (`ordem` > 0) para inimigos previsíveis, que ensinam o jogador,
 - sorteio por peso (`ordem` = 0) para inimigos comuns,
-- condicao em JSON (`{"hp_abaixo_de": 50}`) para mudanca de fase.
+- condição em JSON (`{"hp_abaixo_de": 50}`) para mudança de fase.
 
-Tudo sem uma linha de codigo por inimigo.
+Tudo sem uma linha de código por inimigo.
 
-### 3.5 Por que nao existe tabela de partida ou de turno
+### 3.5 Por que não existe tabela de partida ou de turno
 
-Combate e do cliente. O servidor nunca ve turno, jogada ou dano. Guardar isso exigiria enviar
-telemetria a cada acao, o que multiplica requisicoes num host gratuito por nenhum ganho real.
+Combate é do cliente. O servidor nunca vê turno, jogada ou dano. Guardar isso exigiria enviar
+telemetria a cada ação, o que multiplica requisições num host gratuito por nenhum ganho real.
 
-### 3.6 Por que `usuario_estatisticas` e tabela e nao consulta
+### 3.6 Por que `usuario_estatisticas` é tabela e não consulta
 
-Poderia ser derivada de `runs` com agregacao, mas em host compartilhado consulta agregada em
-tabela que so cresce e o primeiro lugar que fica lento. Uma linha por usuario atualizada no
+Poderia ser derivada de `runs` com agregação, mas em host compartilhado consulta agregada em
+tabela que só cresce e o primeiro lugar que fica lento. Uma linha por usuário atualizada no
 `finish.php` resolve.
 
 ## 4. Seeds
 
-`database/seeds.sql` carrega o conteudo do jogo. Ordem obrigatoria por causa das chaves
+`database/seeds.sql` carrega o conteúdo do jogo. Ordem obrigatória por causa das chaves
 estrangeiras:
 
 ```
@@ -81,15 +81,15 @@ eventos
 objetivos
 ```
 
-Regra: o seed e reexecutavel. Usa `INSERT ... ON DUPLICATE KEY UPDATE` com base no slug, de forma
-que rodar de novo atualiza os valores em vez de duplicar linhas. E assim que o balanceamento vai
-para producao.
+Regra: o seed é reexecutável. Usa `INSERT ... ON DUPLICATE KEY UPDATE` com base no slug, de forma
+que rodar de novo atualiza os valores em vez de duplicar linhas. É assim que o balanceamento vai
+para produção.
 
-## 5. Convencoes
+## 5. Convenções
 
-- Nomes de tabela no plural, em portugues sem acento.
+- Nomes de tabela no plural, em português sem acento.
 - Colunas em `snake_case`.
-- Toda tabela de conteudo tem `slug` unico.
+- Toda tabela de conteúdo tem `slug` único.
 - Chave estrangeira sempre nomeada `fk_<tabela>_<referencia>`.
-- Indice sempre nomeado `ix_<tabela>_<colunas>`.
-- Datas em `DATETIME`, nunca em `TIMESTAMP` (fuso do host gratuito nao e confiavel).
+- Índice sempre nomeado `ix_<tabela>_<colunas>`.
+- Datas em `DATETIME`, nunca em `TIMESTAMP` (fuso do host gratuito não é confiável).
