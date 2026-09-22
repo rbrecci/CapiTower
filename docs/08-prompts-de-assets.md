@@ -1,17 +1,17 @@
 # 08. Prompts de assets: inimigos do MVP Flet
 
-> Prompts para gerar a arte dos 26 inimigos que hoje sao silhueta com icone (`ENEMY_ICONS` em
+> Prompts para gerar a arte dos 26 inimigos que hoje são silhueta com ícone (`ENEMY_ICONS` em
 > `flet_mvp/capitower/ui.py`). Gerados no app do Gemini (gemini.google.com), um por vez, com a
-> `capimaga.png` anexada como referencia de estilo. Saida: `flet_mvp/assets/<id>.png` em 512px
+> `capimaga.png` anexada como referência de estilo. Saída: `flet_mvp/assets/<id>.png` em 512px
 > e entrada em `ENEMY_ART`.
 
 ## Estilo-casa (derivado de capimaga.png e gertrudes.png)
 
 Mascote cartoon: contorno preto grosso e limpo, cel shading chapado com pouco gradiente, pelo
-marrom-alaranjado, formas simples e legiveis, corpo inteiro em pe, fundo branco liso, sem texto.
-Tudo que nao e capivara (sapo, rato, halter, frasco, bolha, sobremesa, vaso) segue o mesmo traco.
+marrom-alaranjado, formas simples e legíveis, corpo inteiro em pé, fundo branco liso, sem texto.
+Tudo que não é capivara (sapo, rato, halter, frasco, bolha, sobremesa, vaso) segue o mesmo traço.
 
-**Bloco de estilo** (vai no comeco de todo prompt, com a `capimaga.png` anexada na mesma mensagem):
+**Bloco de estilo** (vai no começo de todo prompt, com a `capimaga.png` anexada na mesma mensagem):
 
 ```
 Generate an image in the exact same art style as the attached reference character: cartoon game mascot illustration, clean thick black outlines, flat cel shading with minimal soft gradients, simple readable shapes, full body standing pose, slight 3/4 view, isolated on a plain pure white background, no text, no watermark, no scenery. Same line weight, same fur rendering and same proportions logic as the reference.
@@ -23,16 +23,16 @@ Generate an image in the exact same art style as the attached reference characte
 Single character only, centered, whole body visible with margin around it, square composition.
 ```
 
-**Se o Gemini sair do traco:** repetir "same art style as the attached reference" e pedir "no
-realistic shading, no 3D render". Se sair com cenario, pedir "plain white background only".
+**Se o Gemini sair do traço:** repetir "same art style as the attached reference" e pedir "no
+realistic shading, no 3D render". Se sair com cenário, pedir "plain white background only".
 
-**Negativo** (o app do Gemini nao tem campo negativo; usar em texto se precisar corrigir):
+**Negativo** (o app do Gemini não tem campo negativo; usar em texto se precisar corrigir):
 realistic, 3D render, photo, painterly, sketch lines, text, watermark, background scenery,
 multiple characters, cropped body.
 
-## Ordem de geracao
+## Ordem de geração
 
-Chefes -> elites -> monstros comuns. Gertrudes ja tem arte e fica fora.
+Chefes -> elites -> monstros comuns. Gertrudes já tem arte e fica fora.
 
 ---
 
@@ -53,14 +53,14 @@ Chefes -> elites -> monstros comuns. Gertrudes ja tem arte e fica fora.
 [estilo] A mad scientist capybara boss, the family chemist: white lab coat over a tight gym shirt showing muscles, round goggles pushed up on his forehead, wild tufts of fur, holding up a protein shaker bottle overflowing with bubbling glowing green liquid, other hand holding a test tube, manic grin. Warm brown fur. [fechamento]
 ```
 
-### gemeo_a (Gemeo Rosca, esquerdo, andar 40)
+### gemeo_a (Gêmeo Rosca, esquerdo, andar 40)
 ```
 [estilo] A muscular capybara bodybuilder twin doing a bicep curl: huge round biceps, red sweatband on the head, red sleeveless gym shirt with a bold letter-free logo shape, curling a heavy dumbbell with his LEFT arm while flexing, cocky wink, body turned slightly to the viewer's left. Warm brown fur. [fechamento]
 ```
 
-### gemeo_b (Gemeo Rosca, direito, andar 40)
-Espelho horizontal de `gemeo_a` feito no Pillow (eles "treinam em espelho"), nao se gera. Se
-quiser distinguir, trocar a cor da faixa pra azul na edicao.
+### gemeo_b (Gêmeo Rosca, direito, andar 40)
+Espelho horizontal de `gemeo_a` feito no Pillow (eles "treinam em espelho"), não se gera. Se
+quiser distinguir, trocar a cor da faixa pra azul na edição.
 
 ### capitolino (Sargento Capitolino, andar 50)
 ```
@@ -71,7 +71,7 @@ quiser distinguir, trocar a cor da faixa pra azul na edicao.
 
 ## Elites
 
-### elite1 (Capivara de Pulso, bloco O Poco)
+### elite1 (Capivara de Pulso, bloco O Poço)
 ```
 [estilo] An elite capybara fighter with gigantic forearms and wrists far bigger than the rest of the body, white wrist wraps, damp fur with water drops, squeezing a steel hand-gripper until it bends, veins popping on the forearm, gritted teeth, slightly hunched stance. Warm brown fur. [fechamento]
 ```
@@ -81,12 +81,12 @@ quiser distinguir, trocar a cor da faixa pra azul na edicao.
 [estilo] An elite female capybara cross-training instructor: athletic build, high ponytail of fur, whistle in mouth, stopwatch hanging from the neck, fingerless gloves, black leggings and a neon-yellow sports top, holding a heavy kettlebell in one hand and pointing at the viewer with the other, bossy commanding expression. Warm brown fur. [fechamento]
 ```
 
-### elite3 (Cobaia Alfa, bloco O Laboratorio)
+### elite3 (Cobaia Alfa, bloco O Laboratório)
 ```
 [estilo] An elite mutated lab-test capybara: asymmetric body with one massively oversized arm, patches of glowing toxic-green fur, a yellow ear tag reading nothing (blank tag), a few thin transparent tubes taped to the back leaking green drops, cracked stitches, one eye bigger than the other, unsettling toothy grin. Warm brown fur with green patches. [fechamento]
 ```
 
-### elite4 (Chef de Cozinha, bloco O Refeitorio)
+### elite4 (Chef de Cozinha, bloco O Refeitório)
 ```
 [estilo] An elite fat and muscular capybara chef: big round belly over thick arms, tall white chef toque, white double-breasted chef jacket with the sleeves rolled up, red neckerchief, curly mustache, holding a giant ladle like a club and a frying pan as a shield, furious red-faced yelling expression. Warm brown fur. [fechamento]
 ```
@@ -150,7 +150,7 @@ quiser distinguir, trocar a cor da faixa pra azul na edicao.
 [estilo] A fat lazy capybara hugging a huge aluminum lunchbox: round belly, food stains on a white shirt, a fork in one hand, mouth full with cheeks puffed out, greasy happy half-closed eyes, sitting heavily on the ground. Warm brown fur. [fechamento]
 ```
 
-### garcom (Garcom Bombado, bloco 4)
+### garcom (Garçom Bombado, bloco 4)
 ```
 [estilo] A gigantic bodybuilder capybara waiter: towering muscular build, black vest and bow tie over a white shirt stretched by the muscles, a white cloth over one forearm, balancing a silver serving tray with a cloche dome high on one hand, other fist clenched, calm polite smile that looks threatening. Warm brown fur. [fechamento]
 ```
